@@ -1,3 +1,7 @@
+Questions:
+1) could I call AsynchTask in Fragment.onCreate()?
+2) what are the ruls for placing menu items in Activity vs Fragment? In my case, I have one Activity contains one fragment.
+3) should the app retain old movie pages?
 
 1) package com.squareup.picasso(picasso) for loading images
 2) API https://www.themoviedb.org/ for movie info

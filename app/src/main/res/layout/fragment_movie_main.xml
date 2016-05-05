@@ -6,12 +6,20 @@
              android:paddingLeft="@dimen/activity_horizontal_margin"
              android:paddingRight="@dimen/activity_horizontal_margin"
              android:paddingTop="@dimen/activity_vertical_margin"
+             android:background="@android:color/black"
              tools:context="com.coderming.movieapp.MovieMainFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"/>
+        android:layout_gravity="center"
+        android:id="@+id/movie_grid"
+        android:numColumns="auto_fit"
+        android:stretchMode="none"
+        android:verticalSpacing="3dp"
+        android:horizontalSpacing="3dp"
+        android:clickable="true">
+    </GridView>
 
 </FrameLayout>

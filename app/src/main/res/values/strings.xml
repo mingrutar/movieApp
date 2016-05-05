@@ -1,6 +1,20 @@
 <resources>
     <string name="app_name">MovieApp</string>
+    <string name="tag_api_key" translatable="false">api_key</string>
+    <string name="tag_sortby_popular" translatable="false">popular</string>
+    <string name="tag_sortby_top_rated" translatable="false">top_rated</string>
 
+    <string name="pref_sortby_key">pref_sortby_key</string>
+    <string name="sortby_popular">most popular</string>
+    <string name="sortby_top_rated">highest rated</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="movieListOrder">
+        <item>@string/tag_sortby_popular</item>
+        <item>@string/tag_sortby_top_rated</item>
+    </string-array>
+    <string-array name="movieListOrderValue">
+        <item>@string/sortby_popular</item>
+        <item>@string/sortby_top_rated</item>
+    </string-array>
 </resources>

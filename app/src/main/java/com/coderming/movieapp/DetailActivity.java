@@ -1,21 +1,19 @@
 package com.coderming.movieapp;
 
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+public class DetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.main_container, new MovieMainFragment() )
+                    .add(R.id.detail_container, new DetailFragment() )
                     .commit();
         }
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
 }
