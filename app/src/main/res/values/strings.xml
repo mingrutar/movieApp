@@ -7,6 +7,7 @@
     <string name="pref_sortby_key">pref_sortby_key</string>
     <string name="sortby_popular">most popular</string>
     <string name="sortby_top_rated">highest rated</string>
+    <string name="main_frag_title">All Time Favourite Movies</string>
     <!-- TODO: Remove or change this placeholder text -->
 
     <string-array name="movieListOrder">

@@ -3,13 +3,14 @@ package com.coderming.movieapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,7 +38,6 @@ public class MovieMainFragment extends Fragment {
     private MovieDb mMovieDb;
 
     public MovieMainFragment() {
-        // Required empty public constructor
     }
 
     /**
@@ -61,16 +61,22 @@ public class MovieMainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+    private void calcNumColumes( GridView gridView) {
+        Resources res = getActivity().getResources();
+        Configuration configuration = res.getConfiguration();
+        int smallScreenWidthDp = configuration.smallestScreenWidthDp;                       // for nexus 6: pixel 1440, dp=441
 
-    private int calcNumColumn() {
-        DisplayMetrics metrics = new  DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int columnwidth_px = 185 * metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT;
-        int colNum =  metrics.widthPixels / columnwidth_px;
-        Log.v(LOG_TAG, String.format("calc #col: columnwidth_px=%d, colNum=%d", columnwidth_px,colNum));
-        return colNum;
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        int posterWidthDp = Math.round(GridViewAdapter.POSTER_WIDTH / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+//        int numcol = (int) (smallScreenWidthDp  / (posterWidthDp));
+        int hSpacing = 4;                       // GridView.getHspacing not owrking, it returns 0
+        int colWidth = posterWidthDp + hSpacing;
+//        int colWidth = GridViewAdapter.POSTER_WIDTH+hSpacing;
+        int numCol =  Math.round(smallScreenWidthDp/colWidth);
+        if ((smallScreenWidthDp % colWidth) > (colWidth/4))       //
+            numCol++;
+        gridView.setNumColumns(numCol);
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -80,8 +86,9 @@ public class MovieMainFragment extends Fragment {
         mAdapter = new GridViewAdapter( context, R.layout.grid_item );
         GridView gridView = (GridView) rootView.findViewById(R.id.movie_grid);
         gridView.setAdapter(mAdapter);
-        int gridNumCol = calcNumColumn();
-        gridView.setNumColumns(gridNumCol);
+        calcNumColumes(gridView);
+//        int hs = gridView.getHorizontalSpacing();  not work
+//        gridView.setVerticalSpacing(hs);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
