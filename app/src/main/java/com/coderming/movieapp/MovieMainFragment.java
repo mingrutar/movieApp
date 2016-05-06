@@ -94,7 +94,7 @@ public class MovieMainFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 MovieItem item = mAdapter.getItem(position);
                 Intent detailIntenet = new Intent(getContext(), DetailActivity.class);
-                detailIntenet.putExtra("MovieItem", item.mId);
+                detailIntenet.putExtra("MovieItem", item);
                 startActivity(detailIntenet);
             }
         });
