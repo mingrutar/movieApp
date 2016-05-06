@@ -6,4 +6,5 @@
     android:layout_height="wrap_content"
     android:scaleType="fitCenter"
     android:layout_gravity="center"
-           android:background="@android:color/holo_orange_light"/>
+    android:background="@android:color/holo_orange_light"
+    />

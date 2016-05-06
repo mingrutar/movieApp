@@ -3,11 +3,13 @@
     <string name="tag_api_key" translatable="false">api_key</string>
     <string name="tag_sortby_popular" translatable="false">popular</string>
     <string name="tag_sortby_top_rated" translatable="false">top_rated</string>
+    <string name="title_detail_activity">Movie Details</string>
+    <string name="main_frag_title">Favourite Movies</string>
+    <string name="title_settings_activity">Settings</string>
 
     <string name="pref_sortby_key">pref_sortby_key</string>
     <string name="sortby_popular">most popular</string>
     <string name="sortby_top_rated">highest rated</string>
-    <string name="main_frag_title">All Time Favourite Movies</string>
     <!-- TODO: Remove or change this placeholder text -->
 
     <string-array name="movieListOrder">

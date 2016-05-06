@@ -68,15 +68,13 @@ public class MovieMainFragment extends Fragment {
         int smallScreenWidthDp = configuration.smallestScreenWidthDp;                       // for nexus 6: pixel 1440, dp=441
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        int posterWidthDp = Math.round(GridViewAdapter.POSTER_WIDTH / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        int posterWidthDp = Math.round( res.getDimension(R.dimen.moviedb_image_width_185) / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
 //        int numcol = (int) (smallScreenWidthDp  / (posterWidthDp));
-        int hSpacing = 4;                       // GridView.getHspacing not owrking, it returns 0
-        int colWidth = posterWidthDp + hSpacing;
-//        int colWidth = GridViewAdapter.POSTER_WIDTH+hSpacing;
+//        int colWidth = posterWidthDp + hSpacing;+ hSpacing;
+        float colWidth = res.getDimension(R.dimen.moviedb_image_width_185) + res.getDimensionPixelSize(R.dimen.grid_hspacing) ;
         int numCol =  Math.round(smallScreenWidthDp/colWidth);
-        if ((smallScreenWidthDp % colWidth) > (colWidth/4))       //
-            numCol++;
-        Log.v(LOG_TAG, String.format("+++ calcNumColumes: smallScreenWidthDp=%d, posterWidthDp=%d, numCol=%d",smallScreenWidthDp,posterWidthDp,numCol));
+        Log.v(LOG_TAG, String.format("+++ calcNumColumes: smallScreenWidthDp=%d, posterWidthDp=%d, res_185=%f numCol=%d"
+                ,smallScreenWidthDp,posterWidthDp,res.getDimension(R.dimen.moviedb_image_width_185), numCol));
         gridView.setNumColumns(numCol);
     }
     @Override
@@ -118,7 +116,8 @@ public class MovieMainFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_setting) {
-            updateMovieInfo();
+            Intent settingIntent  = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingIntent);
             return true;               // stop here
         } else {
             return super.onOptionsItemSelected(item);
