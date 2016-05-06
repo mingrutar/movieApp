@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,6 +76,7 @@ public class MovieMainFragment extends Fragment {
         int numCol =  Math.round(smallScreenWidthDp/colWidth);
         if ((smallScreenWidthDp % colWidth) > (colWidth/4))       //
             numCol++;
+        Log.v(LOG_TAG, String.format("+++ calcNumColumes: smallScreenWidthDp=%d, posterWidthDp=%d, numCol=%d",smallScreenWidthDp,posterWidthDp,numCol));
         gridView.setNumColumns(numCol);
     }
     @Override
