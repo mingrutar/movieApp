@@ -2,20 +2,12 @@ package com.coderming.movieapp;
 
 import android.app.Activity;
 import android.content.Context;
-<<<<<<< HEAD
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-=======
->>>>>>> spinner
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-<<<<<<< HEAD
-=======
 import android.widget.LinearLayout;
->>>>>>> spinner
 
 import com.coderming.movieapp.model.MovieItem;
 import com.squareup.picasso.Picasso;

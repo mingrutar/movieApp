@@ -35,8 +35,8 @@ public class MovieMainFragment extends Fragment {
     private static final boolean DEBUG = false;
 
     static final String UrlBase = "https://api.themoviedb.org/3/movie/";
-    //TODO: remove when submit
-    static final String myApiKey = "cdf5f229abf9f31735694c38c48a67ac";
+    //TODO: replace the api_key
+    static final String myApiKey = "replace-this-api_key";
 
     private GridViewAdapter mAdapter;
     private MovieDb mMovieDb;
