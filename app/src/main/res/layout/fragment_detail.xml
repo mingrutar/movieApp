@@ -1,51 +1,60 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.coderming.movieapp.DetailFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin"
+              tools:context="com.coderming.movieapp.DetailFragment"
+              android:background="@color/design_fab_stroke_end_outer_color">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/design_fab_shadow_mid_color">
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:padding="10dp"
             android:weightSum="1"
             android:background="#f5e8cd">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:text="Title of the Movie"
                 android:id="@+id/title_textView"
-                android:layout_gravity="left"
+                android:layout_gravity="center"
                 android:layout_weight="0.7"
-                android:gravity="left|center_vertical"
+                android:gravity="center"
                 android:textColor="@color/design_snackbar_background_color"/>
-            <RatingBar
-                android:layout_width="wrap_content"
+            <LinearLayout
                 android:layout_height="wrap_content"
-                android:id="@+id/ratingBar"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_alignLeft="@+id/nVoters_text_textView"
-                android:isIndicator="true"
-                android:gravity="right"
-                android:stepSize="0.1"
-                android:rating="2.0"
-                android:numStars="4" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="#voters: 1234"
-                        android:gravity="right"
-                        android:id="@+id/nVoters_text_textView" />
-
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end|center_vertical"
+                android:layout_gravity="end"
+                android:background="@color/highlighted_text_material_dark"
+                android:baselineAligned="false">
+                <RatingBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ratingBar"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_alignLeft="@+id/nVoters_text_textView"
+                    android:isIndicator="true"
+                    android:stepSize="0.1"
+                    android:rating="2.0"
+                    android:numStars="4" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="#1234"
+                    android:paddingLeft="6dp"
+                    android:layout_gravity="end"
+                    android:id="@+id/nVoters_textView" />
+            </LinearLayout>
         </LinearLayout>
 
         <ImageView
@@ -53,21 +62,24 @@
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
             android:layout_gravity="center"
-            android:padding="10dp"
+            android:layout_margin="16dp"
+            android:adjustViewBounds="true"
             android:id="@+id/imageView_backdrop"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="end"
-            android:padding="10dp">
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="end" >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Released on "
-                android:textStyle="italic"/>
+                android:textStyle="italic"
+                android:textColor="@color/abc_secondary_text_material_light"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -78,17 +90,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/overview_textView"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:text="long text.................more text ,,,,,...more....long text.................more text ,,,,,...more....long text.................more text ,,,,,...more..long text.................more text ,,,,,...more"
             android:layout_marginTop="10dp"
-            android:padding="16dp"
-            android:background="@color/button_material_light"/>
+            android:padding="10dp"
+            android:background="@color/background_material_light"
+            android:textColor="@color/background_material_dark"/>
 
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="right|top">
-    </RelativeLayout>
-</FrameLayout>
+</LinearLayout>

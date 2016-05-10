@@ -62,16 +62,16 @@ public class MovieMainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+    // TODO how to deal with 4K screen?
     private void calcNumColumes( GridView gridView) {
         Resources res = getActivity().getResources();
         Configuration configuration = res.getConfiguration();
-        int smallScreenWidthDp = configuration.smallestScreenWidthDp;                       // for nexus 6: pixel 1440, dp=441
+        int smallScreenWidthDp = configuration.smallestScreenWidthDp;
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        int posterWidthDp = Math.round( res.getDimension(R.dimen.moviedb_image_width_185) / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-//        int numcol = (int) (smallScreenWidthDp  / (posterWidthDp));
-//        int colWidth = posterWidthDp + hSpacing;+ hSpacing;
         float colWidth = res.getDimension(R.dimen.moviedb_image_width_185) + res.getDimensionPixelSize(R.dimen.grid_hspacing) ;
+        int posterWidthDp = Math.round( colWidth / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+//        int numCol = (int) (smallScreenWidthDp  / (posterWidthDp));
         int numCol =  Math.round(smallScreenWidthDp/colWidth);
         Log.v(LOG_TAG, String.format("+++ calcNumColumes: smallScreenWidthDp=%d, posterWidthDp=%d, res_185=%f numCol=%d"
                 ,smallScreenWidthDp,posterWidthDp,res.getDimension(R.dimen.moviedb_image_width_185), numCol));
@@ -87,8 +87,6 @@ public class MovieMainFragment extends Fragment {
         GridView gridView = (GridView) rootView.findViewById(R.id.movie_grid);
         gridView.setAdapter(mAdapter);
         calcNumColumes(gridView);
-//        int hs = gridView.getHorizontalSpacing();  not work
-//        gridView.setVerticalSpacing(hs);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
