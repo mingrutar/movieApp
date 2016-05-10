@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +22,9 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.coderming.movieapp.model.MovieDb;
+import com.coderming.movieapp.model.MovieItem;
 
 //TODO: add menu forsort
 /**
@@ -63,10 +65,8 @@ public class MovieMainFragment extends Fragment {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         float colWidth = res.getDimension(R.dimen.moviedb_image_width_185) + res.getDimensionPixelSize(R.dimen.grid_hspacing) ;
         int posterWidthDp = Math.round( colWidth / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        int numCol = (int) (smallScreenWidthDp  / (posterWidthDp));
-//        int numCol =  Math.round(smallScreenWidthDp/colWidth);
-        Log.v(LOG_TAG, String.format("+++ calcNumColumes: smallScreenWidthDp=%d, posterWidthDp=%d, res_185=%f numCol=%d"
-                ,smallScreenWidthDp,posterWidthDp,res.getDimension(R.dimen.moviedb_image_width_185), numCol));
+//        int numCol = (int) (smallScreenWidthDp  / (posterWidthDp));
+        int numCol =  Math.round(smallScreenWidthDp/colWidth);
         gridView.setNumColumns(numCol);
     }
     @Override
@@ -125,23 +125,23 @@ public class MovieMainFragment extends Fragment {
             }
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
             }        });
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_setting) {
-            Intent settingIntent  = new Intent(getActivity(), SettingsActivity.class);
-            startActivity(settingIntent);
-            return true;               // stop here
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
+//        if (item.getItemId() == R.id.action_setting) {
+//            Intent settingIntent  = new Intent(getActivity(), SettingsActivity.class);
+//            startActivity(settingIntent);
+//            return true;               // stop here
+//        } else {
+//            return super.onOptionsItemSelected(item);
+//        }
     }
     public void updateAdapter(MovieDb movieDb) {
         mMovieDb = movieDb;
-        mAdapter.resetList(movieDb.mItemList);
+        mAdapter.resetList(movieDb.getItemList());
     }
 }

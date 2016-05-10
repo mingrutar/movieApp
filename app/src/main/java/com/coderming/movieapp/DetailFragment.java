@@ -16,6 +16,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coderming.movieapp.model.MovieItem;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -35,13 +36,10 @@ public class DetailFragment extends Fragment {
         final ImageView imageView = (ImageView) parent.findViewById(R.id.imageView_backdrop);
         String url = String.format(GridViewAdapter.FORMATTER_PICASSO_IMAGE_LOADER
                 , String.valueOf(resources.getDimensionPixelSize(R.dimen.moviedb_image_width_500))
-                , item.mBackdropPath);
-        Log.v(LOG_TAG, "+++ url=:"+url);
+                , item.getBackdropPath());
         Picasso.with(getContext()).load(url).into(new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                Log.v(LOG_TAG, String.format("+++backdrop image loaded: w=%d,h=%d"
-                        , bitmap.getWidth(), bitmap.getHeight()));
                 imageView.setImageBitmap(bitmap);
             }
 
@@ -54,12 +52,12 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        ((TextView) parent.findViewById(R.id.title_textView)).setText(item.mTitle);
-        ((TextView) parent.findViewById(R.id.overview_textView)).setText(item.mOverview);
-        ((TextView) parent.findViewById(R.id.release_textView)).setText( item.mReleaseDate);
-        ((TextView) parent.findViewById(R.id.nVoters_textView)).setText(String.valueOf(item.mVoteAverage));
+        ((TextView) parent.findViewById(R.id.title_textView)).setText(item.getTitle());
+        ((TextView) parent.findViewById(R.id.overview_textView)).setText(item.getOverview());
+        ((TextView) parent.findViewById(R.id.release_textView)).setText( item.getReleaseDate());
+        ((TextView) parent.findViewById(R.id.nVoters_textView)).setText(String.valueOf(item.getVoteAverage()));
         //TODO: mVoteAverage full range and calculation
-        float rating = (float) (item.mVoteAverage * 4.0f) /10.0f;
+        float rating = (float) (item.getVoteAverage() * 4.0f) /10.0f;
         ((RatingBar) parent.findViewById(R.id.ratingBar)).setRating(rating);
     }
     @Override

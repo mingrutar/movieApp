@@ -3,6 +3,8 @@ package com.coderming.movieapp;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.coderming.movieapp.model.MovieDb;
+
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -24,7 +26,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieDb> {
     }
 
     private String getMovies(String urlStr) {
-        Log.v(LOG_TAG, "urlString="+urlStr);
+//        Log.v(LOG_TAG, "urlString="+urlStr);
         HttpURLConnection httpConnection = null;    // android API vs HTTPClient
         BufferedReader reader = null;
         // Will contain the raw JSON response as a string.
@@ -63,7 +65,6 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieDb> {
                 }
             }
         }
-        Log.d(LOG_TAG, jsonStr);
         return jsonStr;
     }
     /***

@@ -1,3 +1,4 @@
+
 Questions:
 1) could I call AsynchTask in Fragment.onCreate()?
 2) what are the ruls for placing menu items in Activity vs Fragment? In my case, I have one Activity contains one fragment.

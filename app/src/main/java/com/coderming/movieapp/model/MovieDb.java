@@ -1,4 +1,4 @@
-package com.coderming.movieapp;
+package com.coderming.movieapp.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,12 +34,37 @@ public class MovieDb {
 
     static final String DATE_FORMAT = "yyyy-MM-dd";
 
-    List<MovieItem>  mItemList;
     int mCurrentPage;
+
+    public List<MovieItem> getItemList() {
+        return mItemList;
+    }
+
+    public void setItemList(List<MovieItem> itemList) {
+        mItemList = itemList;
+    }
+
+    public int getTotalPages() {
+        return mTotalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        mTotalPages = totalPages;
+    }
+
+    public int getTotalResults() {
+        return mTotalResults;
+    }
+
+    public void setTotalResults(int totalResults) {
+        mTotalResults = totalResults;
+    }
+
     int mTotalPages;
     int mTotalResults;
+    List<MovieItem>  mItemList;
 
-    MovieDb() {
+    public MovieDb() {
         mItemList = new ArrayList<>();
     }
     static public MovieDb parseFromJSON(String jsonStr) throws JSONException {

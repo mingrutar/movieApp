@@ -2,7 +2,6 @@ package com.coderming.movieapp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.coderming.movieapp.model.MovieItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collection;
@@ -31,7 +31,6 @@ public class GridViewAdapter extends ArrayAdapter<MovieItem> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.v(LOG_TAG, String.format("+++ getView position=%d, convertView=%s", position, convertView));
         View rowView;
         Context context = getContext();
         if (convertView == null) {
@@ -43,7 +42,7 @@ public class GridViewAdapter extends ArrayAdapter<MovieItem> {
         ImageView imageView = (ImageView) rowView.findViewById(R.id.movie_poster);
         MovieItem item = this.getItem(position);
         String url = String.format(FORMATTER_PICASSO_IMAGE_LOADER
-                , String.valueOf(context.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)), item.mPosterPath);
+                , String.valueOf(context.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)), item.getPosterPath());
         Picasso.with(getContext()).load(url).into(imageView);
         return rowView;
     }
