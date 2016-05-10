@@ -2,14 +2,14 @@ package com.coderming.movieapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +19,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 //TODO: add menu forsort
 /**
@@ -28,8 +31,6 @@ import android.widget.GridView;
 public class MovieMainFragment extends Fragment {
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
-    static final String PopularPath = "popular";
-    static final String TopRatedPath = "top_rated";
 
     static final String UrlBase = "https://api.themoviedb.org/3/movie/";
     //TODO: remove when submit
@@ -41,22 +42,13 @@ public class MovieMainFragment extends Fragment {
     public MovieMainFragment() {
     }
 
-    /**
-     * @return the subpath ame according to user setting
-    */
-    String sortby() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String popular_val = getString(R.string.sortby_popular);
-        String sortBy = preferences.getString(getString(R.string.pref_sortby_key) ,popular_val );
-        return (popular_val.equals(sortBy)) ? PopularPath : TopRatedPath;
-    }
-    private void updateMovieInfo() {
-        String sortby = sortby();
-        String url = UrlBase + sortby();
+    private void updateMovieInfo(String sortby) {
+        String url = UrlBase + sortby;
         Uri buildUri = Uri.parse(url).buildUpon()
-            .appendQueryParameter(getString(R.string.tag_api_key), myApiKey).build();
+                .appendQueryParameter(getString(R.string.tag_api_key), myApiKey).build();
         new FetchMovieTask(this).execute(buildUri.toString());
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,8 +63,8 @@ public class MovieMainFragment extends Fragment {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         float colWidth = res.getDimension(R.dimen.moviedb_image_width_185) + res.getDimensionPixelSize(R.dimen.grid_hspacing) ;
         int posterWidthDp = Math.round( colWidth / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-//        int numCol = (int) (smallScreenWidthDp  / (posterWidthDp));
-        int numCol =  Math.round(smallScreenWidthDp/colWidth);
+        int numCol = (int) (smallScreenWidthDp  / (posterWidthDp));
+//        int numCol =  Math.round(smallScreenWidthDp/colWidth);
         Log.v(LOG_TAG, String.format("+++ calcNumColumes: smallScreenWidthDp=%d, posterWidthDp=%d, res_185=%f numCol=%d"
                 ,smallScreenWidthDp,posterWidthDp,res.getDimension(R.dimen.moviedb_image_width_185), numCol));
         gridView.setNumColumns(numCol);
@@ -102,12 +94,39 @@ public class MovieMainFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updateMovieInfo();
+        updateMovieInfo(getString(R.string.tag_sortby_popular) );
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.movie_main_fragment, menu);
+
+        MenuItem item = menu.findItem(R.id.spinner);
+        android.support.v7.app.ActionBar actionBar=((AppCompatActivity)getActivity() ).getSupportActionBar();
+        final Context themedContext = actionBar.getThemedContext();
+        ArrayAdapter spinnerAdapter = ArrayAdapter.createFromResource(
+                themedContext, R.array.movieListOrderValue, android.R.layout.simple_spinner_dropdown_item); //  create the adapter from a StringArray
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
+        spinner.setAdapter(spinnerAdapter); // set the adapter to provide layout of rows and content
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                Object item = parent.getItemAtPosition(pos);
+                if (item != null) {
+                    if ( item.toString().equals( getString(R.string.sortby_popular))) {
+                        updateMovieInfo(getString(R.string.tag_sortby_popular));
+                    } else {
+                        updateMovieInfo(getString(R.string.tag_sortby_top_rated));
+                    }
+                } else {
+                    Toast.makeText(themedContext, "Selected unknown", Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }        });
         super.onCreateOptionsMenu(menu, inflater);
     }
 
