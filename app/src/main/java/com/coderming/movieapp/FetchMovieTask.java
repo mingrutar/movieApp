@@ -3,6 +3,8 @@ package com.coderming.movieapp;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.coderming.movieapp.model.MovieDb;
+
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -24,7 +26,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieDb> {
     }
 
     private String getMovies(String urlStr) {
-        Log.v(LOG_TAG, "urlString="+urlStr);
+//        Log.v(LOG_TAG, "urlString="+urlStr);
         HttpURLConnection httpConnection = null;    // android API vs HTTPClient
         BufferedReader reader = null;
         // Will contain the raw JSON response as a string.
@@ -95,29 +97,3 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieDb> {
         }
     }
 }
-
-/**
- * http://image.tmdb.org/t/p/
- * w500/        w92", "w154", "w185", "w342", "w500", "w780",
- * m5O3SZvQ6EgD5XXXLPIP1wLppeW.jpg?api_key=cdf5f229abf9f31735694c38c48a67ac
- *
-M "poster_path":"\/5N20rQURev5CNDcMjHVUZhpoCNC.jpg",  // has movie title
- "adult":false,
-D "overview":"Following the events of Age of Ultron, the collective governments of the world pass an act designed to regulate all superhuman activity. This polarizes opinion amongst the Avengers, causing two factions to side with Iron Man or Captain America, which causes an epic battle between former allies.",
-D "release_date":"2016-04-27",    // detail
- "genre_ids":[
- 28,
- 878,
- 53
- ],
- "id":271110,
- "original_title":"Captain America: Civil War",
- "original_language":"en",
-D "title":"Captain America: Civil War",    //detail
-D "backdrop_path":"\/m5O3SZvQ6EgD5XXXLPIP1wLppeW.jpg",   //? main
- "popularity":82.947294,
- "vote_count":554,
- "video":false,
-D "vote_average":6.85  /detail
- },
- */
