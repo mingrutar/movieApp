@@ -35,7 +35,7 @@ public class DetailFragment extends Fragment {
         Resources resources = getContext().getResources();
         final ImageView imageView = (ImageView) parent.findViewById(R.id.imageView_backdrop);
         String url = String.format(GridViewAdapter.FORMATTER_PICASSO_IMAGE_LOADER
-                , String.valueOf(resources.getDimensionPixelSize(R.dimen.moviedb_image_width_500))
+                , String.valueOf(resources.getDimensionPixelSize(R.dimen.moviedb_image_width_342))
                 , item.getBackdropPath());
         Picasso.with(getContext()).load(url).into(new Target() {
             @Override
