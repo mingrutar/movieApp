@@ -52,7 +52,7 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        ((TextView) parent.findViewById(R.id.title_textView)).setText(item.getTitle());
+        ((TextView) parent.findViewById(R.id.title_textView)).setText(item.getOriginalTitle());
         ((TextView) parent.findViewById(R.id.overview_textView)).setText(item.getOverview());
         ((TextView) parent.findViewById(R.id.release_textView)).setText( item.getReleaseDate());
         ((TextView) parent.findViewById(R.id.nVoters_textView)).setText(String.valueOf(item.getVoteAverage()));

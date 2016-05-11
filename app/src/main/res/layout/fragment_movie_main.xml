@@ -6,7 +6,7 @@
              android:paddingLeft="@dimen/activity_horizontal_margin"
              android:paddingRight="@dimen/activity_horizontal_margin"
              android:paddingTop="@dimen/activity_vertical_margin"
-             android:background="@color/design_fab_stroke_end_outer_color"
+             android:background="@color/material_grey_100"
              tools:context="com.coderming.movieapp.MovieMainFragment">
 
     <GridView

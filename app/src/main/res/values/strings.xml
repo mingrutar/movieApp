@@ -2,7 +2,7 @@
     <string name="app_name">MovieApp</string>
     <string name="tag_api_key" translatable="false">api_key</string>
     <string name="tag_sortby_popular" translatable="false">popular</string>
-    <string name="tag_sortby_top_rated" translatable="false">top_rated</string>
+    <string name="tag_sortby_top_rated" translatable="false">highest-rated</string>
     <string name="title_detail_activity">Movie Details</string>
     <string name="main_frag_title">Favourite Movies</string>
     <string name="title_settings_activity">Settings</string>
