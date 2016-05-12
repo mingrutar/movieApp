@@ -21,7 +21,7 @@ public class SettingsActivity extends PreferenceActivity
         pref.setOnPreferenceChangeListener(this);
         onPreferenceChange(pref, PreferenceManager
                 .getDefaultSharedPreferences(pref.getContext())
-                .getString(pref.getKey(), getString(R.string.tag_sortby_popular)));
+                .getString(pref.getKey(), ""));
     }
 
     @Override

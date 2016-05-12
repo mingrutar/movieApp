@@ -5,7 +5,8 @@
     <ListPreference
         android:title="@string/tag_sort_by"
         android:key="@string/pref_sortby_key"
-        android:defaultValue="@string/tag_sortby_popular"
+        android:summary="Most Popular"
+        android:defaultValue="@string/sortby_popular"
         android:entries="@array/movieListOrderValue"
         android:entryValues="@array/movieListOrderValue" />
 </PreferenceScreen>
