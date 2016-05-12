@@ -19,6 +19,7 @@ public class SettingsActivity extends PreferenceActivity
     private void bindPreferenceSummaryToValue(int pref_key) {
         Preference pref = findPreference(getString(pref_key));
         pref.setOnPreferenceChangeListener(this);
+
         onPreferenceChange(pref, PreferenceManager
                 .getDefaultSharedPreferences(pref.getContext())
                 .getString(pref.getKey(), ""));

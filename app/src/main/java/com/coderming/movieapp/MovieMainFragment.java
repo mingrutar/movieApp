@@ -2,15 +2,18 @@ package com.coderming.movieapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,8 +26,8 @@ import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.coderming.movieapp.model.MovieSource;
 import com.coderming.movieapp.model.MovieItem;
+import com.coderming.movieapp.model.MovieSource;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,12 +40,19 @@ public class MovieMainFragment extends Fragment {
 
     private GridViewAdapter mAdapter;
     private MovieSource mMovieDb;
+    private ArrayAdapter mSpinnerAdapter;
+    private SharedPreferences.OnSharedPreferenceChangeListener mListener;
+    private Spinner mSpinner;
 
     public MovieMainFragment() {
     }
 
-    private void updateMovieInfo(String sortby) {
-        String url = UrlBase + sortby;
+    private void updateMovieInfo() {
+       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String sortby = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
+        int tagId=  sortby.equals(getString(R.string.sortby_popular)) ?
+                R.string.tag_sortby_popular : R.string.tag_sortby_top_rated;
+        String url = UrlBase + getString(tagId);
         Uri buildUri = Uri.parse(url).buildUpon()
                 .appendQueryParameter(getString(R.string.tag_api_key), getString(R.string.themoviedb_api_key)).build();
         new FetchMovieTask(this).execute(buildUri.toString());
@@ -91,7 +101,7 @@ public class MovieMainFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updateMovieInfo(getString(R.string.tag_sortby_popular) );
+        updateMovieInfo();
     }
 
     @Override
@@ -101,21 +111,34 @@ public class MovieMainFragment extends Fragment {
         MenuItem item = menu.findItem(R.id.spinner);
         android.support.v7.app.ActionBar actionBar=((AppCompatActivity)getActivity() ).getSupportActionBar();
         final Context themedContext = actionBar.getThemedContext();
-        ArrayAdapter spinnerAdapter = ArrayAdapter.createFromResource(
+        mSpinnerAdapter = ArrayAdapter.createFromResource(
                 themedContext, R.array.movieListOrderValue, android.R.layout.simple_spinner_dropdown_item); //  create the adapter from a StringArray
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-        spinner.setAdapter(spinnerAdapter); // set the adapter to provide layout of rows and content
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner = (Spinner) MenuItemCompat.getActionView(item);
+        mSpinner.setAdapter(mSpinnerAdapter); // set the adapter to provide layout of rows and content
+
+        mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                if (key.equals(getString(R.string.pref_sortby_key))) {
+                    updateMovieInfo();
+                    String val = prefs.getString(key, "");
+                    int pos = (val.equals(getString(R.string.sortby_top_rated))) ? 1 : 0;
+                    mSpinner.setSelection(pos);
+                }
+            }
+        };
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        prefs.registerOnSharedPreferenceChangeListener(mListener);
+
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 Object item = parent.getItemAtPosition(pos);
                 if (item != null) {
-                    if ( item.toString().equals( getString(R.string.sortby_popular))) {
-                        updateMovieInfo(getString(R.string.tag_sortby_popular));
-                    } else {
-                        updateMovieInfo(getString(R.string.tag_sortby_top_rated));
-                    }
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString(getString(R.string.pref_sortby_key), item.toString());
+                    editor.apply();
                 } else {
                     Toast.makeText(themedContext, "Selected unknown", Toast.LENGTH_LONG).show();
                 }
@@ -132,9 +155,8 @@ public class MovieMainFragment extends Fragment {
             Intent settingIntent  = new Intent(getActivity(), SettingsActivity.class);
             startActivity(settingIntent);
             return true;               // stop here
-        } else {
-            return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
     public void updateAdapter(MovieSource movieSource) {
         mMovieDb = movieSource;
