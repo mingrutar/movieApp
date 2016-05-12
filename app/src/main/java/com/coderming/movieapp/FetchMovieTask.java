@@ -3,7 +3,7 @@ package com.coderming.movieapp;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.coderming.movieapp.model.MovieDb;
+import com.coderming.movieapp.model.MovieSource;
 
 import org.json.JSONException;
 
@@ -17,12 +17,12 @@ import java.net.URL;
 /**
  * Created by linna on 5/4/2016.
  */
-public class FetchMovieTask extends AsyncTask<String, Void, MovieDb> {
+public class FetchMovieTask extends AsyncTask<String, Void, MovieSource> {
     private static final String LOG_TAG = FetchMovieTask.class.getSimpleName();
     private MovieMainFragment mMovieMainFragment;
 
     public FetchMovieTask(MovieMainFragment movieMainFragment) {
-        mMovieMainFragment= movieMainFragment;
+        mMovieMainFragment = movieMainFragment;
     }
 
     private String getMovies(String urlStr) {
@@ -42,9 +42,6 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieDb> {
                 reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
                     buffer.append(line).append("\n");
                 }
                 if (buffer.length() != 0) {
@@ -74,12 +71,12 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieDb> {
      * @return List<MovieItem>
      */
     @Override
-    protected MovieDb doInBackground(String... params) {
+    protected MovieSource doInBackground(String... params) {
         try {
             //TODO: params[1] as page number?
             String jsonStr = getMovies(params[0]);
             if (jsonStr != null) {
-                return MovieDb.parseFromJSON(jsonStr);
+                return MovieSource.parseFromJSON(jsonStr);
             } else {
                 return null;
             }
@@ -90,9 +87,9 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieDb> {
     }
 
     @Override
-    protected void onPostExecute(MovieDb movieDb) {
-        if (movieDb != null) {
-            mMovieMainFragment.updateAdapter(movieDb);
+    protected void onPostExecute(MovieSource movieSource) {
+        if (movieSource != null) {
+            mMovieMainFragment.updateAdapter(movieSource);
             mMovieMainFragment = null;
         }
     }

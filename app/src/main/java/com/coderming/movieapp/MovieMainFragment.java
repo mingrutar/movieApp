@@ -23,10 +23,9 @@ import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.coderming.movieapp.model.MovieDb;
+import com.coderming.movieapp.model.MovieSource;
 import com.coderming.movieapp.model.MovieItem;
 
-//TODO: add menu forsort
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -35,11 +34,9 @@ public class MovieMainFragment extends Fragment {
     private static final boolean DEBUG = false;
 
     static final String UrlBase = "https://api.themoviedb.org/3/movie/";
-    //TODO: replace the api_key
-    static final String myApiKey = "cdf5f229abf9f31735694c38c48a67ac";
 
     private GridViewAdapter mAdapter;
-    private MovieDb mMovieDb;
+    private MovieSource mMovieDb;
 
     public MovieMainFragment() {
     }
@@ -47,7 +44,7 @@ public class MovieMainFragment extends Fragment {
     private void updateMovieInfo(String sortby) {
         String url = UrlBase + sortby;
         Uri buildUri = Uri.parse(url).buildUpon()
-                .appendQueryParameter(getString(R.string.tag_api_key), myApiKey).build();
+                .appendQueryParameter(getString(R.string.tag_api_key), getString(R.string.themoviedb_api_key)).build();
         new FetchMovieTask(this).execute(buildUri.toString());
     }
 
@@ -63,15 +60,15 @@ public class MovieMainFragment extends Fragment {
         int smallScreenWidthDp = configuration.smallestScreenWidthDp;
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        float colWidth = res.getDimension(R.dimen.moviedb_image_width_185) + res.getDimensionPixelSize(R.dimen.grid_hspacing) ;
+        float colWidth = res.getDimension(R.dimen.moviedb_image_width_185) + res.getDimensionPixelSize(R.dimen.dimen_4dp) ;
         int posterWidthDp = Math.round( colWidth / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+// TODO: use commented numCol all dp will get tiny imagess
 //        int numCol = (int) (smallScreenWidthDp  / (posterWidthDp));
         int numCol =  Math.round(smallScreenWidthDp/colWidth);
         gridView.setNumColumns(numCol);
     }
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_movie_main, container, false);
         Context context = getContext();
@@ -131,17 +128,16 @@ public class MovieMainFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-//        if (item.getItemId() == R.id.action_setting) {
-//            Intent settingIntent  = new Intent(getActivity(), SettingsActivity.class);
-//            startActivity(settingIntent);
-//            return true;               // stop here
-//        } else {
-//            return super.onOptionsItemSelected(item);
-//        }
+        if (item.getItemId() == R.id.action_setting) {
+            Intent settingIntent  = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingIntent);
+            return true;               // stop here
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
-    public void updateAdapter(MovieDb movieDb) {
-        mMovieDb = movieDb;
-        mAdapter.resetList(movieDb.getItemList());
+    public void updateAdapter(MovieSource movieSource) {
+        mMovieDb = movieSource;
+        mAdapter.resetList(movieSource.getItemList());
     }
 }

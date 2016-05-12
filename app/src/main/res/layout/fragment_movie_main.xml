@@ -2,11 +2,10 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:paddingBottom="@dimen/activity_vertical_margin"
-             android:paddingLeft="@dimen/activity_horizontal_margin"
-             android:paddingRight="@dimen/activity_horizontal_margin"
-             android:paddingTop="@dimen/activity_vertical_margin"
-             android:background="@color/material_grey_100"
+             android:paddingBottom="@dimen/dimen_10dp"
+             android:paddingLeft="@dimen/dimen_10dp"
+             android:paddingRight="@dimen/dimen_10dp"
+             android:paddingTop="@dimen/dimen_10dp"
              tools:context="com.coderming.movieapp.MovieMainFragment">
 
     <GridView
@@ -14,8 +13,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:id="@+id/movie_grid"
-        android:verticalSpacing="@dimen/grid_vspacing"
-        android:horizontalSpacing="@dimen/grid_hspacing"
+        android:verticalSpacing="@dimen/dimen_4dp"
+        android:horizontalSpacing="@dimen/dimen_4dp"
         android:columnWidth="@dimen/moviedb_image_width_185"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"

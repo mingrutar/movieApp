@@ -12,7 +12,7 @@ import java.util.Locale;
 /**
  * Created by linna on 5/4/2016.
  */
-public class MovieDb {
+public class MovieSource {
     //https://api.themoviedb.org/3/movie/top_rated?api_key=cdf5f229abf9f31735694c38c48a67ac&page=1&language=fr
     static final String TAG_POSTER_PATH = "poster_path";
     static final String TAG_OVERVIEW = "overview";
@@ -64,11 +64,11 @@ public class MovieDb {
     int mTotalResults;
     List<MovieItem>  mItemList;
 
-    public MovieDb() {
+    public MovieSource() {
         mItemList = new ArrayList<>();
     }
-    static public MovieDb parseFromJSON(String jsonStr) throws JSONException {
-        MovieDb ret = new MovieDb();
+    static public MovieSource parseFromJSON(String jsonStr) throws JSONException {
+        MovieSource ret = new MovieSource();
         JSONObject jobj = new JSONObject(jsonStr);
         ret.mCurrentPage = jobj.getInt(TAG_page);
         ret.mTotalPages = jobj.getInt(TAG_TOTAL_PAGES);

@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
     <ListPreference
-        android:title="Sort By"
+        android:title="@string/tag_sort_by"
         android:key="@string/pref_sortby_key"
-        android:defaultValue="sortby_popular"
-        android:entries="@array/movieListOrder"
+        android:defaultValue="@string/tag_sortby_popular"
+        android:entries="@array/movieListOrderValue"
         android:entryValues="@array/movieListOrderValue" />
 </PreferenceScreen>
