@@ -101,8 +101,17 @@ public class MovieMainFragment extends Fragment {
     public void onStart() {
         super.onStart();
         updateMovieInfo();
+        if (mSpinner!=null) {
+            setSpinner();
+        }
     }
 
+    private void setSpinner() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String val = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
+        int pos = (val.equals(getString(R.string.sortby_top_rated))) ? 1 : 0;
+        mSpinner.setSelection(pos);
+    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.movie_main_fragment, menu);
@@ -115,19 +124,7 @@ public class MovieMainFragment extends Fragment {
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner = (Spinner) MenuItemCompat.getActionView(item);
         mSpinner.setAdapter(mSpinnerAdapter); // set the adapter to provide layout of rows and content
-
-        mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                if (key.equals(getString(R.string.pref_sortby_key))) {
-                    updateMovieInfo();
-                    String val = prefs.getString(key, "");
-                    int pos = (val.equals(getString(R.string.sortby_top_rated))) ? 1 : 0;
-                    mSpinner.setSelection(pos);
-                }
-            }
-        };
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        prefs.registerOnSharedPreferenceChangeListener(mListener);
+        setSpinner();
 
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -137,7 +134,8 @@ public class MovieMainFragment extends Fragment {
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString(getString(R.string.pref_sortby_key), item.toString());
-                    editor.apply();
+                    editor.commit();
+                    updateMovieInfo();
                 } else {
                     Toast.makeText(themedContext, "Selected unknown", Toast.LENGTH_LONG).show();
                 }
