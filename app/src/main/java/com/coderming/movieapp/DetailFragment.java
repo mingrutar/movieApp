@@ -53,7 +53,7 @@ public class DetailFragment extends Fragment {
         ((TextView) parent.findViewById(R.id.overview_textView)).setText(item.getOverview());
         ((TextView) parent.findViewById(R.id.release_textView)).setText( item.getReleaseDate());
         // the full rate is 10 represented by 5 stars, so /2
-        ((TextView) parent.findViewById(R.id.nVoters_textView)).setText(String.valueOf(item.getVoteAverage()/2.0f));
+        ((TextView) parent.findViewById(R.id.nVoters_textView)).setText(String.format("%.01f", item.getVoteAverage()/2.0f));
         float rating = (float) (item.getVoteAverage() * 5.0f) /10.0f;
         ((RatingBar) parent.findViewById(R.id.ratingBar)).setRating(rating);
     }

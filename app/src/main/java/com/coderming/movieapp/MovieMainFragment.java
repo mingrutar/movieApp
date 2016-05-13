@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,14 +43,13 @@ public class MovieMainFragment extends Fragment {
     private ArrayAdapter mSpinnerAdapter;
     private SharedPreferences.OnSharedPreferenceChangeListener mListener;
     private Spinner mSpinner;
+    private String mSortby;
 
     public MovieMainFragment() {
     }
 
     private void updateMovieInfo() {
-       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String sortby = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
-        int tagId=  sortby.equals(getString(R.string.sortby_popular)) ?
+        int tagId=  mSortby.equals(getString(R.string.sortby_popular)) ?
                 R.string.tag_sortby_popular : R.string.tag_sortby_top_rated;
         String url = UrlBase + getString(tagId);
         Uri buildUri = Uri.parse(url).buildUpon()
@@ -59,6 +59,7 @@ public class MovieMainFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "++++onCreate");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -98,20 +99,29 @@ public class MovieMainFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        updateMovieInfo();
-        if (mSpinner!=null) {
-            setSpinner();
+    public void onResume() {
+        Log.v(LOG_TAG, "++++onResume");
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mSortby = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
+        if (mSpinner != null) {
+            int pos = (mSortby.equals(getString(R.string.sortby_top_rated))) ? 1 : 0;
+            mSpinner.setSelection(pos);
+        } else {
+            updateMovieInfo();
         }
     }
 
-    private void setSpinner() {
+    @Override
+    public void onPause() {
+        Log.v(LOG_TAG, "++++onPause");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String val = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
-        int pos = (val.equals(getString(R.string.sortby_top_rated))) ? 1 : 0;
-        mSpinner.setSelection(pos);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(getString(R.string.pref_sortby_key), mSortby);
+        editor.commit();
+        super.onPause();
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.movie_main_fragment, menu);
@@ -124,17 +134,15 @@ public class MovieMainFragment extends Fragment {
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner = (Spinner) MenuItemCompat.getActionView(item);
         mSpinner.setAdapter(mSpinnerAdapter); // set the adapter to provide layout of rows and content
-        setSpinner();
+        int pos = (mSortby.equals(getString(R.string.sortby_top_rated))) ? 1 : 0;
+        mSpinner.setSelection(pos);
 
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 Object item = parent.getItemAtPosition(pos);
                 if (item != null) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString(getString(R.string.pref_sortby_key), item.toString());
-                    editor.commit();
+                    mSortby = item.toString();
                     updateMovieInfo();
                 } else {
                     Toast.makeText(themedContext, "Selected unknown", Toast.LENGTH_LONG).show();
