@@ -1,10 +1,14 @@
 package com.coderming.movieapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -48,7 +52,7 @@ public class MovieMainFragment extends Fragment {
     public MovieMainFragment() {
     }
 
-    private void updateMovieInfo() {
+    public void updateMovieInfo() {
         int tagId=  mSortby.equals(getString(R.string.sortby_popular)) ?
                 R.string.tag_sortby_popular : R.string.tag_sortby_top_rated;
         String url = UrlBase + getString(tagId);
@@ -59,10 +63,26 @@ public class MovieMainFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.v(LOG_TAG, "++++onCreate");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        getContext().registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
+
+    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.v(LOG_TAG, "++ onReceive received intent");
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork =cm.getActiveNetworkInfo();
+            if (activeNetwork != null) {
+                boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;  // not in use
+                if (activeNetwork.isConnectedOrConnecting()) {
+                    updateMovieInfo();
+                }
+            }
+        }
+    };
+
     // TODO how to deal with 4K screen?
     private void calcNumColumes( GridView gridView) {
         Resources res = getActivity().getResources();
@@ -120,6 +140,12 @@ public class MovieMainFragment extends Fragment {
         editor.putString(getString(R.string.pref_sortby_key), mSortby);
         editor.commit();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
