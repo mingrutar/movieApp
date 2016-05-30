@@ -31,19 +31,22 @@ public class GridViewAdapter extends ArrayAdapter<MovieItem> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View rowView;
+        View rowView = convertView;
         Context context = getContext();
-        if (convertView == null) {
+        ViewHolder viewHolder;
+        if (rowView == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             rowView = inflater.inflate(R.layout.grid_item, parent, false);
+            viewHolder = new ViewHolder();
+            viewHolder.mImageView =  (ImageView) rowView.findViewById(R.id.movie_poster);
+            rowView.setTag(viewHolder );
         } else {
-            rowView = (View) convertView;
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.movie_poster);
         MovieItem item = this.getItem(position);
         String url = String.format(FORMATTER_PICASSO_IMAGE_LOADER
                 , String.valueOf(context.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)), item.getPosterPath());
-        Picasso.with(getContext()).load(url).into(imageView);
+        Picasso.with(getContext()).load(url).into(viewHolder.mImageView);
         return rowView;
     }
     public void resetList(List<MovieItem> list) {
@@ -54,4 +57,10 @@ public class GridViewAdapter extends ArrayAdapter<MovieItem> {
     public void addAll(Collection<? extends MovieItem> collection) {
         super.addAll(collection);
     }
+
+    class ViewHolder {
+        public ImageView mImageView;
+
+    }
 }
+

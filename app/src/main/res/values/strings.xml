@@ -1,6 +1,4 @@
 <resources>
-    <string name="themoviedb_api_key" translatable="false">replace-this-api_key</string>
-
     <string name="app_name">MovieApp</string>
 
     <string name="tag_api_key" translatable="false">api_key</string>

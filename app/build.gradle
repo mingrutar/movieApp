@@ -21,6 +21,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildTypes.each {
+        if ( project.hasProperty("themoviedbApiKKeyProp") ) {
+            it.buildConfigField 'String', 'MOVIE_DB_API_KEY', themoviedbApiKKeyProp
+        } else {
+            logger.warn("Missing themoviedbApiKKeyProp ");
+        }
+    }
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
