@@ -57,7 +57,7 @@ public class MovieMainFragment extends Fragment {
                 R.string.tag_sortby_popular : R.string.tag_sortby_top_rated;
         String url = UrlBase + getString(tagId);
         Uri buildUri = Uri.parse(url).buildUpon()
-                .appendQueryParameter(getString(R.string.tag_api_key), getString(R.string.themoviedb_api_key)).build();
+                .appendQueryParameter(getString(R.string.tag_api_key), BuildConfig.MOVIE_DB_API_KEY).build();
         new FetchMovieTask(this).execute(buildUri.toString());
     }
 
