@@ -53,6 +53,7 @@ public class MovieMainFragment extends Fragment {
     }
 
     public void updateMovieInfo() {
+
         int tagId=  mSortby.equals(getString(R.string.sortby_popular)) ?
                 R.string.tag_sortby_popular : R.string.tag_sortby_top_rated;
         String url = UrlBase + getString(tagId);
@@ -65,6 +66,7 @@ public class MovieMainFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        //not set in AndroidManifest.xml, register here,
         getContext().registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
 
@@ -124,12 +126,17 @@ public class MovieMainFragment extends Fragment {
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         mSortby = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
-        if (mSpinner != null) {
-            int pos = (mSortby.equals(getString(R.string.sortby_top_rated))) ? 1 : 0;
+//        if (mSpinner != null) {
+            int pos = 0;
+            if (mSortby.equals(getString(R.string.sortby_top_rated))) {
+                pos = 1;
+            } else if (mSortby.equals(getString((R.string.sortby_faverites)))) {
+                pos = 2;
+            }
             mSpinner.setSelection(pos);
-        } else {
-            updateMovieInfo();
-        }
+//        } else {
+//            updateMovieInfo();
+//        }
     }
 
     @Override

@@ -9,6 +9,7 @@
    <string name="title_main_activity">Favourite Movies</string>
     <string name="title_settings_activity">Settings</string>
 
+    <string name="sortby_faverites">Favorites</string>
     <string name="sortby_popular">Most Popular</string>
     <string name="sortby_top_rated">Highest Rated</string>
     <string name="tag_sort_by">Sort by</string>
@@ -17,10 +18,12 @@
     <string-array name="movieListOrder">
         <item>@string/tag_sortby_popular</item>
         <item>@string/tag_sortby_top_rated</item>
+        <item>favirotes</item>
     </string-array>
     <string-array name="movieListOrderValue">
         <item>@string/sortby_popular</item>
         <item>@string/sortby_top_rated</item>
+        <item>@string/sortby_faverites</item>
     </string-array>
 
 </resources>
