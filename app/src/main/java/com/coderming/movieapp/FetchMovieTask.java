@@ -25,6 +25,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieSource> {
         mMovieMainFragment = movieMainFragment;
     }
 
+    // https://api.themoviedb.org/3/movie/popular?api_key=
     private String getMovies(String urlStr) {
 //        Log.v(LOG_TAG, "urlString="+urlStr);
         HttpURLConnection httpConnection = null;    // android API vs HTTPClient

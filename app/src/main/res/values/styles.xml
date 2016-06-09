@@ -6,6 +6,41 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
     </style>
 
+    <style name="secction_title" parent="@android:style/TextAppearance.Widget.TextView" >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-condensedt</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="secction_text" parent="@android:style/TextAppearance.Widget.TextView" >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@color/material_blue_grey_900</item>
+    </style>
+    <style name="header_title" parent="@android:style/TextAppearance.Widget.TextView" >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">sans-serif-condensedt</item>
+    </style>
+    <style name="header_text" parent="@android:style/TextAppearance.Widget.TextView" >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    <style name="header_light" parent="header_text" >
+        <item name="android:textColor">@color/grey_700</item>
+    </style>
+    <style name="header_dark" parent="header_text" >
+        <item name="android:textColor">@color/black</item>
+    </style>
 </resources>
