@@ -1,0 +1,146 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:padding="@dimen/dimen_10dp"
+            tools:context="com.coderming.movieapp.DetailFragment" >
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        <RelativeLayout
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content" >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                >
+            <TextView
+                style="@style/header_title"
+                android:text="Title of the Movie"
+                android:id="@+id/title_textView"
+                  />
+            <TextView
+                style="@style/header_light"
+                android:paddingLeft="@dimen/dimen_4dp"
+                android:text="(2016)"
+                android:textColor="@color/grey_700"
+                android:id="@+id/release_textView"
+                android:layout_gravity="center_vertical"
+                />
+            </LinearLayout>
+           <ImageView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignParentLeft="true"
+               android:layout_marginRight="@dimen/dimen_4dp"
+               android:id="@+id/favority_imageView"
+               android:layout_gravity="center_vertical"
+               android:src="@drawable/favorite_border_black_24dp"/>
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ratingBar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:isIndicator="true"
+                android:stepSize="0.1"
+                android:rating="2.0"
+                android:numStars="5"
+                android:layout_toLeftOf="@+id/nStar_textView"
+                 />
+            <TextView
+                style="@style/header_light"
+                android:paddingLeft="@dimen/dimen_4dp"
+                android:text="3.2"
+                android:id="@+id/nStar_textView"
+                android:layout_alignParentRight="true" />
+
+            <TextView
+                style="@style/header_dark"
+                android:paddingLeft="@dimen/dimen_4dp"
+                android:text="1234 votes"
+                android:id="@+id/nVoters_textView"
+                android:layout_below="@+id/ratingBar"
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#c0c0c0"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="false"
+                android:id="@+id/poster_imageView"
+                android:src="@drawable/poster"
+                android:scaleType="fitStart"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical"
+                android:layout_marginLeft="@dimen/dimen_4dp"
+                >
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/review_card_view"
+                    android:background="@android:color/transparent"
+                    card_view:cardCornerRadius="8dp" >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_4dp"
+                        android:orientation="vertical">
+                        <TextView
+                            style="@style/secction_title"
+                            android:text="Overview"  />
+                        <TextView
+                            style="@style/secction_text"
+                            android:id="@+id/overview_textView"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:text="long text.................more text ,,,,,...more....long text.................more text ,,,,,...more....long text.................more text ,,,,,...more..long text......"
+                            android:layout_marginTop="4dp"
+                            android:padding="10dp"
+                            android:singleLine="false"
+                            />
+                        </LinearLayout>
+                </android.support.v7.widget.CardView>
+                <TextView
+                    style="@style/secction_title"
+                    android:layout_marginTop="@dimen/dimen_10dp"
+                    android:paddingLeft="@dimen/dimen_4dp"
+                    android:text="Reviews"    />
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/review_listView"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_marginLeft="@dimen/dimen_4dp"
+                android:padding="@dimen/dimen_4dp"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/secction_title"
+                    android:text="Trailers" />
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/trailer_listView"/>
+            </LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
+</ScrollView>

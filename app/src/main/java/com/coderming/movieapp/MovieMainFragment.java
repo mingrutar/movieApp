@@ -126,7 +126,7 @@ public class MovieMainFragment extends Fragment {
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         mSortby = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
-//        if (mSpinner != null) {
+        if (mSpinner != null) {
             int pos = 0;
             if (mSortby.equals(getString(R.string.sortby_top_rated))) {
                 pos = 1;
@@ -134,9 +134,9 @@ public class MovieMainFragment extends Fragment {
                 pos = 2;
             }
             mSpinner.setSelection(pos);
-//        } else {
-//            updateMovieInfo();
-//        }
+        } else {                      // resume could be called before spinner is created
+            updateMovieInfo();
+        }
     }
 
     @Override
