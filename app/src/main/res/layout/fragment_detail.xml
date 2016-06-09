@@ -61,12 +61,13 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
+            android:layout_marginTop="@dimen/dimen_4dp"
+            android:layout_marginBottom="@dimen/dimen_10dp"
             android:background="#c0c0c0"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="@dimen/dimen_10dp"
             android:layout_marginBottom="@dimen/dimen_10dp">
             <FrameLayout
                 android:layout_width="0dp"
@@ -110,7 +111,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:padding="@dimen/dimen_4dp"
             android:orientation="vertical">
             <TextView
@@ -125,7 +125,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/review_card_view"
-            android:layout_marginTop="@dimen/dimen_10dp"
             android:background="@color/material_grey_100"
             card_view:cardCornerRadius="8dp" >
             <LinearLayout
