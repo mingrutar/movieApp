@@ -68,9 +68,7 @@ public class MainActivity extends AppCompatActivity
         } else if (savedInstanceState.containsKey(SELECTED_FRAG)) {
             mSelectedFrag = savedInstanceState.getInt(SELECTED_FRAG);
         }
-
         registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        MovieSyncAdapter.initializeSyncAdapter(this);
     }
 
     BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -89,6 +87,7 @@ public class MainActivity extends AppCompatActivity
     };
 
     void callSync() {
+        Log.v(LOG_TAG, "++++ calling syncImmediately ");
         MovieSyncAdapter.syncImmediately(this);
         // TODO: do I need restartLoader ?
     }

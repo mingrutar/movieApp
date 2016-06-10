@@ -98,11 +98,13 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.v(LOG_TAG, String.format("++++ onLoadFinished, cursor count=%d", data.getCount()));
-        mCursor = data;
-        notifyDataSetChanged();
-        for (OnLoadFinishListener loaderSubscriber : mLoaderSubscriber) {
-           loaderSubscriber.onLoadFinish();
+        Log.v(LOG_TAG, "++++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
+        if (data != null) {
+            mCursor = data;
+            notifyDataSetChanged();
+            for (OnLoadFinishListener loaderSubscriber : mLoaderSubscriber) {
+                loaderSubscriber.onLoadFinish();
+            }
         }
     }
 

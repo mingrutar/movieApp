@@ -2,6 +2,7 @@ package com.coderming.movieapp;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -51,19 +52,37 @@ public class MovieMainFragment extends Fragment {
         int numCol =  Math.round(smallScreenWidthDp/colWidth);
         return numCol;
     }
+    public static class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+        private final int mSpace;
+        public SpacesItemDecoration(float space) {
+            this.mSpace = Math.round(space);
+        }
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            outRect.left = mSpace;
+            outRect.right = mSpace;
+            outRect.bottom = mSpace;
+            // Add top margin only for the first item to avoid double space between items
+            if (parent.getChildAdapterPosition(view) == 0)
+                outRect.top = mSpace;
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calcNumColumes()));
+        RecyclerView.ItemDecoration itemDecoration = new SpacesItemDecoration(getResources().getDimension(R.dimen.dimen_4dp));
+        recyclerView.addItemDecoration(itemDecoration);
+
         Bundle args = getArguments();
         if (!args.containsKey(MainActivity.PAGE_DATA_URI))
             args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
         mAdapter = new MovieRecyclerViewAdapter(getContext());
-        getLoaderManager().initLoader(mAdapter.LOADER_ID, args, mAdapter);
-
-        View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calcNumColumes()));
         recyclerView.setAdapter(mAdapter);
-       return rootView;
+
+        getLoaderManager().initLoader(mAdapter.LOADER_ID, args, mAdapter);
+        return rootView;
     }
 
 //    public void onResume() {
