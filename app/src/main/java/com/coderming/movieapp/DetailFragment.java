@@ -15,6 +15,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.coderming.movieapp.model.MovieItem;
+import com.coderming.movieapp.utils.Constants;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -31,7 +32,7 @@ public class DetailFragment extends Fragment {
     private void fillPage(View parent, MovieItem item) {
         Resources resources = getContext().getResources();
         final ImageView imageView = (ImageView) parent.findViewById(R.id.poster_imageView);
-        String url = String.format(GridViewAdapter.FORMATTER_PICASSO_IMAGE_LOADER
+        String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                 , String.valueOf(resources.getDimensionPixelSize(R.dimen.moviedb_image_width_342))
                 , item.getBackdropPath());
         Picasso.with(getContext()).load(url).into(new Target() {

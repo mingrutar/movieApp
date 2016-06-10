@@ -3,7 +3,10 @@ package com.coderming.movieapp.utils;
 /**
  * Created by linna on 6/6/2016.
  */
-public class JsonTags {
+public class Constants {
+    public static final String FORMATTER_PICASSO_IMAGE_LOADER = "http://image.tmdb.org/t/p/w%s/%s";
+
+
     // movie tags
     public static final String TAG_POSTER_PATH = "poster_path";
     public static final String TAG_OVERVIEW = "overview";

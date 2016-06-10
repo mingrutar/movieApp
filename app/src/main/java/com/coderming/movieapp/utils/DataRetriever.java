@@ -90,34 +90,34 @@ public class DataRetriever {
         JSONObject jobj = new JSONObject(jsonStr);
         Log.v(LOG_TAG, "++++s+++ parseJson2Db. json str length= "+Integer.toString(jsonStr.length()));
         int[] ret = new int[3];
-        ret[0] = jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_page);             //currentPage
-        ret[1] = jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_TOTAL_PAGES);      //totalPages
-        ret[2] = jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_TOTAL_RESULTS);    //totalResults
+        ret[0] = jobj.getInt(Constants.TAG_page);             //currentPage
+        ret[1] = jobj.getInt(Constants.TAG_TOTAL_PAGES);      //totalPages
+        ret[2] = jobj.getInt(Constants.TAG_TOTAL_RESULTS);    //totalResults
 
-        JSONArray jarr = jobj.getJSONArray(com.coderming.movieapp.utils.JsonTags.TAG_RESULTS);
+        JSONArray jarr = jobj.getJSONArray(Constants.TAG_RESULTS);
         SimpleDateFormat dateFormater = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         List<ContentValues> movies = new ArrayList<>();
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
-            int moview_id = jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_ID);
+            int moview_id = jobj.getInt(Constants.TAG_ID);
             ContentValues cv = new ContentValues();
             cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, moview_id);
-            cv.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_POSTER_PATH));
-            cv.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_OVERVIEW));
+            cv.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, jobj.getString(Constants.TAG_POSTER_PATH));
+            cv.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, jobj.getString(Constants.TAG_OVERVIEW));
             try {
-                Date date = dateFormater.parse(jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_RELEASE_DATE));
+                Date date = dateFormater.parse(jobj.getString(Constants.TAG_RELEASE_DATE));
                 cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, date.getTime());
             } catch (ParseException pex) {
                 Log.w(LOG_TAG, "failed to parse release time");
                 cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, 0);
             }
-            cv.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_ORIGINAL_TITLE));
-            cv.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_ORIGINAL_LANGUAGE));
-            cv.put(MovieContract.MovieEntry.COLUMN_TITLE, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_TITLE));
-            cv.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_BACKDROP_PATH));
-            cv.put(MovieContract.MovieEntry.COLUMN_POPULARUTY, jobj.getDouble(com.coderming.movieapp.utils.JsonTags.TAG_POPULARITY));
-            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT, jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_VOTE_COUNT));
-            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, jobj.getDouble(com.coderming.movieapp.utils.JsonTags.TAG_VOTE_AVERAGE));
+            cv.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, jobj.getString(Constants.TAG_ORIGINAL_TITLE));
+            cv.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, jobj.getString(Constants.TAG_ORIGINAL_LANGUAGE));
+            cv.put(MovieContract.MovieEntry.COLUMN_TITLE, jobj.getString(Constants.TAG_TITLE));
+            cv.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, jobj.getString(Constants.TAG_BACKDROP_PATH));
+            cv.put(MovieContract.MovieEntry.COLUMN_POPULARUTY, jobj.getDouble(Constants.TAG_POPULARITY));
+            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT, jobj.getInt(Constants.TAG_VOTE_COUNT));
+            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, jobj.getDouble(Constants.TAG_VOTE_AVERAGE));
             movies.add(cv);
         }
         if (movies.size() > 0) {
