@@ -12,12 +12,39 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-<!-- replaced with dynamic created one in MovieMainFragment
-       <receiver android:name="com.coderming.movieapp.ConnectivityReceiver" >
+        <!-- Service -->
+        <service android:name=".sync.MovieAuthenticatorService">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.accounts.AccountAuthenticator"    />
             </intent-filter>
-        </receiver> -->
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <service android:name=".sync.MovieSyncService" android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"   />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+        <!-- Provider -->
+        <provider android:authorities="@string/content_authority"
+                  android:name=".data.MovieProvider"
+                  android:exported="false"
+                  android:syncable="true" />
+
+        <!-- Activity -->
+
+        <!-- replaced with dynamic created one in MovieMainFragment
+               <receiver android:name="com.coderming.movieapp.ConnectivityReceiver" >
+                    <intent-filter>
+                        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                    </intent-filter>
+                </receiver> -->
 
         <activity
             android:name=".MainActivity"

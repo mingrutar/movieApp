@@ -5,6 +5,9 @@
     <string name="tag_sortby_popular" translatable="false">popular</string>
     <string name="tag_sortby_top_rated" translatable="false">top_rated</string>
 
+    <string name="sync_account_type">com.coderming.movieapp</string>
+    <string name="content_authority">com.coderming.movieapp</string>
+
     <string name="title_detail_activity">Movie Details</string>
    <string name="title_main_activity">Favourite Movies</string>
     <string name="title_settings_activity">Settings</string>

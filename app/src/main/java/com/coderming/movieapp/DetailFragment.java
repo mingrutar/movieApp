@@ -30,7 +30,7 @@ public class DetailFragment extends Fragment {
 
     private void fillPage(View parent, MovieItem item) {
         Resources resources = getContext().getResources();
-        final ImageView imageView = (ImageView) parent.findViewById(R.id.imageView_backdrop);
+        final ImageView imageView = (ImageView) parent.findViewById(R.id.poster_imageView);
         String url = String.format(GridViewAdapter.FORMATTER_PICASSO_IMAGE_LOADER
                 , String.valueOf(resources.getDimensionPixelSize(R.dimen.moviedb_image_width_342))
                 , item.getBackdropPath());
