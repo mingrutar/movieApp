@@ -36,7 +36,7 @@
         </service>
 
         <!-- Provider -->
-        <provider android:authorities="@string/content_authority"
+        <provider android:authorities="com.coderming.movieapp"
                   android:name=".data.MovieProvider"
                   android:exported="false"
                   android:syncable="true" />

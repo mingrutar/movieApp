@@ -31,14 +31,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity
-        implements ViewPager.OnPageChangeListener {
+public class MainActivity extends AppCompatActivity  {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String SELECTED_FRAG = "selectedFragment";
     public static final String PAGE_DATA_URI = "page_data_uri";
 
     private Spinner mSpinner;
     private int mSelectedFrag;
+    //MyFragmentPagerAdapter mAdapter;
+    ViewPager mViewPager;
 
     private static final Map<String, Uri> FragUriMap = new HashMap<>();
     static {
@@ -51,20 +52,23 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         callSync();
         setContentView(R.layout.activity_main);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
-        Bundle args = new Bundle();
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        MyFragmentPagerAdapter mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+
         for (Map.Entry<String, Uri> entry : FragUriMap.entrySet() ) {
             MovieMainFragment mmf = new MovieMainFragment();
+            Bundle args = new Bundle();
             args.putParcelable(PAGE_DATA_URI, entry.getValue());
             mmf.setArguments(args);
-            adapter.addFragment(mmf, entry.getKey());
+            mAdapter.addFragment(mmf, entry.getKey());
         }
-        viewPager.setAdapter(adapter);
+        mViewPager.setAdapter(mAdapter);
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.main_container, adapter.getItem(mSelectedFrag), adapter.getPageTitle(mSelectedFrag))
-                    .commit();
+            Fragment frag = mAdapter.getItem(mSelectedFrag) ;
+            String name =   mAdapter.getPageTitle(mSelectedFrag);
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.main_container, frag, name)
+//                    .commit();
         } else if (savedInstanceState.containsKey(SELECTED_FRAG)) {
             mSelectedFrag = savedInstanceState.getInt(SELECTED_FRAG);
         }
@@ -90,10 +94,6 @@ public class MainActivity extends AppCompatActivity
         Log.v(LOG_TAG, "++++ calling syncImmediately ");
         MovieSyncAdapter.syncImmediately(this);
         // TODO: do I need restartLoader ?
-    }
-    @Override
-    public void onStart() {
-        super.onStart();
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -153,56 +153,18 @@ public class MainActivity extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * This method will be invoked when the current page is scrolled, either as part
-     * of a programmatically initiated smooth scroll or a user initiated touch scroll.
-     *
-     * @param position             Position index of the first page currently being displayed.
-     *                             Page position+1 will be visible if positionOffset is nonzero.
-     * @param positionOffset       Value from [0, 1) indicating the offset from the page at position.
-     * @param positionOffsetPixels Value in pixels indicating the offset from position.
-     */
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-         //TODO: pass to fragment????
-    }
-
-    /**
-     * This method will be invoked when a new page becomes selected. Animation is not
-     * necessarily complete.
-     *
-     * @param position Position index of the new selected page.
-     */
-    @Override
     public void onPageSelected(int position) {
+        Log.v(LOG_TAG, "****** onPageSelected called, pos="+Integer.toString(position));
         mSelectedFrag = position;
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        MyFragmentPagerAdapter adapte = (MyFragmentPagerAdapter) viewPager.getAdapter();
-        getSupportFragmentManager().beginTransaction()
-            .replace(R.id.main_container, adapte.getItem(position), adapte.getPageTitle(position))
-            .commit() ;
-    }
-
-    /**
-     * Called when the scroll state changes. Useful for discovering when the user
-     * begins dragging, when the pager is automatically settling to the current page,
-     * or when it is fully stopped/idle.
-     *
-     * @param state The new scroll state.
-     * @see ViewPager#SCROLL_STATE_IDLE
-     * @see ViewPager#SCROLL_STATE_DRAGGING
-     * @see ViewPager#SCROLL_STATE_SETTLING
-     */
-    @Override
-    public void onPageScrollStateChanged(int state) {
-        // we do let it dragging
+        mViewPager.setCurrentItem(position);
+        mViewPager.getAdapter().notifyDataSetChanged();
     }
 
     /**
      * MyFragmentPagerAdapter
      */
     static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+        private static final String LOG_TAG = MyFragmentPagerAdapter.class.getSimpleName();
         private List<Fragment> mFragments;
         private List<String> mFragmentTitles;
 
@@ -221,6 +183,7 @@ public class MainActivity extends AppCompatActivity
         }
         @Override
         public int getCount() {
+            Log.v(LOG_TAG, "----- getCount, size=" + Integer.toString(mFragments.size()));
             return mFragments.size();
         }
         /**
@@ -230,9 +193,10 @@ public class MainActivity extends AppCompatActivity
          */
         @Override
         public Fragment getItem(int position) {
-            if (position < mFragments.size())
+            if (position < mFragments.size()) {
+                Log.v(LOG_TAG, "----- getItem called, pos=" + Integer.toString(position));
                 return mFragments.get(position);
-            else {
+            } else {
                 Log.v(LOG_TAG, "invalid position " + Integer.toString(position));
                 return null;
             }

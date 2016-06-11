@@ -9,13 +9,15 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.model.MovieSource;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +26,7 @@ public class MovieMainFragment extends Fragment {
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
 
+    static final AtomicInteger pagerNum = new AtomicInteger(0);
     static final String UrlBase = "https://api.themoviedb.org/3/movie/";
     private MovieRecyclerViewAdapter mAdapter;
     private MovieSource mMovieDb;
@@ -78,10 +81,12 @@ public class MovieMainFragment extends Fragment {
         Bundle args = getArguments();
         if (!args.containsKey(MainActivity.PAGE_DATA_URI))
             args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
-        mAdapter = new MovieRecyclerViewAdapter(getContext());
+        mAdapter = new MovieRecyclerViewAdapter(getContext(), pagerNum.getAndIncrement());
         recyclerView.setAdapter(mAdapter);
-
-        getLoaderManager().initLoader(mAdapter.LOADER_ID, args, mAdapter);
+        TextView textView = (TextView) rootView.findViewById(R.id.page_name);
+        String pname = args.getParcelable(MainActivity.PAGE_DATA_URI).toString();
+        textView.setText(pname);
+        getLoaderManager().initLoader(mAdapter.mLoadId, args, mAdapter);
         return rootView;
     }
 
@@ -105,7 +110,7 @@ public class MovieMainFragment extends Fragment {
 
     @Override
     public void onPause() {
-        Log.v(LOG_TAG, "++++onPause");
+//        Log.v(LOG_TAG, "++++onPause");
 //        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 //        SharedPreferences.Editor editor = prefs.edit();
 //        editor.putString(getString(R.string.pref_sortby_key), mSortby);

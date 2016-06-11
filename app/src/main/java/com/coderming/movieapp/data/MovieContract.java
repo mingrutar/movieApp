@@ -9,7 +9,7 @@ import android.provider.BaseColumns;
  * Created by linna on 6/1/2016.
  */
 public class MovieContract  {
-    public static final String CONTENT_AUTHORITY = "com.coderming.sqlitedb";
+    public static final String CONTENT_AUTHORITY = "com.coderming.movieapp";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY);
 
     public enum MovieSelectionType {

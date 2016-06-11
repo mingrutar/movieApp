@@ -20,6 +20,7 @@ import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = MovieRecyclerViewAdapter.class.getSimpleName();
 
-    public final int LOADER_ID = 0;
+    public int mLoadId = 0;
 
     private Cursor mCursor;
     private Context mContext;
@@ -39,8 +40,10 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         void onLoadFinish();
     }
 
-    public MovieRecyclerViewAdapter(Context context) {
+    public MovieRecyclerViewAdapter(Context context, int pageN) {
+        mLoadId = pageN;
         mContext = context;
+        mLoaderSubscriber = new ArrayList<>();
     }
 
     @Override
@@ -74,7 +77,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     }
     @Override
     public int getItemCount() {
-        return (mCursor == null) ? null : mCursor.getCount();
+        return (mCursor == null) ? 0 : mCursor.getCount();
     }
 
     /**
@@ -87,7 +90,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Loader<Cursor> ret = null;
-        if (LOADER_ID == id) {
+        if (mLoadId == id) {
             Uri uri = args.getParcelable(MainActivity.PAGE_DATA_URI);
             ret = new CursorLoader(mContext, uri, null, null, null, MovieContract.MovieEntry._ID + " asc");
         } else {
@@ -98,7 +101,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.v(LOG_TAG, "++++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
+//        Log.v(LOG_TAG, "++++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
         if (data != null) {
             mCursor = data;
             notifyDataSetChanged();
