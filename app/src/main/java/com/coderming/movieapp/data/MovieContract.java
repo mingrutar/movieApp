@@ -54,6 +54,16 @@ public class MovieContract  {
         public static Uri buildUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+        public static Uri getTypeUri(MovieSelectionType type) {
+            if (type.equals(MovieSelectionType.Favorite))
+                return CONTENT_FAVORITE_URI;
+            else if (type.equals(MovieSelectionType.Popular))
+                return  CONTENT_POPULAR_URI;
+            else if (type.equals(MovieSelectionType.TopRated))
+                return CONTENT_TOP_RATES_URI;
+            else
+                return null;
+        }
     }
     public static final class DetailEntry implements BaseColumns {
         public static final String TABLE_NAME = "detail";
@@ -71,7 +81,6 @@ public class MovieContract  {
         public static Uri buildUri(long movieDbId) {
             return ContentUris.withAppendedId(CONTENT_URI, movieDbId);
         }
-
     }
     public static final class MovieSelectionEntry implements BaseColumns {
         public static final String TABLE_NAME = "movie_selection";

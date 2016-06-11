@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,15 +22,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.coderming.movieapp.data.MovieContract;
+import com.coderming.movieapp.data.MovieContract.MovieEntry;
+import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 import com.coderming.movieapp.sync.MovieSyncAdapter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity implements MovieRecyclerViewAdapter.OnLoadFinishListener  {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String SELECTED_FRAG = "selectedFragment";
     public static final String PAGE_DATA_URI = "page_data_uri";
@@ -40,27 +38,23 @@ public class MainActivity extends AppCompatActivity  {
     private int mSelectedFrag;
     //MyFragmentPagerAdapter mAdapter;
     ViewPager mViewPager;
-
-    private static final Map<String, Uri> FragUriMap = new HashMap<>();
-    static {
-        FragUriMap.put("popular", MovieContract.MovieEntry.CONTENT_POPULAR_URI);
-        FragUriMap.put("top_rated", MovieContract.MovieEntry.CONTENT_TOP_RATES_URI);
-        FragUriMap.put("favorite", MovieContract.MovieEntry.CONTENT_FAVORITE_URI);
-    }
+    MyFragmentPagerAdapter mAdapter;
+     private MovieSelectionType[] listTypes =  new MovieSelectionType[] {MovieSelectionType.Popular,
+            MovieSelectionType.TopRated, MovieSelectionType.Favorite} ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         callSync();
         setContentView(R.layout.activity_main);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
-        MyFragmentPagerAdapter mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 
-        for (Map.Entry<String, Uri> entry : FragUriMap.entrySet() ) {
+        for ( MovieSelectionType type :  listTypes) {
             MovieMainFragment mmf = new MovieMainFragment();
             Bundle args = new Bundle();
-            args.putParcelable(PAGE_DATA_URI, entry.getValue());
+            args.putParcelable(PAGE_DATA_URI, MovieEntry.getTypeUri(type));
             mmf.setArguments(args);
-            mAdapter.addFragment(mmf, entry.getKey());
+            mAdapter.addFragment(mmf, type.toString());
         }
         mViewPager.setAdapter(mAdapter);
         if (savedInstanceState == null) {
@@ -121,7 +115,7 @@ public class MainActivity extends AppCompatActivity  {
         MenuItem item = menu.findItem(R.id.spinner);
         android.support.v7.app.ActionBar actionBar= this.getSupportActionBar();
         final Context themedContext = actionBar.getThemedContext();
-        ArrayAdapter spinnerAdapter = ArrayAdapter.createFromResource(
+        ArrayAdapter spinnerAdapter =  ArrayAdapter.createFromResource(
                 themedContext, R.array.movieListOrderValue, android.R.layout.simple_spinner_dropdown_item); //  create the adapter from a StringArray
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner = (Spinner) MenuItemCompat.getActionView(item);
@@ -160,6 +154,12 @@ public class MainActivity extends AppCompatActivity  {
         mViewPager.getAdapter().notifyDataSetChanged();
     }
 
+    @Override
+    public void onLoadFinish(int page, int size) {
+//        mAdapter.setEnabled(page, (size > 0) ) ;
+//        ((ArrayAdapter)mSpinner.getAdapter()).notifyDataSetChanged();
+    }
+
     /**
      * MyFragmentPagerAdapter
      */
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity  {
         }
         @Override
         public int getCount() {
-            Log.v(LOG_TAG, "----- getCount, size=" + Integer.toString(mFragments.size()));
+//            Log.v(LOG_TAG, "----- getCount, size=" + Integer.toString(mFragments.size()));
             return mFragments.size();
         }
         /**
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         public Fragment getItem(int position) {
             if (position < mFragments.size()) {
-                Log.v(LOG_TAG, "----- getItem called, pos=" + Integer.toString(position));
+//                Log.v(LOG_TAG, "----- getItem called, pos=" + Integer.toString(position));
                 return mFragments.get(position);
             } else {
                 Log.v(LOG_TAG, "invalid position " + Integer.toString(position));

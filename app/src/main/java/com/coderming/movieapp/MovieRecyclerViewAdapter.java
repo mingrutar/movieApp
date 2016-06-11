@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
@@ -30,14 +29,14 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = MovieRecyclerViewAdapter.class.getSimpleName();
 
-    public int mLoadId = 0;
+    public int mLoadId = 0;         // use page number
 
     private Cursor mCursor;
     private Context mContext;
 
     private List<OnLoadFinishListener> mLoaderSubscriber;
     public interface OnLoadFinishListener {
-        void onLoadFinish();
+        void onLoadFinish(int page, int size);
     }
 
     public MovieRecyclerViewAdapter(Context context, int pageN) {
@@ -53,7 +52,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     }
     @Override
     public void onBindViewHolder(RecyclerViewHolders holder, int position) {
-        Log.v(LOG_TAG, String.format("++++ onBindViewHolder, cursor?=%s, position=%d", (mCursor!=null) ,position ));
+//        Log.v(LOG_TAG, String.format("++++ onBindViewHolder, cursor?=%s, position=%d", (mCursor!=null) ,position ));
         if (mCursor != null) {
             mCursor.moveToPosition(position);
             int idx = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
@@ -102,12 +101,14 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 //        Log.v(LOG_TAG, "++++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
+        int size = 0;
         if (data != null) {
             mCursor = data;
+            size = mCursor.getCount();
             notifyDataSetChanged();
-            for (OnLoadFinishListener loaderSubscriber : mLoaderSubscriber) {
-                loaderSubscriber.onLoadFinish();
-            }
+        }
+        for (OnLoadFinishListener loaderSubscriber : mLoaderSubscriber) {
+            loaderSubscriber.onLoadFinish(mLoadId, size);
         }
     }
 
@@ -144,8 +145,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
          */
         @Override
         public void onClick(View v) {
-
-            Toast.makeText(v.getContext(), "clicked", Toast.LENGTH_LONG);
         }
     }
 }

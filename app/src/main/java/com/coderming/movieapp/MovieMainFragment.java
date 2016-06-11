@@ -16,8 +16,7 @@ import android.widget.TextView;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.model.MovieSource;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import com.coderming.movieapp.utils.Constants;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,7 +25,6 @@ public class MovieMainFragment extends Fragment {
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    static final AtomicInteger pagerNum = new AtomicInteger(0);
     static final String UrlBase = "https://api.themoviedb.org/3/movie/";
     private MovieRecyclerViewAdapter mAdapter;
     private MovieSource mMovieDb;
@@ -81,7 +79,7 @@ public class MovieMainFragment extends Fragment {
         Bundle args = getArguments();
         if (!args.containsKey(MainActivity.PAGE_DATA_URI))
             args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
-        mAdapter = new MovieRecyclerViewAdapter(getContext(), pagerNum.getAndIncrement());
+        mAdapter = new MovieRecyclerViewAdapter(getContext(), Constants.nextId());
         recyclerView.setAdapter(mAdapter);
         TextView textView = (TextView) rootView.findViewById(R.id.page_name);
         String pname = args.getParcelable(MainActivity.PAGE_DATA_URI).toString();

@@ -1,11 +1,18 @@
 package com.coderming.movieapp.utils;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by linna on 6/6/2016.
  */
 public class Constants {
+    private static final AtomicInteger uniqueNum = new AtomicInteger(0);
+    public static int nextId() {
+        return uniqueNum.getAndIncrement();
+    }
     public static final String FORMATTER_PICASSO_IMAGE_LOADER = "http://image.tmdb.org/t/p/w%s/%s";
-
+    public static final String DETAIL_URI = "detail_uri";
+    public static final String MORE_DETAIL_URI = "more_detail_uri";
 
     // movie tags
     public static final String TAG_POSTER_PATH = "poster_path";
