@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -55,7 +56,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 //    ArrayAdapter<Details.Review> mReviewAdapter;
 //    ListView mTrailers;
     ListView mReviews;
-    ImageView mMyStar;
+    ImageView mMyFavorite;
 
     public static final String[] MOVIE_COLUMNS = {
             MovieEntry.COLUMN_TITLE,
@@ -103,13 +104,24 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mNumVote = (TextView) root.findViewById(R.id.nStar_textView) ;
         mVoteAverage = (TextView) root.findViewById(R.id.nVoters_textView);
         mRatingBar = (RatingBar) root.findViewById(R.id.ratingBar);
-        mMyStar = (ImageView) root.findViewById(R.id.favority_imageView);
+        mMyFavorite = (ImageView) root.findViewById(R.id.favority_imageView);
         mPoster = (ImageView) root.findViewById(R.id.poster_imageView);
         mOverview = (TextView) root.findViewById(R.id.overview_textView);
 
         mTailerListView = (ListView) root.findViewById(R.id.trailer_listView);
         mReviewListView = (ListView) root.findViewById(R.id.review_listView);
         setupExtraListViews ();
+
+
+        FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utilities.addFavoriteMovie(getContext(), mMovieId);
+                mMyFavorite.setVisibility(View.VISIBLE);
+            }
+        });
+
         return root;
     }
 

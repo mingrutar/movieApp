@@ -41,7 +41,7 @@ public class MovieProvider extends ContentProvider {
         ret.addURI(com.coderming.movieapp.data.MovieContract.CONTENT_AUTHORITY,
                 String.format("%s/%s", path, com.coderming.movieapp.data.MovieContract.MovieSelectionType.Favorite), MOVIE_FAVORITE);
         ret.addURI(com.coderming.movieapp.data.MovieContract.CONTENT_AUTHORITY,
-                String.format("%s/#", path, com.coderming.movieapp.data.MovieContract.MovieSelectionType.Favorite), MOVIE_BY_ID);
+                String.format("%s/#", path), MOVIE_BY_ID);
         ret.addURI(com.coderming.movieapp.data.MovieContract.CONTENT_AUTHORITY, com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, DETAIL_MOVIE);
         ret.addURI(com.coderming.movieapp.data.MovieContract.CONTENT_AUTHORITY,
                 String.format("%s/#", com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME), DETAIL_MOVIE__ID);
@@ -86,7 +86,7 @@ public class MovieProvider extends ContentProvider {
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
         int matchCode = sUriMatcher.match(uri);
         if (matchCode == MOVIE_BY_ID) {
-            String movieId = uri.getPathSegments().get(1);
+            String movieId = uri.getPathSegments().get(1);          //TODO: getLastSegment work?
             cursor = db.query(com.coderming.movieapp.data.MovieContract.MovieEntry.TABLE_NAME, projection,
                 String.format("%s.%s = %s", com.coderming.movieapp.data.MovieContract.MovieEntry.TABLE_NAME, com.coderming.movieapp.data.MovieContract.MovieEntry._ID, movieId),
                 null, null, null, sortOrder);

@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 Object item = parent.getItemAtPosition(pos);
                 if (item != null) {
+                    mSelectedFrag = pos;
                     onPageSelected(pos);
                 } else {
                     Toast.makeText(themedContext, "Selected unknown", Toast.LENGTH_LONG).show();
@@ -149,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     }
     public void onPageSelected(int position) {
         Log.v(LOG_TAG, "****** onPageSelected called, pos="+Integer.toString(position));
-        mSelectedFrag = position;
         mViewPager.setCurrentItem(position);
         mViewPager.getAdapter().notifyDataSetChanged();
     }
