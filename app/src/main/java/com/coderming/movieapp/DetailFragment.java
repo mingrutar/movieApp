@@ -1,11 +1,11 @@
 package com.coderming.movieapp;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -30,10 +30,7 @@ import com.squareup.picasso.Target;
 
 import org.json.JSONException;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,8 +49,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     ImageView mPoster;
     TextView mOverview;
 
-    ArrayAdapter<Details.Video> mTrailerAdapter;
-    ArrayAdapter<Details.Review> mReviewAdapter;
+    ListView mTailerListView;
+    ListView mReviewListView;
+//    ArrayAdapter<Details.Video> mTrailerAdapter;
+//    ArrayAdapter<Details.Review> mReviewAdapter;
 //    ListView mTrailers;
     ListView mReviews;
     ImageView mMyStar;
@@ -82,6 +81,36 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // Required empty public constructor
         mMovieLoaderId = Constants.nextId();
         mDetailLoaderId = Constants.nextId();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        getLoaderManager().initLoader(mMovieLoaderId, args, this);
+        Uri uri = args.getParcelable(Constants.DETAIL_URI);
+        mMovieId = Integer.parseInt(uri.getLastPathSegment());
+
+        Uri uriDetail = MovieContract.DetailEntry.buildUri(mMovieId);
+        Bundle dargs = getArguments();
+        dargs.putParcelable(Constants.MORE_DETAIL_URI, uriDetail);
+        getLoaderManager().initLoader(mDetailLoaderId, dargs, this);
+
+        // Inflate the layout for this fragment
+        View root = inflater.inflate(R.layout.fragment_detail, container, false);
+        mTitle = (TextView) root.findViewById(R.id.title_textView)  ;
+        mReleaseDate = (TextView) root.findViewById(R.id.release_textView);
+        mNumVote = (TextView) root.findViewById(R.id.nStar_textView) ;
+        mVoteAverage = (TextView) root.findViewById(R.id.nVoters_textView);
+        mRatingBar = (RatingBar) root.findViewById(R.id.ratingBar);
+        mMyStar = (ImageView) root.findViewById(R.id.favority_imageView);
+        mPoster = (ImageView) root.findViewById(R.id.poster_imageView);
+        mOverview = (TextView) root.findViewById(R.id.overview_textView);
+
+        mTailerListView = (ListView) root.findViewById(R.id.trailer_listView);
+        mReviewListView = (ListView) root.findViewById(R.id.review_listView);
+        setupExtraListViews ();
+        return root;
     }
 
     private void fillPage(Cursor cursor) {
@@ -117,12 +146,22 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 String type = cursor.getString(COL_TYPE);
                 if ("videos".equals(type)) {
                     List<Details.Video> videos =  Details.parseVideos(cursor.getString(COL_DETAIL_DATA));
-                    mTrailerAdapter.addAll(videos) ;
+                    if (videos.size() > 0) {
+                        ((ArrayAdapter<Details.Video>) mTailerListView.getAdapter()).addAll(videos);
+                        mTailerListView.setVisibility(View.VISIBLE);
+                    } else {
+                        mTailerListView.setVisibility(View.INVISIBLE);
+                    }
                 } else if ("reviews".equals(type)) {
                     List<Details.Review> reviews =  Details.parseReviews(cursor.getString(COL_DETAIL_DATA));
-                    fillReiew(reviews);
+                    if (reviews.size() > 0) {
+                        mTailerListView.setVisibility(View.VISIBLE);
+                        ((ArrayAdapter<Details.Review>)mTailerListView.getAdapter()).addAll(reviews) ;
+                    } else {
+                        mTailerListView.setVisibility(View.INVISIBLE);
+                    }
                 } else {
-                    List<Details.Image> reviews = Details.parseImages(cursor.getString(COL_DETAIL_DATA));
+                    List<Details.Image> images = Details.parseImages(cursor.getString(COL_DETAIL_DATA));
                     //TODO: use later;
                 }
             }catch (JSONException jex) {
@@ -130,45 +169,48 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             }
         } while (cursor.moveToNext());
     }
-    private void setupTrailerList(ListView trailers) {
-        mTrailerAdapter = new ArrayAdapter<Details.Video>(getContext(),R.layout.trailer_list_item ) {
-
-       };
-        trailers.setAdapter(mTrailerAdapter);
-    }
-    private void setupReviewList(ListView reviews) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), null, null  ) {
-
+    private void setupExtraListViews( ) {
+        ArrayAdapter<Details.Video> videoAdapter = new ArrayAdapter<Details.Video>(getContext(), R.layout.trailer_list_item ) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View rowView = convertView;
+                final Details.Video video = super.getItem(position);
+                if (rowView == null) {
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    rowView = inflater.inflate(R.layout.trailer_list_item, parent, false);
+                    ImageView playIcon = (ImageView)rowView.findViewById(R.id.trailer_video_control);
+                    playIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Context context = v.getContext();
+                            Log.v(LOG_TAG, "!!! call youTube key="+video.getVideoKey());
+//                            //TODO: play youtube
+//                            Intent intent = new Intent(context, youTube.class);
+//                            Uri uri = MovieContract.MovieEntry.buildUri(video.getVideoKey());
+//                            intent.setData(uri);
+//                            context.startActivity(intent);
+                        }
+                    });
+                }
+                ((TextView)rowView.findViewById(R.id.trailer_textView)).setText(video.getName());
+                 return rowView;
+            }
         };
-        reviews.setAdapter(adapter);
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        getLoaderManager().initLoader(mMovieLoaderId, args, this);
-        Uri uri = args.getParcelable(Constants.DETAIL_URI);
-        mMovieId = Integer.parseInt(uri.getLastPathSegment());
+        mTailerListView.setAdapter(videoAdapter);
 
-        Uri uriDetail = MovieContract.DetailEntry.buildUri(mMovieId);
-        Bundle dargs = getArguments();
-        dargs.putParcelable(Constants.MORE_DETAIL_URI, uriDetail);
-        getLoaderManager().initLoader(mDetailLoaderId, dargs, this);
-
-        // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_detail, container, false);
-        mTitle = (TextView) root.findViewById(R.id.title_textView)  ;
-        mReleaseDate = (TextView) root.findViewById(R.id.release_textView);
-        mNumVote = (TextView) root.findViewById(R.id.nStar_textView) ;
-        mVoteAverage = (TextView) root.findViewById(R.id.nVoters_textView);
-        mRatingBar = (RatingBar) root.findViewById(R.id.ratingBar);
-        mMyStar = (ImageView) root.findViewById(R.id.favority_imageView);
-        mPoster = (ImageView) root.findViewById(R.id.poster_imageView);
-        mOverview = (TextView) root.findViewById(R.id.overview_textView);
-
-        setupTrailerList ((ListView) root.findViewById(R.id.trailer_listView));
-        setupReviewList((ListView) root.findViewById(R.id.review_listView));
-        return root;
+        mReviewListView.setAdapter(new ArrayAdapter<Details.Review>(getContext(), R.layout.review_list_item) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View rowView = convertView;
+                Details.Review review = super.getItem(position);
+                if (rowView == null) {
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    rowView = inflater.inflate(R.layout.review_list_item, parent, false);
+                }
+                ((TextView) rowView.findViewById(R.id.review_item_textView)).setText(review.getContent());
+                return rowView;
+            }
+        } );
     }
 
     /**
@@ -199,19 +241,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 fillExtraData(data);
             } else {
                 MovieSyncAdapter.syncImmediately(getContext(), mMovieId);
+                //TODO: should call after load???
+                getLoaderManager().getLoader(mDetailLoaderId).onContentChanged();
             }
         }
     }
-
-    /**
-     * Called when a previously created loader is being reset, and thus
-     * making its data unavailable.  The application should at this point
-     * remove any references it has to the Loader's data.
-     *
-     * @param loader The Loader that is being reset.
-     */
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }
