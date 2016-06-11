@@ -52,7 +52,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     ImageView mPoster;
     TextView mOverview;
 
-    ListView mTrailers;
+    ArrayAdapter<Details.Video> mTrailerAdapter;
+    ArrayAdapter<Details.Review> mReviewAdapter;
+//    ListView mTrailers;
     ListView mReviews;
     ImageView mMyStar;
 
@@ -109,21 +111,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             }
         });
     }
-    private void fillVideo(List<Details.Video> videos) {
-        ArrayAdapter ad = ArrayAdapter. .createFromResource( getContext(), videos,
-                getResources().getLayout(R.layout.trailer_list_item) );
-        mTrailers.setAdapter( );
-    }
-    private void fillReiew(List<Details.Review> reviews)  {
-        //        mReviews;
-    }
     private void fillExtraData(Cursor cursor) {
         do {
             try {
                 String type = cursor.getString(COL_TYPE);
                 if ("videos".equals(type)) {
                     List<Details.Video> videos =  Details.parseVideos(cursor.getString(COL_DETAIL_DATA));
-                    fillVideo(videos) ;
+                    mTrailerAdapter.addAll(videos) ;
                 } else if ("reviews".equals(type)) {
                     List<Details.Review> reviews =  Details.parseReviews(cursor.getString(COL_DETAIL_DATA));
                     fillReiew(reviews);
@@ -137,7 +131,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         } while (cursor.moveToNext());
     }
     private void setupTrailerList(ListView trailers) {
-       ArrayAdapter<String> adapter = new ArrayAdapter<String>( )
+        mTrailerAdapter = new ArrayAdapter<Details.Video>(getContext(),R.layout.trailer_list_item ) {
+
+       };
+        trailers.setAdapter(mTrailerAdapter);
     }
     private void setupReviewList(ListView reviews) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), null, null  ) {
