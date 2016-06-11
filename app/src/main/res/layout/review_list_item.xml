@@ -6,8 +6,5 @@
     <TextView
         style="@style/secction_text"
         android:id="@+id/review_item_textView"
-        android:layout_marginLeft="@dimen/dimen_4dp"
-        android:singleLine="false"
-        android:text="review 1"
-        android:layout_gravity="center_vertical"/>
+        android:singleLine="false"               />
 </LinearLayout>

@@ -122,7 +122,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mVoteAverage.setText(String.format("%.01f", rating));
         mNumVote.setText(Integer.toString(cursor.getInt(COL_VOTE_COUNT)));
         mOverview.setText(cursor.getString(COL_OVERVIEW));
-        mPoster.
+        mPoster.setImageResource(0);
         String imagePath = cursor.getString(COL_POSTER_PATH);
         String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                 , String.valueOf(getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_342))

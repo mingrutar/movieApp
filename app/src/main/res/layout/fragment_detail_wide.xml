@@ -86,7 +86,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:orientation="vertical"
                 android:layout_marginLeft="@dimen/dimen_4dp"
                 >
@@ -115,20 +115,11 @@
                             />
                         </LinearLayout>
                 </android.support.v7.widget.CardView>
-                <TextView
-                    style="@style/secction_title"
-                    android:layout_marginTop="@dimen/dimen_10dp"
-                    android:paddingLeft="@dimen/dimen_4dp"
-                    android:text="Reviews"    />
-                <ListView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/review_listView"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:layout_marginLeft="@dimen/dimen_4dp"
                 android:padding="@dimen/dimen_4dp"
                 android:orientation="vertical">
@@ -139,7 +130,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/trailer_listView"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/dimen_4dp"
+                    android:layout_marginBottom="@dimen/dimen_10dp"
+                    android:background="#c0c0c0"/>
+
+                <TextView
+                    style="@style/secction_title"
+                    android:paddingLeft="@dimen/dimen_4dp"
+                    android:text="Reviews"    />
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/review_listView"/>
             </LinearLayout>
+
     </LinearLayout>
     </LinearLayout>
 </ScrollView>
