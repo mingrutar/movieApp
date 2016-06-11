@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IntegerRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -23,12 +24,16 @@ import com.coderming.movieapp.data.MovieContract.MovieEntry;
 import com.coderming.movieapp.model.Details;
 import com.coderming.movieapp.sync.MovieSyncAdapter;
 import com.coderming.movieapp.utils.Constants;
+import com.coderming.movieapp.utils.Utilities;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import org.json.JSONException;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,7 +43,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private int mMovieLoaderId;
     private int mDetailLoaderId;
     private int mMovieId;
-
 
     TextView mTitle;
     TextView mReleaseDate;
@@ -80,13 +84,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private void fillPage(Cursor cursor) {
         mTitle.setText( cursor.getString(COL_TITLE));
-        long relase= cursor.getLong(COL_RELEASE_DATE);
-        mReleaseDate.setText();
+        mReleaseDate.setText(Utilities.releaseDate2Str(cursor.getLong(COL_RELEASE_DATE)));
         double vote_average = cursor.getDouble(COL_VOTE_AVERAGE);
-        mNumVote.setText();
-        int numStart = cursor.getInt(COL_VOTE_COUNT);
-        mRatingBar;
-        mVoteAverage.setText();
+        float rating = (float) (vote_average * 5.0f) /10.0f;
+        mRatingBar.setRating(rating);
+        mVoteAverage.setText(String.format("%.01f", rating));
+        mNumVote.setText(Integer.toString(cursor.getInt(COL_VOTE_COUNT)));
         mOverview.setText(cursor.getString(COL_OVERVIEW));
         String imagePath = cursor.getString(COL_POSTER_PATH);
         String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
@@ -97,7 +100,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 mPoster.setImageBitmap(bitmap);
             }
-
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
                 Log.w(LOG_TAG, "Fail to load backdrop image");
@@ -106,12 +108,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             public void onPrepareLoad(Drawable placeHolderDrawable) {
             }
         });
-    }   "videos", "results");
-    SetailTypeJsonTag.put("reviews", "results");
-    SetailTypeJsonTag.put("images"
-
+    }
     private void fillVideo(List<Details.Video> videos) {
-        ArrayAdapter ad = new ArrayAdapter.createFromResource( getContext(), videos,
+        ArrayAdapter ad = ArrayAdapter. .createFromResource( getContext(), videos,
                 getResources().getLayout(R.layout.trailer_list_item) );
         mTrailers.setAdapter( );
     }
@@ -137,6 +136,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             }
         } while (cursor.moveToNext());
     }
+    private void setupTrailerList(ListView trailers) {
+       ArrayAdapter<String> adapter = new ArrayAdapter<String>( )
+    }
+    private void setupReviewList(ListView reviews) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), null, null  ) {
+
+        };
+        reviews.setAdapter(adapter);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -152,7 +160,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_detail, container, false);
-        mTitle = (TextView) root.findViewById(R.id.title_textView))  ;
+        mTitle = (TextView) root.findViewById(R.id.title_textView)  ;
         mReleaseDate = (TextView) root.findViewById(R.id.release_textView);
         mNumVote = (TextView) root.findViewById(R.id.nStar_textView) ;
         mVoteAverage = (TextView) root.findViewById(R.id.nVoters_textView);
@@ -160,8 +168,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mMyStar = (ImageView) root.findViewById(R.id.favority_imageView);
         mPoster = (ImageView) root.findViewById(R.id.poster_imageView);
         mOverview = (TextView) root.findViewById(R.id.overview_textView);
-        mTrailers = (ListView) root.findViewById(R.id.trailer_listView);
-        mReviews = (ListView) root.findViewById(R.id.review_listView);
+
+        setupTrailerList ((ListView) root.findViewById(R.id.trailer_listView));
+        setupReviewList((ListView) root.findViewById(R.id.review_listView));
         return root;
     }
 

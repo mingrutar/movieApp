@@ -10,16 +10,27 @@ import android.util.Log;
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 /**
  * Created by linna on 6/5/2016.
  */
 public class Utilities {
-   private static final String LOG_TAG = Utilities.class.getSimpleName();
+    private static final String LOG_TAG = Utilities.class.getSimpleName();
+
+    public static final String RELEASE_DATE = "MMM yyyy";
     public static final String sDeleteMovie = String.format("%s.%s!=%s.%s",MovieContract.MovieEntry.TABLE_NAME, BaseColumns._ID,
     MovieContract.MovieSelectionEntry.TABLE_NAME, MovieContract.MovieSelectionEntry.COLUMN_MOVIE_ID);
 
+    public static String releaseDate2Str(long timeinMilli) {
+        SimpleDateFormat dateFormater = new SimpleDateFormat(RELEASE_DATE, Locale.getDefault());
+        Date date = new Date(timeinMilli);
+        String str = dateFormater.format(date);
+        return str;
+    }
     public static int getRecordLimmit(MovieSelectionType type) {
         //TODO: get from shared preference, setting
         return (type == MovieSelectionType.Popular) ? 3 : 2;
