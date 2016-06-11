@@ -1,6 +1,5 @@
 package com.coderming.movieapp;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -195,13 +194,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     playIcon.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Context context = v.getContext();
-                            Log.v(LOG_TAG, "!!! call youTube key="+video.getVideoKey());
-//                            //TODO: play youtube
-//                            Intent intent = new Intent(context, youTube.class);
-//                            Uri uri = MovieContract.MovieEntry.buildUri(video.getVideoKey());
-//                            intent.setData(uri);
-//                            context.startActivity(intent);
+                            Utilities.watchYouTube(v.getContext(), video.getVideoKey());
                         }
                     });
                 }

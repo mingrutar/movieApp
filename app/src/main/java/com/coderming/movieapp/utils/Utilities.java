@@ -1,7 +1,9 @@
 package com.coderming.movieapp.utils;
 
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -34,6 +36,16 @@ public class Utilities {
     public static int getRecordLimmit(MovieSelectionType type) {
         //TODO: get from shared preference, setting
         return (type == MovieSelectionType.Popular) ? 3 : 2;
+    }
+    public static void watchYouTube(Context context, String id) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Intent intent = new Intent(Intent.ACTION_VIEW,      // try web
+                    Uri.parse("http://www.youtube.com/watch?v=" + id));
+            context.startActivity(intent);
+        }
     }
 
     static public long getMovieDbId(Context context, int moview_id) {
