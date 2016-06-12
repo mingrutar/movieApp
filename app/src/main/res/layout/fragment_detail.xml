@@ -75,8 +75,8 @@
             android:orientation="horizontal"
             android:layout_marginBottom="@dimen/dimen_10dp">
             <ImageView
-                android:layout_width="@dimen/moviedb_image_width_185"
-                android:layout_height="@dimen/moviedb_image_height_185"
+                android:layout_width="@dimen/poster_image_width_185"
+                android:layout_height="@dimen/poster_image_height_185"
                 android:adjustViewBounds="false"
                 android:id="@+id/poster_imageView"
                 android:src="@drawable/poster"
