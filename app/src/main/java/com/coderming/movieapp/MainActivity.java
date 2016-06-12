@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     }
     @Override
     public void onResume() {
-        Log.v(LOG_TAG, "++++onResume");
+        Log.v(LOG_TAG, String.format("++++onResume mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
         super.onResume();
         if (mSpinner != null) {
             mSpinner.setSelection(mSelectedFrag);

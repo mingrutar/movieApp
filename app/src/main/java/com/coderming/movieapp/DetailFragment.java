@@ -169,10 +169,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 } else if ("reviews".equals(type)) {
                     List<Details.Review> reviews =  Details.parseReviews(cursor.getString(COL_DETAIL_DATA));
                     if (reviews.size() > 0) {
-                        mTailerListView.setVisibility(View.VISIBLE);
-                        ((ArrayAdapter<Details.Review>)mTailerListView.getAdapter()).addAll(reviews) ;
+                        ((ArrayAdapter<Details.Review>)mReviewListView.getAdapter()).addAll(reviews) ;
+                        mReviewListView.setVisibility(View.VISIBLE);
                     } else {
-                        mTailerListView.setVisibility(View.INVISIBLE);
+                        mReviewListView.setVisibility(View.INVISIBLE);
                     }
                 } else {
                     List<Details.Image> images = Details.parseImages(cursor.getString(COL_DETAIL_DATA));
