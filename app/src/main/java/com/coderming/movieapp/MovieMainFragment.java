@@ -37,7 +37,7 @@ public class MovieMainFragment extends Fragment {
         //not set in AndroidManifest.xml, register here,
     }
 
-    // TODO how to deal with 4K screen?
+    // TODO how to deal with 4K screen?  should use onMeasure?
 //    private void calcNumColumes( GridView gridView) {
     private int calcNumColumes( ) {
         Resources res = getActivity().getResources();
@@ -91,18 +91,6 @@ public class MovieMainFragment extends Fragment {
 //        super.onSaveInstanceState(outState);
 //    }
 //
-    public void onResume() {
-    }
-
-    @Override
-    public void onPause() {
-//        Log.v(LOG_TAG, "++++onPause");
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-//        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putString(getString(R.string.pref_sortby_key), mSortby);
-//        editor.commit();
-        super.onPause();
-    }
 
 //    public void updateAdapter(MovieSource movieSource) {
 //        mMovieDb = movieSource;

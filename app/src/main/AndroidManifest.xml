@@ -42,14 +42,6 @@
                   android:syncable="true" />
 
         <!-- Activity -->
-
-        <!-- replaced with dynamic created one in MovieMainFragment
-               <receiver android:name="com.coderming.movieapp.ConnectivityReceiver" >
-                    <intent-filter>
-                        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                    </intent-filter>
-                </receiver> -->
-
         <activity
             android:name=".MainActivity"
             android:label="@string/title_main_activity"  >

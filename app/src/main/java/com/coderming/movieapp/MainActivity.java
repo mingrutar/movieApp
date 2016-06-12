@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.coderming.movieapp.data.MovieContract.MovieEntry;
 import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 import com.coderming.movieapp.sync.MovieSyncAdapter;
+import com.coderming.movieapp.utils.DataRetriever;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//TODO:        callSync();
         setContentView(R.layout.activity_main);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
 //                    .commit();
         }
         registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        callSync();
     }
 
     BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -78,8 +79,8 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             NetworkInfo activeNetwork =cm.getActiveNetworkInfo();
             if (activeNetwork != null) {
                 boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;  // not in use
-                if (activeNetwork.isConnectedOrConnecting()) {
-// TODO:                    callSync();
+                if (activeNetwork.isConnectedOrConnecting() && !DataRetriever.syncSucceed ) {
+                    callSync();
                 }
             }
         }
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.v(LOG_TAG, String.format("----onCreateOptionsMenu, mSelectedFrag=%d", mSelectedFrag));
         getMenuInflater().inflate(R.menu.movie_main, menu);
 
         MenuItem item = menu.findItem(R.id.spinner);

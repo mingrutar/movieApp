@@ -72,7 +72,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                     , String.valueOf(mContext.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)),
                     mCursor.getString(COL_POSTER_PATH));
-//            Log.v(LOG_TAG, String.format("++++ onBindViewHolder, position=%d, url=%s", position,url ));
+            Log.v(LOG_TAG, String.format("+++RA+++ onBindViewHolder, position=%d, url=%s", position,url ));
             Picasso.with(mContext).load(url).into(new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -127,7 +127,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//        Log.v(LOG_TAG, "++++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
+        Log.v(LOG_TAG, "+++RA+++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
         int size = 0;
         if (data != null) {
             mCursor = data;

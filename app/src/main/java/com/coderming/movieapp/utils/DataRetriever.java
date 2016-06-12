@@ -34,6 +34,9 @@ import java.util.Map;
  */
 public class DataRetriever {
     private static final String LOG_TAG = DataRetriever.class.getSimpleName();
+    //
+    public static boolean syncSucceed;
+
     //  detail tags
     public static final String[] SUPPORTED_DETAIL_TYPES = new String[] {"videos", "reviews",  "images",};
     private static  final Map<String, String> SetailTypeJsonTag =  new HashMap<>();
@@ -172,8 +175,10 @@ public class DataRetriever {
                     Log.v(LOG_TAG, "++++ got 0 bytes from remote: url="+url);
                 }
             }
+            syncSucceed = true;
         } catch (IOException ioe) {
-            Log.e(LOG_TAG, "Exception retrieveMovies "+ioe.getMessage(), ioe);
+            syncSucceed = false;
+            Log.e(LOG_TAG, "====Exception retrieveMovies "+ioe.getMessage(), ioe);
         } finally {
             if (httpConnection != null) {
                 httpConnection.disconnect();
