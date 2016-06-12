@@ -100,8 +100,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         View root = inflater.inflate(R.layout.fragment_detail, container, false);
         mTitle = (TextView) root.findViewById(R.id.title_textView)  ;
         mReleaseDate = (TextView) root.findViewById(R.id.release_textView);
-        mNumVote = (TextView) root.findViewById(R.id.nStar_textView) ;
-        mVoteAverage = (TextView) root.findViewById(R.id.nVoters_textView);
+        mNumVote = (TextView) root.findViewById(R.id.nVoters_textView) ;
+        mVoteAverage = (TextView) root.findViewById(R.id.nStar_textView);
         mRatingBar = (RatingBar) root.findViewById(R.id.ratingBar);
         mMyFavorite = (ImageView) root.findViewById(R.id.favority_imageView);
         mPoster = (ImageView) root.findViewById(R.id.poster_imageView);

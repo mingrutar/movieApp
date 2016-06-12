@@ -30,8 +30,7 @@ public class Utilities {
     public static String releaseDate2Str(long timeinMilli) {
         SimpleDateFormat dateFormater = new SimpleDateFormat(RELEASE_DATE, Locale.getDefault());
         Date date = new Date(timeinMilli);
-        String str = dateFormater.format(date);
-        return str;
+        return String.format("(%s)", dateFormater.format(date));
     }
     public static int getRecordLimmit(MovieSelectionType type) {
         //TODO: get from shared preference, setting
