@@ -22,6 +22,7 @@ import com.coderming.movieapp.model.MovieSource;
 public class MovieMainFragment extends Fragment {
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
+    private static final String SELECTED_ITEM = "selected_item";
 
     static final String UrlBase = "https://api.themoviedb.org/3/movie/";
     private MovieRecyclerViewAdapter mAdapter;
@@ -81,26 +82,17 @@ public class MovieMainFragment extends Fragment {
         mAdapter = new MovieRecyclerViewAdapter( this );
         recyclerView.setAdapter(mAdapter);
         getLoaderManager().initLoader(mAdapter.mLoadId, args, mAdapter);
+
         return rootView;
     }
-
-//    public void onResume() {
-//        Log.v(LOG_TAG, "++++onResume");
-//        super.onResume();
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-//        mSortby = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
-//        if (mSpinner != null) {
-//            int pos = 0;
-//            if (mSortby.equals(getString(R.string.sortby_top_rated))) {
-//                pos = 1;
-//            } else if (mSortby.equals(getString((R.string.sortby_faverites)))) {
-//                pos = 2;
-//            }
-//            mSpinner.setSelection(pos);
-//        } else {                      // resume could be called before spinner is created
-//            updateMovieInfo();
-//        }
+ // save Selected item?
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
 //    }
+//
+    public void onResume() {
+    }
 
     @Override
     public void onPause() {

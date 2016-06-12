@@ -162,6 +162,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     List<Details.Video> videos =  Details.parseVideos(cursor.getString(COL_DETAIL_DATA));
                     if (videos.size() > 0) {
                         ((ArrayAdapter<Details.Video>) mTailerListView.getAdapter()).addAll(videos);
+                        Log.v(LOG_TAG, "+++++fillExtraData #video="+Integer.toString(videos.size()));
                         mTailerListView.setVisibility(View.VISIBLE);
                     } else {
                         mTailerListView.setVisibility(View.INVISIBLE);

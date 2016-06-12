@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -64,8 +66,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
 //            getSupportFragmentManager().beginTransaction()
 //                    .add(R.id.main_container, frag, name)
 //                    .commit();
-        } else if (savedInstanceState.containsKey(SELECTED_FRAG)) {
-            mSelectedFrag = savedInstanceState.getInt(SELECTED_FRAG);
         }
         registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
@@ -90,15 +90,33 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         MovieSyncAdapter.syncImmediately(this);
         // TODO: do I need restartLoader ?
     }
+// do not know how to restore the value
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        Log.v(LOG_TAG, String.format("----onSaveInstanceState mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
+//        super.onSaveInstanceState(outState);
+//        outState.putInt(SELECTED_FRAG, mSelectedFrag);
+//    }
+
+    /**
+     * Dispatch onPause() to fragments.
+     */
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(SELECTED_FRAG, mSelectedFrag);
+    protected void onPause() {
+        Log.v(LOG_TAG, String.format("----onPause mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(SELECTED_FRAG, mSelectedFrag);
+        editor.commit();
+        super.onPause();
     }
+
     @Override
     public void onResume() {
-        Log.v(LOG_TAG, String.format("++++onResume mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
+        Log.v(LOG_TAG, String.format("----onResume mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
         super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        this.mSelectedFrag = prefs.getInt(SELECTED_FRAG, 0);
         if (mSpinner != null) {
             mSpinner.setSelection(mSelectedFrag);
         }
