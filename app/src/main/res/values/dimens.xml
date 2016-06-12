@@ -14,9 +14,7 @@
     <dimen name="moviedb_image_width_92">92px</dimen>
     <dimen name="moviedb_image_width_154">154px</dimen>
     <dimen name="moviedb_image_width_185">185px</dimen>
-    <dimen name="moviedb_image_height_185">277px</dimen>
     <dimen name="moviedb_image_width_342">342px</dimen>
-    <dimen name="moviedb_image_height_342">513px</dimen>
     <dimen name="moviedb_image_width_500">500px</dimen>
     <dimen name="moviedb_image_width_780">780px</dimen>
 </resources>

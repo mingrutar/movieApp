@@ -57,25 +57,25 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     ListView mReviews;
     ImageView mMyFavorite;
 
-    public static final String[] MOVIE_COLUMNS = {
+    private static final String[] MOVIE_COLUMNS = {
             MovieEntry.COLUMN_TITLE,
             MovieEntry.COLUMN_RELEASE_DATE,
             MovieEntry.COLUMN_VOTE_COUNT,
             MovieEntry.COLUMN_VOTE_AVERAGE,
             MovieEntry.COLUMN_POSTER_PATH,
             MovieEntry.COLUMN_OVERVIEW      };
-    public static final int COL_TITLE = 0;
-    public static final int COL_RELEASE_DATE = 1;
-    public static final int COL_VOTE_COUNT = 2;
-    public static final int COL_VOTE_AVERAGE = 3;
-    public static final int COL_POSTER_PATH = 4;
-    public static final int COL_OVERVIEW = 5;
+    private static final int COL_TITLE = 0;
+    private static final int COL_RELEASE_DATE = 1;
+    private static final int COL_VOTE_COUNT = 2;
+    private static final int COL_VOTE_AVERAGE = 3;
+    private static final int COL_POSTER_PATH = 4;
+    private static final int COL_OVERVIEW = 5;
 
-    public static final String[] EXTRA_DETAIL_COLUMNS = {
+    private static final String[] EXTRA_DETAIL_COLUMNS = {
             MovieContract.DetailEntry.COLUMN_TYPE,
             MovieContract.DetailEntry.COLUMN_DETAIL_DATA };
-    public static final int COL_TYPE = 0;
-    public static final int COL_DETAIL_DATA = 1;
+    private static final int COL_TYPE = 0;
+    private static final int COL_DETAIL_DATA = 1;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -135,9 +135,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mOverview.setText(cursor.getString(COL_OVERVIEW));
         mPoster.setImageResource(0);
         String imagePath = cursor.getString(COL_POSTER_PATH);
-        String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
+        final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                 , String.valueOf(getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_342))
                 , imagePath);
+        Log.v(LOG_TAG, String.format("++++ fillPage, title=%s, url=%s", mTitle.getText(), url ));
+
         Picasso.with(getContext()).load(url).into(new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -145,7 +147,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             }
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
-                Log.w(LOG_TAG, "Fail to load backdrop image");
+                Log.w(LOG_TAG, "Fail to load backdrop image at "+url);
             }
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {

@@ -8,7 +8,7 @@
         android:layout_height="@dimen/poster_image_height_185"
         android:id="@+id/movie_poster"
         android:scaleType="fitCenter"
-        android:layout_gravity="center"
+        android:gravity="center"
         android:adjustViewBounds="true"
         android:background="@android:color/holo_orange_light"
         />

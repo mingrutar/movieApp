@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.model.MovieSource;
-import com.coderming.movieapp.utils.Constants;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,7 +78,7 @@ public class MovieMainFragment extends Fragment {
         Bundle args = getArguments();
         if (!args.containsKey(MainActivity.PAGE_DATA_URI))
             args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
-        mAdapter = new MovieRecyclerViewAdapter(getContext(), Constants.nextId());
+        mAdapter = new MovieRecyclerViewAdapter(getContext());
         recyclerView.setAdapter(mAdapter);
         TextView textView = (TextView) rootView.findViewById(R.id.page_name);
         String pname = args.getParcelable(MainActivity.PAGE_DATA_URI).toString();

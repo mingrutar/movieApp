@@ -3,6 +3,8 @@ package com.coderming.movieapp;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +32,14 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = MovieRecyclerViewAdapter.class.getSimpleName();
 
-    public int mLoadId = 0;         // use page number
+    private static final String[] MAIN_MOVIE_COLUMNS = {
+            MovieContract.MovieEntry.TABLE_NAME+"."+ MovieContract.MovieEntry._ID,
+// show start?            MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
+            MovieContract.MovieEntry.COLUMN_POSTER_PATH };
+    private static final int COL_ID = 0;
+    private static final int COL_POSTER_PATH = 1;
+
+    public int mLoadId;         // use page number
 
     private Cursor mCursor;
     private Context mContext;
@@ -39,8 +49,8 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         void onLoadFinish(int page, int size);
     }
 
-    public MovieRecyclerViewAdapter(Context context, int pageN) {
-        mLoadId = pageN;
+    public MovieRecyclerViewAdapter(Context context) {
+        mLoadId = Constants.nextId();
         mContext = context;
         mLoaderSubscriber = new ArrayList<>();
     }
@@ -51,15 +61,27 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         return new RecyclerViewHolders(view);
     }
     @Override
-    public void onBindViewHolder(RecyclerViewHolders holder, int position) {
-        Log.v(LOG_TAG, String.format("++++ onBindViewHolder, cursor?=%s, position=%d", (mCursor!=null) ,position ));
+    public void onBindViewHolder(final RecyclerViewHolders holder, int position) {
         if (mCursor != null) {
             mCursor.moveToPosition(position);
-            int idx = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
-
-            String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
+            holder.mView.setTag(mCursor.getLong(COL_ID));
+            final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                     , String.valueOf(mContext.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)),
-                    mCursor.getString(idx));
+                    mCursor.getString(COL_POSTER_PATH));
+            Log.v(LOG_TAG, String.format("++++ onBindViewHolder, position=%d, url=%s", position,url ));
+            Picasso.with(mContext).load(url).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    holder.mImageView.setImageBitmap(bitmap);
+                }
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    Log.w(LOG_TAG, "Fail to load poster image at "+url);
+                }
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            });
             Picasso.with(mContext).load(url).into(holder.mImageView);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +89,8 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                 public void onClick(View v) {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, DetailActivity.class);
-                    Uri uri = MovieContract.MovieEntry.buildUri(mCursor.getLong(0));
+                    Long movieDbId = (Long) v.getTag();
+                    Uri uri = MovieContract.MovieEntry.buildUri( movieDbId.longValue() );
                     intent.setData(uri);
                     context.startActivity(intent);
                 }
@@ -91,7 +114,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         Loader<Cursor> ret = null;
         if (mLoadId == id) {
             Uri uri = args.getParcelable(MainActivity.PAGE_DATA_URI);
-            ret = new CursorLoader(mContext, uri, null, null, null, MovieContract.MovieEntry._ID + " asc");
+            ret = new CursorLoader(mContext, uri, MAIN_MOVIE_COLUMNS, null, null, MovieContract.MovieEntry._ID + " asc");
         } else {
             Log.w(LOG_TAG, "LOADER_MOVIE_ID need to contain URI in bundle");
         }
