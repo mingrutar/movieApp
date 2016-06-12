@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        callSync();
+//TODO:        callSync();
         setContentView(R.layout.activity_main);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             if (activeNetwork != null) {
                 boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;  // not in use
                 if (activeNetwork.isConnectedOrConnecting()) {
-                    callSync();
+// TODO:                    callSync();
                 }
             }
         }

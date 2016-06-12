@@ -52,7 +52,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     }
     @Override
     public void onBindViewHolder(RecyclerViewHolders holder, int position) {
-//        Log.v(LOG_TAG, String.format("++++ onBindViewHolder, cursor?=%s, position=%d", (mCursor!=null) ,position ));
+        Log.v(LOG_TAG, String.format("++++ onBindViewHolder, cursor?=%s, position=%d", (mCursor!=null) ,position ));
         if (mCursor != null) {
             mCursor.moveToPosition(position);
             int idx = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
@@ -100,7 +100,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//        Log.v(LOG_TAG, "++++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
+        Log.v(LOG_TAG, "++++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
         int size = 0;
         if (data != null) {
             mCursor = data;
