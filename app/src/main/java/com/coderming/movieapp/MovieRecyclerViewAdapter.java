@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -33,7 +34,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     private static final String LOG_TAG = MovieRecyclerViewAdapter.class.getSimpleName();
 
     private static final String[] MAIN_MOVIE_COLUMNS = {
-            MovieContract.MovieEntry.TABLE_NAME+"."+ MovieContract.MovieEntry._ID,
+            BaseColumns._ID,
 // show start?            MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
             MovieContract.MovieEntry.COLUMN_POSTER_PATH };
     private static final int COL_ID = 0;

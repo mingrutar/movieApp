@@ -39,7 +39,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     static final String LOG_TAG = DetailFragment.class.getSimpleName();
     private int mMovieLoaderId;
     private int mDetailLoaderId;
-    private int mMovieId;
+    private long mMovieId;
 
     TextView mTitle;
     TextView mReleaseDate;
@@ -89,7 +89,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Bundle args = getArguments();
         getLoaderManager().initLoader(mMovieLoaderId, args, this);
         Uri uri = args.getParcelable(Constants.DETAIL_URI);
-        mMovieId = Integer.parseInt(uri.getLastPathSegment());
+        mMovieId = Long.parseLong(uri.getLastPathSegment());
 
         Uri uriDetail = MovieContract.DetailEntry.buildUri(mMovieId);
         Bundle dargs = getArguments();

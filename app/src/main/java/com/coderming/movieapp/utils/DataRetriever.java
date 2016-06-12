@@ -47,25 +47,26 @@ public class DataRetriever {
     }
 
     @Nullable
-    public static void retrieveDetails(Context context, int movieID ) {
-        long id = com.coderming.movieapp.utils.Utilities.getMovieDbId(context, movieID);
-        if (id != -1) {
-            ContentValues values = new ContentValues();
-            values.put(DetailEntry.COLUMN_MOVIE_ID, id);
+    public static void retrieveDetails(Context context, long movieDbID ) {
+        int movieId = Utilities.getMovieId(context, movieDbID) ;
+        if (movieId != -1) {
+            ContentValues values;
             for (String data : SUPPORTED_DETAIL_TYPES) {
                 try {
-                    String urlStr = String.format(mDetailUri, movieID, data);
+                    String urlStr = String.format(mDetailUri, movieId, data);
                     Log.v(LOG_TAG, "++++s+++ retrieveDetails: uri=" + urlStr);
                     String jsonStr = retrieveData(context, new URL(urlStr));
                     if (jsonStr != null) {
                         JSONObject jobj = new JSONObject(jsonStr);
                         JSONArray jarr = jobj.getJSONArray(SetailTypeJsonTag.get(data));
                         if (jarr.length() > 0) {
+                            values = new ContentValues();
+                            values.put(DetailEntry._ID, movieDbID);
                             values.put(DetailEntry.COLUMN_DETAIL_DATA, jarr.toString());
                             values.put(DetailEntry.COLUMN_TYPE, data);
                             Uri uri = context.getContentResolver().insert(DetailEntry.CONTENT_URI, values);
                             Log.v(LOG_TAG, String.format("retrieveDetails inserted movieId=%d, type=%s =>uri=%s",
-                                    movieID, data, uri));
+                                    movieDbID, data, uri));
                         }
                     }
                 } catch (MalformedURLException mfe) {
@@ -76,7 +77,7 @@ public class DataRetriever {
                 }
             }
         } else {
-            Log.w(LOG_TAG, "Could not find DB id for movie id "+Integer.toString(movieID));
+            Log.w(LOG_TAG, "Could not find movie id for movie DB id "+Long.toString(movieDbID));
         }
     }
 

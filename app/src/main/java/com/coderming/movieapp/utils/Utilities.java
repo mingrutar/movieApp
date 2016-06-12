@@ -68,6 +68,26 @@ public class Utilities {
         }
         return ret;
     }
+    static public int getMovieId(Context context, long moviewDbId) {
+        int ret = -1;
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                    new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                    BaseColumns._ID + "=?",
+                    new String[]{Long.toString(moviewDbId)}, null);
+            if (cursor.moveToFirst()) {
+                ret = cursor.getInt(0);
+            }
+        } catch (RuntimeException rex ) {
+            Log.w(LOG_TAG, "getMovieDbId caught an exception.", rex);
+        } finally {
+            if (cursor != null){
+                cursor.close();
+            }
+        }
+        return ret;
+    }
     static public boolean hasMovieDetailInDB(Context context, long id ) {
         Cursor cursor = null;
         try {

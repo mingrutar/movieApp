@@ -17,8 +17,8 @@ public class Details {
 
     public static List<Video>  parseVideos(String jsonStr) throws JSONException {
         List<Video> ret = new ArrayList<>();
-        JSONObject jobj = new JSONObject(jsonStr);
-        JSONArray jarr = jobj.getJSONArray(Constants.TAG_RESULTS);
+        JSONArray jarr = new JSONArray(jsonStr);
+        JSONObject jobj;
         Video video;
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
@@ -33,8 +33,8 @@ public class Details {
     }
     public static List<Image>  parseImages(String jsonStr) throws JSONException {
         List<Image> ret = new ArrayList<>();
-        JSONObject jobj = new JSONObject(jsonStr);
-        JSONArray jarr = jobj.getJSONArray(Constants.TAG_RESULTS);
+        JSONArray jarr = new JSONArray(jsonStr);
+        JSONObject jobj;
         Image image;
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
@@ -49,8 +49,8 @@ public class Details {
     }
     public static List<Review>  parseReviews(String jsonStr) throws JSONException {
         List<Review> ret = new ArrayList<>();
-        JSONObject jobj = new JSONObject(jsonStr);
-        JSONArray jarr = jobj.getJSONArray(Constants.TAG_RESULTS);
+        JSONArray jarr = new JSONArray(jsonStr);
+        JSONObject jobj;
         Review review;
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
