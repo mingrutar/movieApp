@@ -63,8 +63,6 @@ public class MovieMainFragment extends Fragment {
             outRect.left = mSpace;
             outRect.right = mSpace;
             outRect.bottom = mSpace;
-            // Add top margin only for the first item to avoid double space between items
- //           if (parent.getChildAdapterPosition(view) == 0)
             outRect.top = mSpace;
         }
     }
@@ -91,21 +89,5 @@ public class MovieMainFragment extends Fragment {
 //        super.onSaveInstanceState(outState);
 //    }
 //
-    public void onResume() {
-    }
 
-    @Override
-    public void onPause() {
-//        Log.v(LOG_TAG, "++++onPause");
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-//        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putString(getString(R.string.pref_sortby_key), mSortby);
-//        editor.commit();
-        super.onPause();
-    }
-
-//    public void updateAdapter(MovieSource movieSource) {
-//        mMovieDb = movieSource;
-//        getLoaderManager().initLoader(mAdapter.LOADER_ID, args, mAdapter);
-//    }
 }
