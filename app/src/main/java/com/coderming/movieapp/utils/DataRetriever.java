@@ -58,7 +58,7 @@ public class DataRetriever {
                         JSONArray jarr = jobj.getJSONArray(SetailTypeJsonTag.get(data));
                         if (jarr.length() > 0) {
                             values = new ContentValues();
-                            values.put(DetailEntry._ID, movieDbID);
+                            values.put(DetailEntry.COLUMN_MOVIE_ID, movieDbID);
                             values.put(DetailEntry.COLUMN_DETAIL_DATA, jarr.toString());
                             values.put(DetailEntry.COLUMN_TYPE, data);
                             Uri uri = context.getContentResolver().insert(DetailEntry.CONTENT_URI, values);
@@ -67,10 +67,11 @@ public class DataRetriever {
                         }
                     }
                 } catch (MalformedURLException mfe) {
-                    Log.e(LOG_TAG, "Error retrieveDetail  "+mfe.getMessage(), mfe);
-                }
-                catch (JSONException jex) {
-                    Log.e(LOG_TAG, "Error retrieveDetail  "+jex.getMessage(), jex);
+                    Log.w(LOG_TAG, "Error: retrieveDetail  "+mfe.getMessage(), mfe);
+                } catch (JSONException jex) {
+                    Log.w(LOG_TAG, "Error: retrieveDetail  "+jex.getMessage(), jex);
+                } catch (RuntimeException rex) {
+                    Log.w(LOG_TAG, "Error: retrieveDetail "+rex.getMessage(), rex);
                 }
             }
         } else {

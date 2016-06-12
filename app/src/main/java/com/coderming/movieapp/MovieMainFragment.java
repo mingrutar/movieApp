@@ -63,8 +63,8 @@ public class MovieMainFragment extends Fragment {
             outRect.right = mSpace;
             outRect.bottom = mSpace;
             // Add top margin only for the first item to avoid double space between items
-            if (parent.getChildAdapterPosition(view) == 0)
-                outRect.top = mSpace;
+ //           if (parent.getChildAdapterPosition(view) == 0)
+            outRect.top = mSpace;
         }
     }
     @Override
@@ -72,7 +72,7 @@ public class MovieMainFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), calcNumColumes()));
-        RecyclerView.ItemDecoration itemDecoration = new SpacesItemDecoration(getResources().getDimension(R.dimen.dimen_4dp));
+        RecyclerView.ItemDecoration itemDecoration = new SpacesItemDecoration(getResources().getDimension(R.dimen.dimen_4dp) / 2);
         recyclerView.addItemDecoration(itemDecoration);
 
         Bundle args = getArguments();
