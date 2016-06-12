@@ -13,7 +13,9 @@ import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -26,6 +28,8 @@ public class Utilities {
     public static final String RELEASE_DATE = "MMM yyyy";
     public static final String sDeleteMovie = String.format("%s.%s!=%s.%s",MovieContract.MovieEntry.TABLE_NAME, BaseColumns._ID,
     MovieContract.MovieSelectionEntry.TABLE_NAME, MovieContract.MovieSelectionEntry.COLUMN_MOVIE_ID);
+
+    private static List<Long> FavoriteList = new ArrayList<>();
 
     public static String releaseDate2Str(long timeinMilli) {
         SimpleDateFormat dateFormater = new SimpleDateFormat(RELEASE_DATE, Locale.getDefault());
@@ -105,10 +109,19 @@ public class Utilities {
         return context.getContentResolver().delete( MovieContract.MovieEntry.CONTENT_URI, null, null);
     }
     static public Uri addFavoriteMovie(Context context, long movieDbId) {
+        addFavoriteMovie(movieDbId);
         ContentValues values = new ContentValues();
         values.put(MovieContract.MovieSelectionEntry.COLUMN_MOVIE_ID, movieDbId);
         values.put(MovieContract.MovieSelectionEntry.COLUMN_SELECTION_TYPE, MovieSelectionType.Favorite.getValue());
         return context.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_FAVORITE_URI, values);
+    }
+    static public void addFavoriteMovie(long movieDbId) {
+        if (!FavoriteList.contains(movieDbId)) {
+            FavoriteList.add(movieDbId);
+        }
+    }
+    static public boolean isFavorite(long movieDbId) {
+        return FavoriteList.contains(movieDbId);
     }
 
     /***

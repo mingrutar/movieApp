@@ -60,13 +60,14 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         mLoadId = Constants.nextId();
         mContext = fragment.getContext();
         mLoaderSubscriber = new ArrayList<>();
+        if (fragment instanceof OnLoadFinishListener) {
+            mLoaderSubscriber.add((OnLoadFinishListener)fragment);
+        }
+
         mItemClickedCallbacks = new ArrayList<>();
         Activity activity = fragment.getActivity();
-        if (activity instanceof OnLoadFinishListener) {
-            mLoaderSubscriber.add((OnLoadFinishListener)activity);
-        }
-        if (activity instanceof OnLoadFinishListener) {
-            mLoaderSubscriber.add((OnLoadFinishListener)activity);
+        if (activity instanceof ItemClickedCallback) {
+            mItemClickedCallbacks.add((ItemClickedCallback)activity);
         }
     }
 

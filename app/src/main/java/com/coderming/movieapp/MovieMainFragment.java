@@ -19,7 +19,7 @@ import com.coderming.movieapp.model.MovieSource;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieMainFragment extends Fragment {
+public class MovieMainFragment extends Fragment implements OnLoadFinishListener {
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
     private static final String SELECTED_ITEM = "selected_item";

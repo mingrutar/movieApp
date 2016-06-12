@@ -112,7 +112,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mReviewListView = (ListView) root.findViewById(R.id.review_listView);
         setupExtraListViews ();
 
-
         FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +134,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mNumVote.setText(Integer.toString(cursor.getInt(COL_VOTE_COUNT)));
         mOverview.setText(cursor.getString(COL_OVERVIEW));
         mPoster.setImageResource(0);
+        if (Utilities.isFavorite(mMovieId)) {
+            mMyFavorite.setVisibility(View.VISIBLE);
+        }
+
         String imagePath = cursor.getString(COL_POSTER_PATH);
         final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                 , String.valueOf(getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_342))
