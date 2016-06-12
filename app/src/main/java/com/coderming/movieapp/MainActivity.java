@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        callSync();
         mTwoPane = ( findViewById(R.id.detail_container) != null );
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
