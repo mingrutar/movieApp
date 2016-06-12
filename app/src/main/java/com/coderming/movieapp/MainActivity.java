@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coderming.movieapp.data.MovieContract.MovieEntry;
@@ -152,6 +153,11 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         Log.v(LOG_TAG, "****** onPageSelected called, pos="+Integer.toString(position));
         mViewPager.setCurrentItem(position);
         mViewPager.getAdapter().notifyDataSetChanged();
+        // TODO: remove
+        TextView textView = (TextView) findViewById(R.id.page_name);
+        String pname = "Page " + Integer.toString(position);
+        textView.setText(pname);
+
     }
 
     @Override

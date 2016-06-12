@@ -37,7 +37,7 @@ public class Utilities {
         //TODO: get from shared preference, setting
         return (type == MovieSelectionType.Popular) ? 3 : 2;
     }
-    public static void watchYouTube(Context context, String id) {
+    public static void playYouTube(Context context, String id) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
             context.startActivity(intent);

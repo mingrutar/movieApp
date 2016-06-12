@@ -35,15 +35,12 @@ import java.util.Map;
 public class DataRetriever {
     private static final String LOG_TAG = DataRetriever.class.getSimpleName();
     //  detail tags
+    public static final String[] SUPPORTED_DETAIL_TYPES = new String[] {"videos", "reviews",  "images",};
     private static  final Map<String, String> SetailTypeJsonTag =  new HashMap<>();
     static {
-        SetailTypeJsonTag.put("videos", "results");
-        SetailTypeJsonTag.put("reviews", "results");
-        SetailTypeJsonTag.put("images", "posters");
-    }
-    public static final String[] SUPPORTED_DETAIL_TYPES = new String[SetailTypeJsonTag.size()];
-    {
-        SetailTypeJsonTag.keySet().toArray(SUPPORTED_DETAIL_TYPES);
+        SetailTypeJsonTag.put(SUPPORTED_DETAIL_TYPES[0], "results");
+        SetailTypeJsonTag.put(SUPPORTED_DETAIL_TYPES[1], "results");
+        SetailTypeJsonTag.put(SUPPORTED_DETAIL_TYPES[2], "posters");
     }
 
     @Nullable

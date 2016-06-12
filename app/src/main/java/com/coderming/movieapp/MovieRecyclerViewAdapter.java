@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -35,7 +36,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
     private static final String[] MAIN_MOVIE_COLUMNS = {
             BaseColumns._ID,
-// show start?            MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
             MovieContract.MovieEntry.COLUMN_POSTER_PATH };
     private static final int COL_ID = 0;
     private static final int COL_POSTER_PATH = 1;
@@ -50,10 +50,13 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         void onLoadFinish(int page, int size);
     }
 
-    public MovieRecyclerViewAdapter(Context context) {
+    public MovieRecyclerViewAdapter(Fragment fragment) {
         mLoadId = Constants.nextId();
-        mContext = context;
+        mContext = fragment.getContext();
         mLoaderSubscriber = new ArrayList<>();
+        if (fragment instanceof OnLoadFinishListener) {
+            mLoaderSubscriber.add((OnLoadFinishListener)fragment);
+        }
     }
 
     @Override

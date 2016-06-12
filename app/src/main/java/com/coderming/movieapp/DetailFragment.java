@@ -196,7 +196,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     playIcon.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Utilities.watchYouTube(v.getContext(), video.getVideoKey());
+                            Utilities.playYouTube(v.getContext(), video.getVideoKey());
                         }
                     });
                 }

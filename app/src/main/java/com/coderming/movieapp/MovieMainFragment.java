@@ -12,7 +12,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.model.MovieSource;
@@ -52,6 +51,7 @@ public class MovieMainFragment extends Fragment {
         int numCol =  Math.round(smallScreenWidthDp/colWidth);
         return numCol;
     }
+
     public static class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         private final int mSpace;
         public SpacesItemDecoration(float space) {
@@ -78,11 +78,8 @@ public class MovieMainFragment extends Fragment {
         Bundle args = getArguments();
         if (!args.containsKey(MainActivity.PAGE_DATA_URI))
             args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
-        mAdapter = new MovieRecyclerViewAdapter(getContext());
+        mAdapter = new MovieRecyclerViewAdapter( this );
         recyclerView.setAdapter(mAdapter);
-        TextView textView = (TextView) rootView.findViewById(R.id.page_name);
-        String pname = args.getParcelable(MainActivity.PAGE_DATA_URI).toString();
-        textView.setText(pname);
         getLoaderManager().initLoader(mAdapter.mLoadId, args, mAdapter);
         return rootView;
     }
