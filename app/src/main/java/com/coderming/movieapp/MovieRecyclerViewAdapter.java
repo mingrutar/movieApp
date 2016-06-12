@@ -145,7 +145,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             size = mCursor.getCount();
             notifyDataSetChanged();
 
-            if (mUri.equals(MovieContract.MovieEntry.CONTENT_FAVORITE_URI) && data.moveToFirst()) {
+            if ( Utilities.isFavoritePage(mUri) && data.moveToFirst()) {
                  do {
                      Utilities.addFavoriteMovie(data.getLong(COL_ID) );
                  } while (data.moveToNext());

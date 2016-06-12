@@ -48,6 +48,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     RatingBar mRatingBar;
     ImageView mPoster;
     TextView mOverview;
+    FloatingActionButton mFab;
 
     ListView mTailerListView;
     ListView mReviewListView;
@@ -112,8 +113,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mReviewListView = (ListView) root.findViewById(R.id.review_listView);
         setupExtraListViews ();
 
-        FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFab = (FloatingActionButton) root.findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Utilities.addFavoriteMovie(getContext(), mMovieId);
@@ -136,6 +137,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mPoster.setImageResource(0);
         if (Utilities.isFavorite(mMovieId)) {
             mMyFavorite.setVisibility(View.VISIBLE);
+            mFab.setVisibility(View.INVISIBLE);
         }
 
         String imagePath = cursor.getString(COL_POSTER_PATH);

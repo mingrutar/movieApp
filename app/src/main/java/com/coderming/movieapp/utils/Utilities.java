@@ -120,6 +120,9 @@ public class Utilities {
             FavoriteList.add(movieDbId);
         }
     }
+    static public boolean isFavoritePage(Uri uri) {
+        return uri.equals(MovieContract.MovieEntry.CONTENT_FAVORITE_URI);
+    }
     static public boolean isFavorite(long movieDbId) {
         return FavoriteList.contains(movieDbId);
     }
