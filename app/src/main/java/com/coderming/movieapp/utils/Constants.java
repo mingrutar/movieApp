@@ -37,6 +37,7 @@ public class Constants {
     public static final String TAG_SITE = "site";
     public static final String TAG_KEY = "key";
     // images
+    public static final String TAG_ASPECT_RATIO = "aspect_ratio";
     public static final String TAG_FILE_PATH = "file_path";
     public static final String TAG_HEIGHT = "height";
     public static final String TAG_WIDTH = "width";

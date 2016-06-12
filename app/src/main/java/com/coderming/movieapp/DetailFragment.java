@@ -175,7 +175,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                         mReviewListView.setVisibility(View.INVISIBLE);
                     }
                 } else {
-                    List<Details.Image> images = Details.parseImages(cursor.getString(COL_DETAIL_DATA));
+//                    List<Details.Image> images = Details.parseImages(cursor.getString(COL_DETAIL_DATA));
                     //TODO: use later;
                 }
             }catch (JSONException jex) {

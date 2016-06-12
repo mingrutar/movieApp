@@ -38,8 +38,8 @@ public class Details {
         Image image;
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
-            String id = jobj.getString(Constants.TAG_ID);
-            image = new Image(id);
+            String aspectRatio = jobj.getString(Constants.TAG_ASPECT_RATIO);
+            image = new Image(aspectRatio);
             image.mPath =  jobj.getString(Constants.TAG_FILE_PATH);
             image.mHeight = jobj.getInt(Constants.TAG_HEIGHT);
             image.mWidth = jobj.getInt(Constants.TAG_WIDTH);
@@ -87,12 +87,12 @@ public class Details {
         static final String FILTER_TAG = "width";
         static final int FILTER_VAL = 1000;
 
-        String mId;
+        String mAspectRatio;
         String mPath;
         int mWidth;
         int mHeight;
 
-        Image(String id) { mId = id;}
+        Image(String aspectRatio) { mAspectRatio = aspectRatio;}
         public String getPath() {return mPath; }
     }
     public static class Review {
