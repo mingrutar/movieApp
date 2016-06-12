@@ -63,8 +63,6 @@ public class MovieMainFragment extends Fragment {
             outRect.left = mSpace;
             outRect.right = mSpace;
             outRect.bottom = mSpace;
-            // Add top margin only for the first item to avoid double space between items
- //           if (parent.getChildAdapterPosition(view) == 0)
             outRect.top = mSpace;
         }
     }
@@ -85,15 +83,4 @@ public class MovieMainFragment extends Fragment {
 
         return rootView;
     }
- // save Selected item?
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//    }
-//
-
-//    public void updateAdapter(MovieSource movieSource) {
-//        mMovieDb = movieSource;
-//        getLoaderManager().initLoader(mAdapter.LOADER_ID, args, mAdapter);
-//    }
 }

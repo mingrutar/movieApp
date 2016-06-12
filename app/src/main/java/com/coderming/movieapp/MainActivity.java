@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -29,43 +30,50 @@ import com.coderming.movieapp.data.MovieContract.MovieEntry;
 import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 import com.coderming.movieapp.sync.MovieSyncAdapter;
 import com.coderming.movieapp.utils.DataRetriever;
+import com.coderming.movieapp.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MovieRecyclerViewAdapter.OnLoadFinishListener  {
+public class MainActivity extends AppCompatActivity implements MovieRecyclerViewAdapter.ItemClickedCallback  {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String SELECTED_FRAG = "selectedFragment";
     public static final String PAGE_DATA_URI = "page_data_uri";
 
+    public static final String MOVIEMAIN_TAG = "MOVIEMAIN_TAG";
+    public static final String DETAILFRAGMENT_TAG = "DETAILFRAGMENT_TAG";
+
     private Spinner mSpinner;
     private int mSelectedFrag;
-    //MyFragmentPagerAdapter mAdapter;
-    ViewPager mViewPager;
-    MyFragmentPagerAdapter mAdapter;
-     private MovieSelectionType[] listTypes =  new MovieSelectionType[] {MovieSelectionType.Popular,
+    private ViewPager mViewPager;
+    private boolean mTwoPane;
+
+    private MovieSelectionType[] listTypes =  new MovieSelectionType[] {MovieSelectionType.Popular,
             MovieSelectionType.TopRated, MovieSelectionType.Favorite} ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mTwoPane = ( findViewById(R.id.detail_container) != null );
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
-        mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 
         for ( MovieSelectionType type :  listTypes) {
             MovieMainFragment mmf = new MovieMainFragment();
             Bundle args = new Bundle();
             args.putParcelable(PAGE_DATA_URI, MovieEntry.getTypeUri(type));
             mmf.setArguments(args);
-            mAdapter.addFragment(mmf, type.toString());
+            adapter.addFragment(mmf, type.toString());
         }
-        mViewPager.setAdapter(mAdapter);
+        mViewPager.setAdapter(adapter);
         if (savedInstanceState == null) {
-            Fragment frag = mAdapter.getItem(mSelectedFrag) ;
-            String name =   mAdapter.getPageTitle(mSelectedFrag);
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.main_container, frag, name)
-//                    .commit();
+            if (mTwoPane) {
+              getSupportFragmentManager().beginTransaction()
+                        .add(R.id.detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }  else {
+                getSupportActionBar().setElevation(0f);
+            }
         }
         registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         callSync();
@@ -89,19 +97,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     void callSync() {
         Log.v(LOG_TAG, "++++ calling syncImmediately ");
         MovieSyncAdapter.syncImmediately(this);
-        // TODO: do I need restartLoader ?
     }
-// do not know how to restore the value
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        Log.v(LOG_TAG, String.format("----onSaveInstanceState mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
-//        super.onSaveInstanceState(outState);
-//        outState.putInt(SELECTED_FRAG, mSelectedFrag);
-//    }
-
-    /**
-     * Dispatch onPause() to fragments.
-     */
     @Override
     protected void onPause() {
         Log.v(LOG_TAG, String.format("----onPause mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
@@ -174,16 +170,27 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         mViewPager.setCurrentItem(position);
         mViewPager.getAdapter().notifyDataSetChanged();
         // TODO: remove
+        String name =   ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getPageTitle(position);
         TextView textView = (TextView) findViewById(R.id.page_name);
-        String pname = "Page " + Integer.toString(position);
+        String pname = "Page " + name;
         textView.setText(pname);
 
     }
 
     @Override
-    public void onLoadFinish(int page, int size) {
-//        mAdapter.setEnabled(page, (size > 0) ) ;
-//        ((ArrayAdapter)mSpinner.getAdapter()).notifyDataSetChanged();
+    public void onItemClicked(Uri uri) {
+        if (mTwoPane) {
+            DetailFragment df = new DetailFragment();
+            Bundle args = new Bundle();
+            args.putParcelable(Constants.DETAIL_URI, uri);
+            df.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, df, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent detailIntent = new Intent(this, DetailActivity.class).setData(uri);
+            startActivity(detailIntent);
+        }
     }
 
     /**

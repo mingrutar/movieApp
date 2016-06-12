@@ -88,13 +88,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                              Bundle savedInstanceState) {
         Bundle args = getArguments();
         getLoaderManager().initLoader(mMovieLoaderId, args, this);
-        Uri uri = args.getParcelable(Constants.DETAIL_URI);
-        mMovieId = Long.parseLong(uri.getLastPathSegment());
-
-        Uri uriDetail = MovieContract.DetailEntry.buildUri(mMovieId);
-        Bundle dargs = getArguments();
-        dargs.putParcelable(Constants.MORE_DETAIL_URI, uriDetail);
-        getLoaderManager().initLoader(mDetailLoaderId, dargs, this);
+        if (args != null) {
+            Uri uri = args.getParcelable(Constants.DETAIL_URI);
+            mMovieId = Long.parseLong(uri.getLastPathSegment());
+            Uri uriDetail = MovieContract.DetailEntry.buildUri(mMovieId);
+            Bundle dargs = getArguments();
+            dargs.putParcelable(Constants.MORE_DETAIL_URI, uriDetail);
+            getLoaderManager().initLoader(mDetailLoaderId, dargs, this);
+        }
 
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_detail, container, false);

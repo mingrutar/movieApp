@@ -1,7 +1,7 @@
 package com.coderming.movieapp;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -46,6 +46,12 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     private Context mContext;
 
     private List<OnLoadFinishListener> mLoaderSubscriber;
+    private List<ItemClickedCallback> mItemClickedCallbacks;
+
+    public interface ItemClickedCallback {
+        void onItemClicked(Uri uri);
+    }
+
     public interface OnLoadFinishListener {
         void onLoadFinish(int page, int size);
     }
@@ -54,8 +60,13 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         mLoadId = Constants.nextId();
         mContext = fragment.getContext();
         mLoaderSubscriber = new ArrayList<>();
-        if (fragment instanceof OnLoadFinishListener) {
-            mLoaderSubscriber.add((OnLoadFinishListener)fragment);
+        mItemClickedCallbacks = new ArrayList<>();
+        Activity activity = fragment.getActivity();
+        if (activity instanceof OnLoadFinishListener) {
+            mLoaderSubscriber.add((OnLoadFinishListener)activity);
+        }
+        if (activity instanceof OnLoadFinishListener) {
+            mLoaderSubscriber.add((OnLoadFinishListener)activity);
         }
     }
 
@@ -86,17 +97,14 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                 public void onPrepareLoad(Drawable placeHolderDrawable) {
                 }
             });
-            Picasso.with(mContext).load(url).into(holder.mImageView);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, DetailActivity.class);
-                    Long movieDbId = (Long) v.getTag();
-                    Uri uri = MovieContract.MovieEntry.buildUri( movieDbId.longValue() );
-                    intent.setData(uri);
-                    context.startActivity(intent);
+                    Uri uri = MovieContract.MovieEntry.buildUri( (long) v.getTag() );
+                    for (ItemClickedCallback callback : mItemClickedCallbacks ) {
+                        callback.onItemClicked(uri);
+                    }
                 }
             });
         }
