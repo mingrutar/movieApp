@@ -14,19 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.coderming.movieapp.data.MovieContract;
-import com.coderming.movieapp.model.MovieSource;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieMainFragment extends Fragment implements OnLoadFinishListener {
+public class MovieMainFragment extends Fragment  {
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
-    private static final boolean DEBUG = false;
-    private static final String SELECTED_ITEM = "selected_item";
 
-    static final String UrlBase = "https://api.themoviedb.org/3/movie/";
     private MovieRecyclerViewAdapter mAdapter;
-    private MovieSource mMovieDb;
 
     public MovieMainFragment() {  }
 

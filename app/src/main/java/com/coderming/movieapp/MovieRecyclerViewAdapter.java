@@ -21,6 +21,7 @@ import android.widget.ImageView;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
+import com.coderming.movieapp.utils.Utilities;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -42,27 +43,28 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
     public int mLoadId;         // use page number
 
+    private Uri mUri;
     private Cursor mCursor;
     private Context mContext;
 
-    private List<OnLoadFinishListener> mLoaderSubscriber;
+//    private List<OnLoadFinishListener> mLoaderSubscriber;    TODO: not used for now
     private List<ItemClickedCallback> mItemClickedCallbacks;
 
     public interface ItemClickedCallback {
         void onItemClicked(Uri uri);
     }
 
-    public interface OnLoadFinishListener {
-        void onLoadFinish(int page, int size);
-    }
+//    public interface OnLoadFinishListener {
+//        void onLoadFinish(Uri pageUri, int size);
+//    }
 
     public MovieRecyclerViewAdapter(Fragment fragment) {
         mLoadId = Constants.nextId();
         mContext = fragment.getContext();
-        mLoaderSubscriber = new ArrayList<>();
-        if (fragment instanceof OnLoadFinishListener) {
-            mLoaderSubscriber.add((OnLoadFinishListener)fragment);
-        }
+//        mLoaderSubscriber = new ArrayList<>();
+//        if (fragment instanceof OnLoadFinishListener) {
+//            mLoaderSubscriber.add((OnLoadFinishListener)fragment);
+//        }
 
         mItemClickedCallbacks = new ArrayList<>();
         Activity activity = fragment.getActivity();
@@ -126,8 +128,8 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Loader<Cursor> ret = null;
         if (mLoadId == id) {
-            Uri uri = args.getParcelable(MainActivity.PAGE_DATA_URI);
-            ret = new CursorLoader(mContext, uri, MAIN_MOVIE_COLUMNS, null, null, MovieContract.MovieEntry._ID + " asc");
+            mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
+            ret = new CursorLoader(mContext, mUri, MAIN_MOVIE_COLUMNS, null, null, MovieContract.MovieEntry._ID + " asc");
         } else {
             Log.w(LOG_TAG, "LOADER_MOVIE_ID need to contain URI in bundle");
         }
@@ -142,9 +144,13 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             mCursor = data;
             size = mCursor.getCount();
             notifyDataSetChanged();
-        }
-        for (OnLoadFinishListener loaderSubscriber : mLoaderSubscriber) {
-            loaderSubscriber.onLoadFinish(mLoadId, size);
+
+            if (mUri.equals(MovieContract.MovieEntry.CONTENT_FAVORITE_URI) && data.moveToFirst()) {
+                 do {
+                     Utilities.addFavoriteMovie(data.getLong(COL_ID) );
+                 } while (data.moveToNext());
+                 data.moveToFirst();
+            }
         }
     }
 

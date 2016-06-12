@@ -115,7 +115,7 @@ public class Utilities {
         values.put(MovieContract.MovieSelectionEntry.COLUMN_SELECTION_TYPE, MovieSelectionType.Favorite.getValue());
         return context.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_FAVORITE_URI, values);
     }
-    static public void addFavoriteMovie(long movieDbId) {
+    static public void addFavoriteMovie(Long movieDbId) {
         if (!FavoriteList.contains(movieDbId)) {
             FavoriteList.add(movieDbId);
         }
