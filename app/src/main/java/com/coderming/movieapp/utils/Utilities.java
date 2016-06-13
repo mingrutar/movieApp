@@ -25,7 +25,7 @@ import java.util.Random;
 public class Utilities {
     private static final String LOG_TAG = Utilities.class.getSimpleName();
 
-    public static final String RELEASE_DATE = "MMM yyyy";
+    public static final String RELEASE_DATE = "YYYY";       // "MMM yyyy";
     public static final String sDeleteMovie = String.format("%s.%s!=%s.%s",MovieContract.MovieEntry.TABLE_NAME, BaseColumns._ID,
     MovieContract.MovieSelectionEntry.TABLE_NAME, MovieContract.MovieSelectionEntry.COLUMN_MOVIE_ID);
 

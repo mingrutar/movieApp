@@ -8,6 +8,7 @@
               android:baselineAligned="false"
               android:divider="?android:attr/dividerHorizontal"
               tools:context="com.coderming.movieapp.MainActivity"
+              android:paddingLeft="@dimen/dimen_16dp"
               app:layout_behavior="@string/appbar_scrolling_view_behavior" >
     <FrameLayout
         android:layout_width="0dp"

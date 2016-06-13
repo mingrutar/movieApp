@@ -17,7 +17,6 @@ import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.coderming.movieapp.data.MovieContract;
@@ -46,7 +45,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     TextView mReleaseDate;
     TextView mNumVote;
     TextView mVoteAverage;
-    RatingBar mRatingBar;
     ImageView mPoster;
     TextView mOverview;
     FloatingActionButton mFab;
@@ -105,7 +103,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mReleaseDate = (TextView) root.findViewById(R.id.release_textView);
         mNumVote = (TextView) root.findViewById(R.id.nVoters_textView) ;
         mVoteAverage = (TextView) root.findViewById(R.id.nStar_textView);
-        mRatingBar = (RatingBar) root.findViewById(R.id.ratingBar);
         mMyFavorite = (ImageView) root.findViewById(R.id.favority_imageView);
         mPoster = (ImageView) root.findViewById(R.id.poster_imageView);
         mOverview = (TextView) root.findViewById(R.id.overview_textView);
@@ -131,9 +128,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mReleaseDate.setText(Utilities.releaseDate2Str(cursor.getLong(COL_RELEASE_DATE)));
         double vote_average = cursor.getDouble(COL_VOTE_AVERAGE);
         float rating = (float) (vote_average * 5.0f) /10.0f;
-        mRatingBar.setRating(rating);
         mVoteAverage.setText(String.format("%.01f", rating));
-        mNumVote.setText(Integer.toString(cursor.getInt(COL_VOTE_COUNT)));
+        mNumVote.setText(String.format("%d votes", cursor.getInt(COL_VOTE_COUNT)));
         mOverview.setText(cursor.getString(COL_OVERVIEW));
         mPoster.setImageResource(0);
         ViewTreeObserver vto = mPoster.getViewTreeObserver();

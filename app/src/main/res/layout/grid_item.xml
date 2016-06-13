@@ -11,6 +11,5 @@
         android:gravity="center"
         android:adjustViewBounds="true"
         android:background="@android:color/holo_orange_light"
-        android:src="@drawable/poster"
         />
 </FrameLayout>
