@@ -41,11 +41,12 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     private static final int COL_ID = 0;
     private static final int COL_POSTER_PATH = 1;
 
-    public int mLoadId;         // use page number
+    public int mLoadId = -1;         // use page number
 
     private Uri mUri;
     private Cursor mCursor;
     private Context mContext;
+    private Fragment mFragment;
 
 //    private List<OnLoadFinishListener> mLoaderSubscriber;    TODO: not used for now
     private List<ItemClickedCallback> mItemClickedCallbacks;
@@ -59,7 +60,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 //    }
 
     public MovieRecyclerViewAdapter(Fragment fragment) {
-        mLoadId = Constants.nextId();
+        mFragment = fragment;
         mContext = fragment.getContext();
 //        mLoaderSubscriber = new ArrayList<>();
 //        if (fragment instanceof OnLoadFinishListener) {
@@ -119,6 +120,9 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         return (mCursor == null) ? 0 : mCursor.getCount();
     }
 
+    public void setLoaderId(int loaderId) {
+        mLoadId = loaderId;
+    }
     /**
      * Instantiate and return a new Loader for the given ID.
      *
@@ -129,11 +133,12 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Loader<Cursor> ret = null;
-        if (mLoadId == id) {
+
+        if ((mLoadId == id) && args.containsKey(MainActivity.PAGE_DATA_URI)) {
             mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
             ret = new CursorLoader(mContext, mUri, MAIN_MOVIE_COLUMNS, null, null, MovieContract.MovieEntry._ID + " asc");
         } else {
-            Log.w(LOG_TAG, "LOADER_MOVIE_ID need to contain URI in bundle");
+            Log.w(LOG_TAG, "onCreateLoader need to contain URI in bundle, mLoadId="+ Integer.toString(mLoadId));
         }
         return ret;
     }
@@ -149,16 +154,28 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             mCursor = data;
             size = mCursor.getCount();
 
-            if ( Utilities.isFavoritePage(mUri) && data.moveToFirst()) {
-                 do {
-                     Utilities.addFavoriteMovie(data.getLong(COL_ID) );
-                 } while (data.moveToNext());
-                 data.moveToFirst();
-            }
-            if (size > 0) {
-                notifyDataSetChanged();
+            if ( Utilities.isFavoritePage(mUri)) {
+                if (data.moveToFirst()) {
+                    do {
+                        Utilities.addFavoriteMovie(data.getLong(COL_ID));
+                    } while (data.moveToNext());
+                    data.moveToFirst();
+                    notifyDataSetChanged();
+                }
             } else {
-
+                if (size > 0) {
+                    notifyDataSetChanged();
+                } else {
+                    try {
+                        Thread.sleep(100);              // sleep 100 ms
+                    } catch (InterruptedException iex) {
+                        Log.w(LOG_TAG, "+++++Thread.sleep: cannot sleep!!!");
+                    }
+//???                        loader.forceLoad();
+                    Bundle args = new Bundle();
+                    args.putParcelable(MainActivity.PAGE_DATA_URI, mUri);
+                    mFragment.getLoaderManager().restartLoader(loader.getId(), args, this);
+                }
             }
         }
     }

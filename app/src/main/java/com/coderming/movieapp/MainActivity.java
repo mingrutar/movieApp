@@ -22,13 +22,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.coderming.movieapp.data.MovieContract.MovieEntry;
+import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 import com.coderming.movieapp.sync.MovieSyncAdapter;
 import com.coderming.movieapp.utils.Constants;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MainActivity extends AppCompatActivity implements MovieRecyclerViewAdapter.ItemClickedCallback  {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     private ViewPager mViewPager;
     private boolean mTwoPane;
 
-    private MovieSelectionType[] listTypes =  new MovieSelectionType[] {MovieSelectionType.Popular,
+    static final  MovieSelectionType[] listTypes =  new MovieSelectionType[] {MovieSelectionType.Popular,
             MovieSelectionType.TopRated, MovieSelectionType.Favorite} ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +53,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 
-        for ( MovieSelectionType type :  listTypes) {
-            MovieMainFragment mmf = new MovieMainFragment();
-            Bundle args = new Bundle();
-            args.putParcelable(PAGE_DATA_URI, MovieEntry.getTypeUri(type));
-            mmf.setArguments(args);
-            adapter.addFragment(mmf, type.toString());
-        }
         mViewPager.setAdapter(adapter);
         if (savedInstanceState == null) {
             if (mTwoPane) {
@@ -170,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         TextView textView = (TextView) findViewById(R.id.page_name);
         String pname = "Page " + name;
         textView.setText(pname);
-
+        mViewPager.requestLayout();
     }
 
     @Override
@@ -194,39 +187,42 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
      */
     static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
         private static final String LOG_TAG = MyFragmentPagerAdapter.class.getSimpleName();
-        private List<Fragment> mFragments;
-        private List<String> mFragmentTitles;
+        private Map<MovieSelectionType, Fragment> mFramentsMap;
 
         public MyFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
-            mFragments = new ArrayList<>();
-            mFragmentTitles = new ArrayList<>();
-        }
-        void addFragment(Fragment fragment, String title) {
-            mFragments.add(fragment);
-            mFragmentTitles.add(title);
+            mFramentsMap = new ConcurrentHashMap<>();
         }
         @Override
         public String getPageTitle(int pos) {
-            return (pos < mFragmentTitles.size()) ? mFragmentTitles.get(pos) : null;
+            if (pos < listTypes.length) {
+                return listTypes[pos].toString();
+            } else {
+                Log.w(LOG_TAG, "----- getPageTitle, wrong pos =" + Integer.toString(pos));
+                return null;
+            }
         }
         @Override
         public int getCount() {
 //            Log.v(LOG_TAG, "----- getCount, size=" + Integer.toString(mFragments.size()));
-            return mFragments.size();
+            return listTypes.length;
         }
-        /**
-         * Return the Fragment associated with a specified position.
-         *
-         * @param position
-         */
-        @Override
         public Fragment getItem(int position) {
-            if (position < mFragments.size()) {
-//                Log.v(LOG_TAG, "----- getItem called, pos=" + Integer.toString(position));
-                return mFragments.get(position);
+            if (position < listTypes.length) {
+                MovieSelectionType key = listTypes[position];
+                boolean newFrag = !mFramentsMap.containsKey(key);
+                if (newFrag) {
+                    MovieMainFragment mmf = new MovieMainFragment();
+                    Bundle args = new Bundle();
+                    args.putParcelable(PAGE_DATA_URI, MovieContract.MovieEntry.getTypeUri(key));
+                    mmf.setArguments(args);
+                    mFramentsMap.put(key, mmf);
+                }
+                Log.v(LOG_TAG, String.format("!!!!!! getItem called, key=%s pos=%d, newFrag=%s",
+                        key, position, newFrag));
+                return mFramentsMap.get(key);
             } else {
-                Log.v(LOG_TAG, "invalid position " + Integer.toString(position));
+                Log.w(LOG_TAG, "!!!!ERROR invalid position=" + Integer.toString(position));
                 return null;
             }
         }

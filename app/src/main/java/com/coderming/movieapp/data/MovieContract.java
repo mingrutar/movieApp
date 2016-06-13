@@ -55,11 +55,11 @@ public class MovieContract  {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
         public static Uri getTypeUri(MovieSelectionType type) {
-            if (type.equals(MovieSelectionType.Favorite))
+            if (MovieSelectionType.Favorite.equals(type))
                 return CONTENT_FAVORITE_URI;
-            else if (type.equals(MovieSelectionType.Popular))
+            else if (MovieSelectionType.Popular.equals(type))
                 return  CONTENT_POPULAR_URI;
-            else if (type.equals(MovieSelectionType.TopRated))
+            else if (MovieSelectionType.TopRated.equals(type))
                 return CONTENT_TOP_RATES_URI;
             else
                 return null;

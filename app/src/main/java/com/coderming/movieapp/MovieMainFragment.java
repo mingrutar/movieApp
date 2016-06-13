@@ -1,19 +1,24 @@
 package com.coderming.movieapp;
 
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.coderming.movieapp.data.MovieContract;
+import com.coderming.movieapp.utils.Constants;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +30,8 @@ public class MovieMainFragment extends Fragment   {
     private RecyclerView mRecyclerView;
     private float mDesityRatio;
     private GridLayoutManager mGridLayoutManager;
+    private int mLoaderId = -1;
+    private Uri mUri;
     public MovieMainFragment() {  }
 
     @Override
@@ -99,11 +106,41 @@ public class MovieMainFragment extends Fragment   {
 //                return true;
 //            }
 //        });
+        Bundle args = getArguments();
+        mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
 
         mAdapter = new MovieRecyclerViewAdapter( this );
         mRecyclerView.setAdapter(mAdapter);
 
         return rootView;
+    }
+    String getLoaderKey() {
+        if (mUri != null) {
+            return "LOADER_ID_" + mUri;
+        }  else {
+            Log.w(LOG_TAG, "getLoaderKey null mUri") ;
+            return null;
+        }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(getLoaderKey(), mLoaderId);
+        editor.commit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (mLoaderId == -1) {
+            this.mLoaderId = prefs.getInt(getLoaderKey(), -1);
+            if (mLoaderId == -1) {
+                mLoaderId = Constants.nextId();
+            }
+        }
     }
 
     @Override
@@ -112,6 +149,10 @@ public class MovieMainFragment extends Fragment   {
         Bundle args = getArguments();
         if (!args.containsKey(MainActivity.PAGE_DATA_URI))
             args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
-        getLoaderManager().initLoader(mAdapter.mLoadId, args, mAdapter);
+        if (mLoaderId == -1) {
+            mLoaderId = Constants.nextId();
+        }
+        mAdapter.setLoaderId(mLoaderId);
+        getLoaderManager().initLoader(mLoaderId, args, mAdapter);
     }
 }
