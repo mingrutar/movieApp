@@ -1,12 +1,8 @@
 package com.coderming.movieapp;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -29,7 +25,6 @@ import android.widget.Toast;
 import com.coderming.movieapp.data.MovieContract.MovieEntry;
 import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 import com.coderming.movieapp.sync.MovieSyncAdapter;
-import com.coderming.movieapp.utils.DataRetriever;
 import com.coderming.movieapp.utils.Constants;
 
 import java.util.ArrayList;
@@ -75,24 +70,24 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
                 getSupportActionBar().setElevation(0f);
             }
         }
-        registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-//TODO:        callSync();
+//        registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        callSync();
     }
 
-    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.v(LOG_TAG, "++ onReceive received intent");
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork =cm.getActiveNetworkInfo();
-            if (activeNetwork != null) {
-                boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;  // not in use
-                if (activeNetwork.isConnectedOrConnecting() && !DataRetriever.syncSucceed ) {
-                    callSync();
-                }
-            }
-        }
-    };
+//    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Log.v(LOG_TAG, "++ onReceive received intent");
+//            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//            NetworkInfo activeNetwork =cm.getActiveNetworkInfo();
+//            if (activeNetwork != null) {
+//                boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;  // not in use
+//                if (activeNetwork.isConnectedOrConnecting() && !DataRetriever.syncSucceed ) {
+////                    callSync();
+//                }
+//            }
+//        }
+//    };
 
     void callSync() {
         Log.v(LOG_TAG, "++++ calling syncImmediately ");
@@ -114,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         this.mSelectedFrag = prefs.getInt(SELECTED_FRAG, 0);
+//        onPageSelected(mSelectedFrag);
         if (mSpinner != null) {
             mSpinner.setSelection(mSelectedFrag);
         }
@@ -121,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mBroadcastReceiver);
+//        unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override

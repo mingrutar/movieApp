@@ -178,17 +178,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 if ("videos".equals(type)) {
                     List<Details.Video> videos =  Details.parseVideos(cursor.getString(COL_DETAIL_DATA));
                     if (videos.size() > 0) {
+                        mTailerListView.setVisibility(View.VISIBLE);
                         ((ArrayAdapter<Details.Video>) mTailerListView.getAdapter()).addAll(videos);
                         Log.v(LOG_TAG, "+++++fillExtraData #video="+Integer.toString(videos.size()));
-                        mTailerListView.setVisibility(View.VISIBLE);
                     } else {
                         mTailerListView.setVisibility(View.INVISIBLE);
                     }
                 } else if ("reviews".equals(type)) {
                     List<Details.Review> reviews =  Details.parseReviews(cursor.getString(COL_DETAIL_DATA));
                     if (reviews.size() > 0) {
-                        ((ArrayAdapter<Details.Review>)mReviewListView.getAdapter()).addAll(reviews) ;
                         mReviewListView.setVisibility(View.VISIBLE);
+                        ((ArrayAdapter<Details.Review>)mReviewListView.getAdapter()).addAll(reviews) ;
                     } else {
                         mReviewListView.setVisibility(View.INVISIBLE);
                     }
@@ -210,8 +210,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 if (rowView == null) {
                     LayoutInflater inflater = getActivity().getLayoutInflater();
                     rowView = inflater.inflate(R.layout.trailer_list_item, parent, false);
-                    ImageView playIcon = (ImageView)rowView.findViewById(R.id.trailer_video_control);
-                    playIcon.setOnClickListener(new View.OnClickListener() {
+                    rowView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Utilities.playYouTube(v.getContext(), video.getVideoKey());

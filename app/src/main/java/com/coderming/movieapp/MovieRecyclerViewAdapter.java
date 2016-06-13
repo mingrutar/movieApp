@@ -86,7 +86,9 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                     , String.valueOf(mContext.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)),
                     mCursor.getString(COL_POSTER_PATH));
-            Log.v(LOG_TAG, String.format("+++RA+++ onBindViewHolder, position=%d, url=%s", position,url ));
+            if (position == 0) {
+                Log.v(LOG_TAG, String.format("+++RA+++ onBindViewHolder, position=%d, url=%s", position, url));
+            }
             Picasso.with(mContext).load(url).into(new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -141,15 +143,22 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         Log.v(LOG_TAG, "+++RA+++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
         int size = 0;
         if (data != null) {
+            if (mCursor != null) {
+                mCursor.close();
+            }
             mCursor = data;
             size = mCursor.getCount();
-            notifyDataSetChanged();
 
             if ( Utilities.isFavoritePage(mUri) && data.moveToFirst()) {
                  do {
                      Utilities.addFavoriteMovie(data.getLong(COL_ID) );
                  } while (data.moveToNext());
                  data.moveToFirst();
+            }
+            if (size > 0) {
+                notifyDataSetChanged();
+            } else {
+
             }
         }
     }
@@ -163,7 +172,10 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
      */
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mCursor = null;
+        if (mCursor != null) {
+            mCursor.close();
+            mCursor = null;
+        }
     }
 
     /**
