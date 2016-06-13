@@ -19,7 +19,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal"
                 >
@@ -79,11 +79,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/poster_container"
             android:orientation="horizontal"
             >
             <ImageView
-                android:layout_width="@dimen/poster_image_width_185"
-                android:layout_height="@dimen/poster_image_height_185"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:adjustViewBounds="false"
                 android:id="@+id/poster_imageView"
                 android:src="@drawable/poster"

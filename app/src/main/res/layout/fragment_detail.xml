@@ -73,10 +73,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:id="@+id/poster_container"
             android:layout_marginBottom="@dimen/dimen_10dp">
             <ImageView
-                android:layout_width="@dimen/poster_image_width_185"
-                android:layout_height="@dimen/poster_image_height_185"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:adjustViewBounds="false"
                 android:id="@+id/poster_imageView"
                 android:src="@drawable/poster"

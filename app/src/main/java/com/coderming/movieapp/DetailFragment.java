@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -49,7 +50,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     ImageView mPoster;
     TextView mOverview;
     FloatingActionButton mFab;
-
+    View mImage_Container;
     ListView mTailerListView;
     ListView mReviewListView;
 //    ArrayAdapter<Details.Video> mTrailerAdapter;
@@ -108,7 +109,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mMyFavorite = (ImageView) root.findViewById(R.id.favority_imageView);
         mPoster = (ImageView) root.findViewById(R.id.poster_imageView);
         mOverview = (TextView) root.findViewById(R.id.overview_textView);
-
+        mImage_Container = root.findViewById(R.id.poster_container);
         mTailerListView = (ListView) root.findViewById(R.id.trailer_listView);
         mReviewListView = (ListView) root.findViewById(R.id.review_listView);
         setupExtraListViews ();
@@ -135,6 +136,19 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mNumVote.setText(Integer.toString(cursor.getInt(COL_VOTE_COUNT)));
         mOverview.setText(cursor.getString(COL_OVERVIEW));
         mPoster.setImageResource(0);
+        ViewTreeObserver vto = mPoster.getViewTreeObserver();
+        vto.addOnPreDrawListener( new ViewTreeObserver.OnPreDrawListener() {
+            public boolean onPreDraw() {
+                mPoster.getViewTreeObserver().removeOnPreDrawListener(this);
+                int w = mPoster.getWidth();
+                int pw = mImage_Container.getWidth();
+                if (w > (pw/2))  {
+                    mPoster.getLayoutParams().width = pw/2;
+                }
+                return true;
+            }
+        });
+
         if (Utilities.isFavorite(mMovieId)) {
             mMyFavorite.setVisibility(View.VISIBLE);
             mFab.setVisibility(View.INVISIBLE);
@@ -142,7 +156,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         String imagePath = cursor.getString(COL_POSTER_PATH);
         final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
-                , String.valueOf(getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_342))
+                , String.valueOf(getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185))
                 , imagePath);
         Log.v(LOG_TAG, String.format("++++ fillPage, title=%s, url=%s", mTitle.getText(), url ));
 
