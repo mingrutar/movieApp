@@ -25,7 +25,7 @@ import java.util.Random;
 public class Utilities {
     private static final String LOG_TAG = Utilities.class.getSimpleName();
 
-    public static final String RELEASE_DATE = "YYYY";       // "MMM yyyy";
+    public static final String RELEASE_DATE = "yyyy";       // "MMM yyyy";
     public static final String sDeleteMovie = String.format("%s.%s!=%s.%s",MovieContract.MovieEntry.TABLE_NAME, BaseColumns._ID,
     MovieContract.MovieSelectionEntry.TABLE_NAME, MovieContract.MovieSelectionEntry.COLUMN_MOVIE_ID);
 
@@ -34,7 +34,7 @@ public class Utilities {
     public static String releaseDate2Str(long timeinMilli) {
         SimpleDateFormat dateFormater = new SimpleDateFormat(RELEASE_DATE, Locale.getDefault());
         Date date = new Date(timeinMilli);
-        return String.format("(%s)", dateFormater.format(date));
+        return dateFormater.format(date);
     }
     public static int getRecordLimmit(MovieSelectionType type) {
         //TODO: get from shared preference, setting
