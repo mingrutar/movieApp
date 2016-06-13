@@ -24,6 +24,7 @@ public class MovieMainFragment extends Fragment  {
 
     private MovieRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
+    private float mDesityRatio;
 
     public MovieMainFragment() {  }
 
@@ -34,31 +35,33 @@ public class MovieMainFragment extends Fragment  {
         //not set in AndroidManifest.xml, register here,
     }
 
-    private boolean isTablet(DisplayMetrics displayMetrics) {
+    private void init() {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         double screenWidthInch = displayMetrics.widthPixels / displayMetrics.xdpi;
         double screenHeightInch = displayMetrics.heightPixels / displayMetrics.ydpi;
         double diagonalInches = Math.sqrt(screenWidthInch * screenWidthInch + screenHeightInch * screenHeightInch);
-        return diagonalInches >= 6.5;
+        if (diagonalInches >= 6.5)
+            mDesityRatio = displayMetrics.xdpi / DisplayMetrics.DENSITY_XXHIGH ;
+        else
+            mDesityRatio = displayMetrics.xdpi / DisplayMetrics.DENSITY_XHIGH ;
     }
     private void calcGridColumnNumber( int parenWidthPx ) {
         Resources res = this.getResources();
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = Math.round(res.getDimension(R.dimen.moviedb_image_width_185));
-        float desityRatio = displayMetrics.xdpi /
-                (isTablet(displayMetrics) ? DisplayMetrics.DENSITY_XXHIGH : DisplayMetrics.DENSITY_XHIGH);
-        if (desityRatio > 1f) {           // if 4K kind
-            width = Math.round( (float)width * desityRatio) ;
+        float width = res.getDimension(R.dimen.moviedb_image_width_185);
+        if (mDesityRatio > 1f) {           // if 4K kind
+            width = width * mDesityRatio ;
         }
         int space = Math.round(res.getDimensionPixelSize(R.dimen.dimen_1dp) / 2);
-        int maxCol = width + (4 * space);
-        int numCol = parenWidthPx / maxCol;
-        int extra =  parenWidthPx % maxCol;
-        if ((extra >= width/2) && (desityRatio<=1))
+        int maxWidth = Math.round(width) + (4 * space);
+        int numCol = parenWidthPx / maxWidth;
+        int extra =  parenWidthPx % maxWidth;
+        if ((extra >= width/2) && (mDesityRatio<=1))
             numCol++;
         else if ((extra / numCol ) > 4)
             space *= 2;
-        Log.v("calcColnumber", String.format("#col=%d, space=%d, parentWidth=%d", numCol, space, parenWidthPx));
+        Log.v(" +=+=+=+= calcColnumber", String.format("#col=%d, space=%d, parentWidth=%d", numCol, space, parenWidthPx));
         setLayoutMgmgt(numCol, space);
     }
 
@@ -83,13 +86,14 @@ public class MovieMainFragment extends Fragment  {
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
+        init();
+        final View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
-        ViewTreeObserver viewTreeObserver = mRecyclerView.getViewTreeObserver();
+        ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
         viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
                 calcGridColumnNumber(mRecyclerView.getWidth());
                 return true;
             }

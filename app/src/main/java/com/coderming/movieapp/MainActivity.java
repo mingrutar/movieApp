@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             }
         }
         registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        callSync();
+//TODO:        callSync();
     }
 
     BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
