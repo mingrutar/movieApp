@@ -117,6 +117,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             public void onClick(View v) {
                 Utilities.addFavoriteMovie(getContext(), mMovieId);
                 mMyFavorite.setVisibility(View.VISIBLE);
+                v.setVisibility(View.INVISIBLE);
             }
         });
 

@@ -76,7 +76,6 @@
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="false"
                 android:id="@+id/poster_imageView"
-                android:src="@drawable/poster"
                 android:scaleType="fitStart"/>
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -118,7 +117,7 @@
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/review_card_view"
             android:background="@color/material_grey_100"
             card_view:cardCornerRadius="8dp" >

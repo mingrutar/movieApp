@@ -26,7 +26,7 @@
                     android:layout_marginRight="@dimen/dimen_4dp"
                     android:id="@+id/favority_imageView"
                     android:layout_gravity="center_vertical"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     android:src="@drawable/favorite_border_24dp"/>
             <TextView
                 style="@style/header_title"
@@ -83,7 +83,6 @@
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="false"
                 android:id="@+id/poster_imageView"
-                android:src="@drawable/poster"
                 android:scaleType="fitStart"/>
             <LinearLayout
                 android:layout_width="0dp"
