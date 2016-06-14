@@ -43,6 +43,7 @@ public class MovieMainFragment extends Fragment
     private float mDesityRatio;
     private GridLayoutManager mGridLayoutManager;
     private int mLoaderId = -1;
+    private long mFirstMovieDbId = -1;
     private Uri mUri;
     private boolean mIsRefreshed;
 
@@ -163,6 +164,9 @@ public class MovieMainFragment extends Fragment
         if (!getUserVisibleHint()) {
             return;
         }
+        if (mFirstMovieDbId != -1)
+            mAdapter.notifyItemSelected(mFirstMovieDbId);
+
         mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -211,6 +215,7 @@ public class MovieMainFragment extends Fragment
                     data.moveToFirst();
                 }
                 mAdapter.swapCursor(data);
+                mFirstMovieDbId = data.getLong(COL_ID);
             } else if (!isFav) {
                 try {
                     Thread.sleep(100);              // sleep 100 ms
