@@ -32,6 +32,7 @@ public class MovieMainFragment extends Fragment   {
     private GridLayoutManager mGridLayoutManager;
     private int mLoaderId = -1;
     private Uri mUri;
+    private boolean mIsVisibleToUser;
     public MovieMainFragment() {  }
 
     @Override
@@ -132,14 +133,28 @@ public class MovieMainFragment extends Fragment   {
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isResumed())
+        {
+            //Only manually call onResume if fragment is already visible
+            //Otherwise allow natural fragment lifecycle to call onResume
+            onResume();
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         if (mLoaderId == -1) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             this.mLoaderId = prefs.getInt(getLoaderKey(), -1);
             if (mLoaderId == -1) {
                 mLoaderId = Constants.nextId();
             }
+        }
+        if (!getUserVisibleHint()) {
+            return;
         }
     }
 
@@ -155,4 +170,18 @@ public class MovieMainFragment extends Fragment   {
         mAdapter.setLoaderId(mLoaderId);
         getLoaderManager().initLoader(mLoaderId, args, mAdapter);
     }
+
+    /**
+     * Set a hint to the system about whether this fragment's UI is currently visible
+     * to the user. This hint defaults to true and is persistent across fragment instance
+     * state save and restore.
+     * <p>
+     * <p>An app may set this to false to indicate that the fragment's UI is
+     * scrolled out of visibility or is otherwise not directly visible to the user.
+     * This may be used by the system to prioritize operations such as fragment lifecycle updates
+     * or loader ordering behavior.</p>
+     *
+     * @param isVisibleToUser true if this fragment's UI is currently visible to the user (default),
+     *                        false if it is not.
+     */
 }

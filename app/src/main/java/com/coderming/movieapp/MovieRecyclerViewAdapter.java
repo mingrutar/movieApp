@@ -83,11 +83,18 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     public void onBindViewHolder(final RecyclerViewHolders holder, int position) {
         if (mCursor != null) {
             mCursor.moveToPosition(position);
-            holder.mView.setTag(mCursor.getLong(COL_ID));
+            Long mid = mCursor.getLong(COL_ID);
+            holder.mView.setTag(mid);
             final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                     , String.valueOf(mContext.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)),
                     mCursor.getString(COL_POSTER_PATH));
             if (position == 0) {
+                if (mFragment.isVisible()) {
+                    Uri uri = MovieContract.MovieEntry.buildUri( mid );
+                    for (ItemClickedCallback callback : mItemClickedCallbacks ) {
+                        callback.onItemClicked(uri);
+                    }
+                }
                 Log.v(LOG_TAG, String.format("+++RA+++ onBindViewHolder, position=%d, url=%s", position, url));
             }
             Picasso.with(mContext).load(url).into(new Target() {
