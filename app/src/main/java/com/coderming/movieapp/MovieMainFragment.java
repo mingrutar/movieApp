@@ -1,12 +1,10 @@
 package com.coderming.movieapp;
 
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -89,6 +87,12 @@ public class MovieMainFragment extends Fragment   {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
  //       init();
         final View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
+        String key = getLoaderKey();
+        if ((savedInstanceState != null) && savedInstanceState.containsKey(key)) {
+            mLoaderId = savedInstanceState.getInt(key);
+        } else {
+            mLoaderId = -1;
+        }
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         int colnum = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)?3:2;
         mGridLayoutManager = new GridLayoutManager(getContext(), colnum);
@@ -123,13 +127,17 @@ public class MovieMainFragment extends Fragment   {
             return null;
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mLoaderId != -1)
+            outState.putLong(getLoaderKey(), mLoaderId);
+    }
+
     @Override
     public void onPause() {
         super.onPause();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(getLoaderKey(), mLoaderId);
-        editor.commit();
     }
 
     @Override
@@ -146,13 +154,6 @@ public class MovieMainFragment extends Fragment   {
     @Override
     public void onResume() {
         super.onResume();
-        if (mLoaderId == -1) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            this.mLoaderId = prefs.getInt(getLoaderKey(), -1);
-            if (mLoaderId == -1) {
-                mLoaderId = Constants.nextId();
-            }
-        }
         if (!getUserVisibleHint()) {
             return;
         }
