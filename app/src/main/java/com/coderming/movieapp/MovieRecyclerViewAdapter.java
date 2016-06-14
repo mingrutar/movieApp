@@ -178,7 +178,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                     } catch (InterruptedException iex) {
                         Log.w(LOG_TAG, "+++++Thread.sleep: cannot sleep!!!");
                     }
-//???                        loader.forceLoad();
                     Bundle args = new Bundle();
                     args.putParcelable(MainActivity.PAGE_DATA_URI, mUri);
                     mFragment.getLoaderManager().restartLoader(loader.getId(), args, this);
