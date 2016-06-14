@@ -2,11 +2,16 @@ package com.coderming.movieapp;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -14,15 +19,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
+import com.coderming.movieapp.utils.Utilities;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieMainFragment extends Fragment   {
+public class MovieMainFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor>{
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
+
+    private static final String[] MAIN_MOVIE_COLUMNS = {
+            BaseColumns._ID,
+            MovieContract.MovieEntry.COLUMN_POSTER_PATH };
+    public static final int COL_ID = 0;
+    public static final int COL_POSTER_PATH = 1;
 
     private MovieRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -30,7 +44,9 @@ public class MovieMainFragment extends Fragment   {
     private GridLayoutManager mGridLayoutManager;
     private int mLoaderId = -1;
     private Uri mUri;
-    private boolean mIsVisibleToUser;
+    private boolean mIsRefreshed;
+
+
     public MovieMainFragment() {  }
 
     @Override
@@ -101,16 +117,6 @@ public class MovieMainFragment extends Fragment   {
         RecyclerView.ItemDecoration itemDecoration = new SpacesItemDecoration(2);
         mRecyclerView.addItemDecoration(itemDecoration);
 
-//        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-//            @Override
-//            public boolean onPreDraw() {
-//                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-//                int newSpanCOunt = calcGridColumnNumber(mRecyclerView.getWidth());
-//                mGridLayoutManager.setSpanCount(newSpanCOunt);
-//                mGridLayoutManager.requestLayout();
-//                return true;
-//            }
-//        });
         Bundle args = getArguments();
         mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
 
@@ -157,6 +163,14 @@ public class MovieMainFragment extends Fragment   {
         if (!getUserVisibleHint()) {
             return;
         }
+        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
+                mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -168,21 +182,58 @@ public class MovieMainFragment extends Fragment   {
         if (mLoaderId == -1) {
             mLoaderId = Constants.nextId();
         }
-        mAdapter.setLoaderId(mLoaderId);
-        getLoaderManager().initLoader(mLoaderId, args, mAdapter);
+        getLoaderManager().initLoader(mLoaderId, args, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Loader<Cursor> ret = null;
+
+        if ((mLoaderId == id) && args.containsKey(MainActivity.PAGE_DATA_URI)) {
+            mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
+            ret = new CursorLoader(getContext(), mUri, MAIN_MOVIE_COLUMNS, null, null, MovieContract.MovieEntry._ID + " asc");
+        } else {
+            Log.w(LOG_TAG, "onCreateLoader need to contain URI in bundle, mLoadId="+ Integer.toString(mLoaderId));
+        }
+        return ret;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.v(LOG_TAG, "+++RA+++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
+        if (mLoaderId == loader.getId()) {
+            boolean isFav = Utilities.isFavoritePage(mUri);
+            if (data.moveToFirst()) {
+                if (isFav) {
+                    do {
+                        Utilities.addFavoriteMovie(data.getLong(COL_ID));
+                    } while (data.moveToNext());
+                    data.moveToFirst();
+                }
+                mAdapter.swapCursor(data);
+            } else if (!isFav) {
+                try {
+                    Thread.sleep(100);              // sleep 100 ms
+                } catch (InterruptedException iex) {
+                    Log.w(LOG_TAG, "+++++Thread.sleep: cannot sleep!!!");
+                }
+                Bundle args = new Bundle();
+                args.putParcelable(MainActivity.PAGE_DATA_URI, mUri);
+                getLoaderManager().restartLoader(loader.getId(), args, this);
+            }
+        }
     }
 
     /**
-     * Set a hint to the system about whether this fragment's UI is currently visible
-     * to the user. This hint defaults to true and is persistent across fragment instance
-     * state save and restore.
-     * <p>
-     * <p>An app may set this to false to indicate that the fragment's UI is
-     * scrolled out of visibility or is otherwise not directly visible to the user.
-     * This may be used by the system to prioritize operations such as fragment lifecycle updates
-     * or loader ordering behavior.</p>
+     * Called when a previously created loader is being reset, and thus
+     * making its data unavailable.  The application should at this point
+     * remove any references it has to the Loader's data.
      *
-     * @param isVisibleToUser true if this fragment's UI is currently visible to the user (default),
-     *                        false if it is not.
+     * @param loader The Loader that is being reset.
      */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        if (mLoaderId == loader.getId())
+            mAdapter.resetCursor();
+    }
 }
