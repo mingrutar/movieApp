@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -164,17 +165,34 @@ public class MovieMainFragment extends Fragment
         if (!getUserVisibleHint()) {
             return;
         }
-        if (mFirstMovieDbId != -1)
+        if (mFirstMovieDbId != -1) {
             mAdapter.notifyItemSelected(mFirstMovieDbId);
-
-        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
-                mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                mAdapter.notifyDataSetChanged();
-            }
-        });
+            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
+                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if (mAdapter != null) {
+                        if (mAdapter.readyForLayout()) {
+                            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
+                                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    }
+                }
+            }, 5000);           // in milli
+        }
     }
 
     @Override
