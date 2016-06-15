@@ -164,8 +164,8 @@ public class MovieMainFragment extends Fragment
                 mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
                         mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
                         mAdapter.notifyDataSetChanged();
                     }
                 });
@@ -188,8 +188,8 @@ public class MovieMainFragment extends Fragment
             mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
                     mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
                     mAdapter.notifyDataSetChanged();
                 }
             });
