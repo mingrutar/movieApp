@@ -158,23 +158,6 @@ public class MovieMainFragment extends Fragment
             onResume();
         }
     }
-    class MyRunnable implements Runnable {
-        public void run() {
-            if (mAdapter.readyForLayout()) {
-                mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-            }
-        }
-    }
-    Handler mHandler;
-    MyRunnable mRunnable;
-
     @Override
     public void onResume() {
         super.onResume();
@@ -182,8 +165,6 @@ public class MovieMainFragment extends Fragment
             return;
         }
         if (mFirstMovieDbId != -1) {
-            if (mHandler != null)
-                mHandler.removeCallbacks(mRunnable);
             mAdapter.notifyItemSelected(mFirstMovieDbId);
             mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -194,9 +175,22 @@ public class MovieMainFragment extends Fragment
                 }
             });
         } else if (!MovieContract.MovieEntry.CONTENT_FAVORITE_URI.equals(mUri)) {
-            mRunnable = new MyRunnable();
-            mHandler = new Handler();
-            mHandler.postDelayed( mRunnable, 500);           // in milli
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if (mAdapter != null) {
+                        if (mAdapter.readyForLayout()) {
+                            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
+                                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    }
+                }
+            }, 5000);           // in milli
         }
     }
 
