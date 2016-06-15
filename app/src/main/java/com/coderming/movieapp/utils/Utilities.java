@@ -4,11 +4,14 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.coderming.movieapp.R;
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 
@@ -34,11 +37,19 @@ public class Utilities {
     public static String releaseDate2Str(long timeinMilli) {
         SimpleDateFormat dateFormater = new SimpleDateFormat(RELEASE_DATE, Locale.getDefault());
         Date date = new Date(timeinMilli);
-        return dateFormater.format(date);
+        return String.format("(%s)", dateFormater.format(date));
     }
-    public static int getRecordLimmit(MovieSelectionType type) {
-        //TODO: get from shared preference, setting
-        return (type == MovieSelectionType.Popular) ? 3 : 2;
+    public static int getRecordLimmit(Context context, MovieSelectionType type) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String val = (MovieSelectionType.Popular == type) ?
+                prefs.getString(context.getString(R.string.pref_num_popular_key), context.getString(R.string.pref_num_popular_default)) :
+                prefs.getString(context.getString(R.string.pref_num_top_rated_key), context.getString(R.string.pref_num_top_rated_default));
+        int ret = 40;
+        try {
+            ret = Integer.parseInt(val);
+        } catch (Exception ex) {
+        }
+        return ret/20;
     }
     public static void playYouTube(Context context, String id) {
         try {

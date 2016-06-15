@@ -1,5 +1,6 @@
 package com.coderming.movieapp;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -9,8 +10,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -37,9 +43,14 @@ import java.util.List;
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     static final String LOG_TAG = DetailFragment.class.getSimpleName();
+
+    private static String MOVIE_FUN_SHARE_HASHTAG = "#MovieFunApp";
     private int mMovieLoaderId;
     private int mDetailLoaderId;
     private long mMovieId;
+
+    private ShareActionProvider mShareActionProvider;
+    private String mMyShareString;
 
     TextView mTitle;
     TextView mReleaseDate;
@@ -123,6 +134,27 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         return root;
     }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_detail, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+        // thisi different from http://developer.android.com/training/sharing/shareaction.html#set-share-intent
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider( menuItem);
+        if (mMyShareString != null) {
+            mShareActionProvider.setShareIntent(createShareForecastIntent());
+        } else {
+            Log.d(LOG_TAG, "Share Action Provider is null");
+        }
+    }
+    private Intent createShareForecastIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        // FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET prevent this activity be put in activity stack
+        // so it will return back to this app.
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mMyShareString+MOVIE_FUN_SHARE_HASHTAG);
+        return shareIntent;
+    }
 
     private void fillPage(Cursor cursor) {
         mTitle.setText( cursor.getString(COL_TITLE));
@@ -170,6 +202,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             public void onPrepareLoad(Drawable placeHolderDrawable) {
             }
         });
+        mMyShareString = String.format("movie %s (%s), %s stars of %s votes",cursor.getString(COL_TITLE),
+                mReleaseDate.getText(), mVoteAverage.getText(), mNumVote.getText());
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareForecastIntent());
+        }
     }
     private void fillExtraData(Cursor cursor) {
         do {
@@ -250,7 +287,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if ((id == mMovieLoaderId) && (args != null)) {
             Uri uri = args.getParcelable(Constants.DETAIL_URI);
             return new android.support.v4.content.CursorLoader(getActivity(), uri, MOVIE_COLUMNS,null,null,null );
-        } else if (id == mDetailLoaderId) {
+        } else if ((id == mDetailLoaderId) && (args != null))  {
             Uri uri = args.getParcelable(Constants.MORE_DETAIL_URI);
             return new android.support.v4.content.CursorLoader(getActivity(),uri,EXTRA_DETAIL_COLUMNS,null,null,null );
         } else

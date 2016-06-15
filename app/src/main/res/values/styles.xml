@@ -8,6 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
 
     </style>
+    <style name="MovieTheme" parent="AppTheme" >
+        <item name="actionBarStyle">@style/ActionBar.Solid.Movie.NoTitle</item>
+    </style>
+
+    <style name="ActionBar.Solid.Movie.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="logo">@drawable/ic_logo2</item>
+    </style>
 
     <style name="secction_title" parent="@android:style/TextAppearance.Widget.TextView" >
         <item name="android:layout_width">wrap_content</item>

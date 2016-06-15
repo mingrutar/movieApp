@@ -9,6 +9,7 @@
               android:divider="?android:attr/dividerHorizontal"
               tools:context="com.coderming.movieapp.MainActivity"
               android:padding="@dimen/dimen_10dp"
+              android:background="@drawable/caroul_31"
               app:layout_behavior="@string/appbar_scrolling_view_behavior" >
     <FrameLayout
         android:layout_width="0dp"

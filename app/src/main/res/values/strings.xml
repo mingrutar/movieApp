@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MovieApp</string>
+    <string name="app_label">Movie Fun</string>
 
     <string name="tag_api_key" translatable="false">api_key</string>
     <string name="tag_sortby_popular" translatable="false">popular</string>
@@ -16,6 +17,13 @@
     <string name="sortby_popular">Most Popular</string>
     <string name="sortby_top_rated">Highest Rated</string>
     <string name="tag_sort_by">Sort by</string>
+
+    <string name="pref_num_popular_title">Number of popular movies (limit 100)</string>
+    <string name="pref_num_popular_key" translatable="false">pref_popular_key</string>
+    <string name="pref_num_popular_default">40</string>
+    <string name="pref_num_top_rated_title">Number of top rated movies (limit 100)</string>
+    <string name="pref_num_top_rated_key" translatable="false">pref_top_rated_key</string>
+    <string name="pref_num_top_rated_default">40</string>
 
     <string name="pref_sortby_key">pref_sort_key</string>
     <string-array name="movieListOrder">

@@ -2,11 +2,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    <ListPreference
-        android:title="@string/tag_sort_by"
-        android:key="@string/pref_sortby_key"
-        android:summary="Most Popular"
-        android:defaultValue="@string/sortby_popular"
-        android:entries="@array/movieListOrderValue"
-        android:entryValues="@array/movieListOrderValue" />
+    <EditTextPreference
+        android:title="@string/pref_num_popular_title"
+        android:key="@string/pref_num_popular_key"
+        android:defaultValue="@string/pref_num_popular_default"
+        android:inputType="number"
+        android:singleLine="true" />
+    <EditTextPreference
+        android:title="@string/pref_num_top_rated_title"
+        android:key="@string/pref_num_top_rated_key"
+        android:defaultValue="@string/pref_num_top_rated_default"
+        android:inputType="number"
+        android:singleLine="true" />
 </PreferenceScreen>

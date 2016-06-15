@@ -52,7 +52,7 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
                 int currentPage = 1;
                 ret = DataRetriever.retrieveMovies(getContext(), type, currentPage);
                 if (ret != null) {
-                    totalPages = Math.min(ret[1], Utilities.getRecordLimmit(type));
+                    totalPages = Math.min(ret[1], Utilities.getRecordLimmit(getContext(), type));
                     currentPage++;
                     for (; currentPage <= totalPages; currentPage++) {
                         Log.v(LOG_TAG, String.format("++++M++ onPerformSync movie, type=%s page=%d",
