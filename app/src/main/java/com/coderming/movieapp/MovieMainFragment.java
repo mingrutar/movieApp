@@ -160,15 +160,24 @@ public class MovieMainFragment extends Fragment
     }
     class MyRunnable implements Runnable {
         public void run() {
-            if (mAdapter.readyForLayout()) {
-                mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
-                        mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        mAdapter.notifyDataSetChanged();
+            for (int i = 0; i < 60; i++) {          // 1 min
+                if (mAdapter.readyForLayout()) {
+                    mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
+                            mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
+                    break;
+                } else if (!MovieContract.MovieEntry.CONTENT_FAVORITE_URI.equals(mUri)) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException iex) {
+
                     }
-                });
+                }
             }
         }
     }
@@ -196,7 +205,7 @@ public class MovieMainFragment extends Fragment
         } else {
             mRunnable = new MyRunnable();
             mHandler = new Handler();
-            mHandler.postDelayed( mRunnable, 500);           // in milli
+            mHandler.postDelayed( mRunnable, 1000);           // in milli
         }
     }
 
