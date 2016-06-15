@@ -160,8 +160,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mTitle.setText( cursor.getString(COL_TITLE));
         mReleaseDate.setText(Utilities.releaseDate2Str(cursor.getLong(COL_RELEASE_DATE)));
         double vote_average = cursor.getDouble(COL_VOTE_AVERAGE);
-        float rating = (float) (vote_average * 5.0f) /10.0f;
-        mVoteAverage.setText(String.format("%.01f", rating));
+        mVoteAverage.setText(String.format("%.01f/10", vote_average));
         mNumVote.setText(String.format("%d votes", cursor.getInt(COL_VOTE_COUNT)));
         mOverview.setText(cursor.getString(COL_OVERVIEW));
         mPoster.setImageResource(0);
