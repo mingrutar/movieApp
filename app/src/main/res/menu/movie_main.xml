@@ -12,6 +12,7 @@
 
     <item android:id="@+id/spinner"
           android:title="@string/tag_sort_by"
+          android:orderInCategory="1"
           com.coderming.movieapp:showAsAction="ifRoom"
           com.coderming.movieapp:actionViewClass="android.widget.Spinner" />
 </menu>
