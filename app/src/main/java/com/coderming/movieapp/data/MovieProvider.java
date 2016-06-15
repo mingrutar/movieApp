@@ -41,7 +41,7 @@ public class MovieProvider extends ContentProvider {
         ret.addURI(com.coderming.movieapp.data.MovieContract.CONTENT_AUTHORITY,
                 String.format("%s/%s", path, com.coderming.movieapp.data.MovieContract.MovieSelectionType.Favorite), MOVIE_FAVORITE);
         ret.addURI(com.coderming.movieapp.data.MovieContract.CONTENT_AUTHORITY,
-                String.format("%s/#", path, com.coderming.movieapp.data.MovieContract.MovieSelectionType.Favorite), MOVIE_BY_ID);
+                String.format("%s/#", path), MOVIE_BY_ID);
         ret.addURI(com.coderming.movieapp.data.MovieContract.CONTENT_AUTHORITY, com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, DETAIL_MOVIE);
         ret.addURI(com.coderming.movieapp.data.MovieContract.CONTENT_AUTHORITY,
                 String.format("%s/#", com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME), DETAIL_MOVIE__ID);
@@ -84,35 +84,35 @@ public class MovieProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor cursor;
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        try {
-            int matchCode = sUriMatcher.match(uri);
-            if (matchCode == MOVIE_BY_ID) {
-                String movieId = uri.getPathSegments().get(1);
-                cursor = db.query(com.coderming.movieapp.data.MovieContract.MovieEntry.TABLE_NAME, projection,
-                    String.format("%s.%s = %s", com.coderming.movieapp.data.MovieContract.MovieEntry.TABLE_NAME, com.coderming.movieapp.data.MovieContract.MovieEntry._ID, movieId),
-                    null, null, null, sortOrder);
-            } else if (matchCode == DETAIL_MOVIE__ID)  {
-                String movieDbId = uri.getPathSegments().get(1);
-                cursor = db.query(com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, projection,
-                        String.format("%s.%s = %s", com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, com.coderming.movieapp.data.MovieContract.DetailEntry.COLUMN_MOVIE_ID,movieDbId),
-                        null , null, null, sortOrder);
+        int matchCode = sUriMatcher.match(uri);
+        if (matchCode == MOVIE_BY_ID) {
+            String movieId = uri.getPathSegments().get(1);          //TODO: getLastSegment work?
+            cursor = db.query(com.coderming.movieapp.data.MovieContract.MovieEntry.TABLE_NAME, projection,
+                String.format("%s.%s = %s", com.coderming.movieapp.data.MovieContract.MovieEntry.TABLE_NAME, com.coderming.movieapp.data.MovieContract.MovieEntry._ID, movieId),
+                null, null, null, sortOrder);
+        } else if (matchCode == DETAIL_MOVIE__ID)  {
+            String movieDbId = uri.getPathSegments().get(1);
+            cursor = db.query(com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, projection,
+                    String.format("%s.%s = %s", com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, com.coderming.movieapp.data.MovieContract.DetailEntry.COLUMN_MOVIE_ID,movieDbId),
+                    null , null, null, sortOrder);
+        }
+        else {
+            String tableName = null;
+            if (matchCode == MOVIE) {
+                tableName = com.coderming.movieapp.data.MovieContract.MovieEntry.TABLE_NAME;
+            } else if (matchCode == MOVIE_TOP_RATE) {
+                tableName = com.coderming.movieapp.data.MovieContract.MovieEntry.VIEW_TOP_RATED;
+            } else if (matchCode == MOVIE_POPULAR) {
+                tableName = com.coderming.movieapp.data.MovieContract.MovieEntry.VIEW_POPULAR;
+            } else if (matchCode == MOVIE_FAVORITE) {
+                tableName = com.coderming.movieapp.data.MovieContract.MovieEntry.VIEW_FAVORITE;
+            } else if (matchCode == DETAIL_MOVIE) {
+                tableName = com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME;
             }
-            else {
-                String tableName = null;
-                if (matchCode == MOVIE) {
-                    tableName = com.coderming.movieapp.data.MovieContract.MovieEntry.TABLE_NAME;
-                } else if (matchCode == MOVIE_TOP_RATE) {
-                    tableName = com.coderming.movieapp.data.MovieContract.MovieEntry.VIEW_TOP_RATED;
-                } else if (matchCode == MOVIE_POPULAR) {
-                    tableName = com.coderming.movieapp.data.MovieContract.MovieEntry.VIEW_POPULAR;
-                } else if (matchCode == MOVIE_FAVORITE) {
-                    tableName = com.coderming.movieapp.data.MovieContract.MovieEntry.VIEW_FAVORITE;
-                } else if (matchCode == DETAIL_MOVIE) {
-                    tableName = com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME;
-                }
-                cursor = db.query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
+            cursor = db.query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
             }
-        } finally {
+        if (cursor != null) {
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
         return cursor;
     }
@@ -124,30 +124,26 @@ public class MovieProvider extends ContentProvider {
         Uri ret = null;
         long id;
         SQLiteDatabase db = null;
-        try {
-            db = mOpenHelper.getWritableDatabase();
-            if (matchCode == DETAIL_MOVIE) {
-                id = db.insert(com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, null, values);
-                if (id > 0) {
-                    ret = com.coderming.movieapp.data.MovieContract.DetailEntry.buildUri(id);
-                } else {
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
-                }
-            } else if (matchCode == MOVIE_FAVORITE) {        // used in add favorite
-                long dbId = db.insert(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.TABLE_NAME, null, values);
-                if (dbId > 0) {
-                    ret = com.coderming.movieapp.data.MovieContract.MovieEntry.buildUri(values.getAsLong(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.COLUMN_MOVIE_ID));
-                } else {
-                    Log.e(LOG_TAG, "insert: failed to add favorite movie " + uri);
-                    throw new android.database.SQLException("Failed to add uri " + uri);
-                }
+        db = mOpenHelper.getWritableDatabase();
+        if (matchCode == DETAIL_MOVIE) {
+            id = db.insert(com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, null, values);
+            if (id > 0) {
+                ret = com.coderming.movieapp.data.MovieContract.DetailEntry.buildUri(id);
             } else {
-                Log.i(LOG_TAG, "insert: not supported Uri for insertion, uri="+uri);
+                throw new android.database.SQLException("Failed to insert row into " + uri);
             }
-        } finally {
-//            if ( (db!=null) && db.isOpen() )
-//                db.close();
+        } else if (matchCode == MOVIE_FAVORITE) {        // used in add favorite
+            long dbId = db.insert(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.TABLE_NAME, null, values);
+            if (dbId > 0) {
+                ret = com.coderming.movieapp.data.MovieContract.MovieEntry.buildUri(values.getAsLong(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.COLUMN_MOVIE_ID));
+            } else {
+                Log.e(LOG_TAG, "insert: failed to add favorite movie " + uri);
+                throw new android.database.SQLException("Failed to add uri " + uri);
+            }
+        } else {
+            Log.i(LOG_TAG, "insert: not supported Uri for insertion, uri="+uri);
         }
+        getContext().getContentResolver().notifyChange(uri, null);
         return ret;
     }
 
@@ -159,25 +155,20 @@ public class MovieProvider extends ContentProvider {
             selection = "1";
         }
         SQLiteDatabase db = null;
-        try {
-            db = mOpenHelper.getWritableDatabase();
-            if ((matchCode == MOVIE_POPULAR) || (matchCode == MOVIE_TOP_RATE) || (matchCode == MOVIE) ) {
-                numrow = db.delete(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.TABLE_NAME, selection, selectionArgs);
-                numrow = db.delete(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.TABLE_NAME, selection, selectionArgs);
+        db = mOpenHelper.getWritableDatabase();
+        if ((matchCode == MOVIE_POPULAR) || (matchCode == MOVIE_TOP_RATE) || (matchCode == MOVIE) ) {
+            numrow = db.delete(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.TABLE_NAME, selection, selectionArgs);
+            numrow = db.delete(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.TABLE_NAME, selection, selectionArgs);
 
-            } else if (matchCode == MOVIE_FAVORITE) {
-                numrow = db.delete(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.TABLE_NAME,
-                        com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.COLUMN_SELECTION_TYPE+"="+ com.coderming.movieapp.data.MovieContract.MovieSelectionType.Favorite.toString(), null);
-            } else if (matchCode == DETAIL_MOVIE) {
-                 numrow = db.delete(com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, selection, selectionArgs);
-            } else if (matchCode == DETAIL_MOVIE__ID) {
-                String movieDbId = uri.getPathSegments().get(1);
-                numrow = db.delete(com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME,
-                        com.coderming.movieapp.data.MovieContract.DetailEntry.COLUMN_MOVIE_ID+"="+movieDbId, null );
-            }
-        } finally {
-//            if ( (db!=null) && db.isOpen() )
-//                db.close();
+        } else if (matchCode == MOVIE_FAVORITE) {
+            numrow = db.delete(com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.TABLE_NAME,
+                    com.coderming.movieapp.data.MovieContract.MovieSelectionEntry.COLUMN_SELECTION_TYPE+"="+ com.coderming.movieapp.data.MovieContract.MovieSelectionType.Favorite.toString(), null);
+        } else if (matchCode == DETAIL_MOVIE) {
+             numrow = db.delete(com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME, selection, selectionArgs);
+        } else if (matchCode == DETAIL_MOVIE__ID) {
+            String movieDbId = uri.getPathSegments().get(1);
+            numrow = db.delete(com.coderming.movieapp.data.MovieContract.DetailEntry.TABLE_NAME,
+                    com.coderming.movieapp.data.MovieContract.DetailEntry.COLUMN_MOVIE_ID+"="+movieDbId, null );
         }
         if (numrow > 0)   // with selection = "1", we can do this
             getContext().getContentResolver().notifyChange(uri, null);
@@ -202,6 +193,7 @@ public class MovieProvider extends ContentProvider {
             try {
                 long id;
                 ContentValues sel_values = new ContentValues();
+                db.beginTransaction();
                 for (ContentValues contentValues : values) {
                     int movieId = (int) contentValues.get(com.coderming.movieapp.data.MovieContract.MovieEntry.COLUMN_MOVIE_ID);
                     id = Utilities.getMovieDbId(getContext(), movieId );

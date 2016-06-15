@@ -41,9 +41,9 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.v(LOG_TAG, "++++++ onPerformSync is called ");
 
         if (extras.containsKey(MOVIE_ID)) {
-            int movieId = extras.getInt(MOVIE_ID);
-            DataRetriever.retrieveDetails (getContext(), movieId );
-            Log.v(LOG_TAG, "++++D++ onPerformSync retrieving detail for movie id "+Integer.toString(movieId));
+            long movieDbId = extras.getLong(MOVIE_ID);
+            DataRetriever.retrieveDetails (getContext(), movieDbId);
+            Log.v(LOG_TAG, "++++D++ onPerformSync retrieving detail for movie id "+Long.toString(movieDbId));
         }  else {
             int totalPages = -1;
             int[] ret = null;
@@ -52,7 +52,7 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
                 int currentPage = 1;
                 ret = DataRetriever.retrieveMovies(getContext(), type, currentPage);
                 if (ret != null) {
-                    totalPages = Math.min(ret[1], Utilities.getRecordLimmit(type));
+                    totalPages = Math.min(ret[1], Utilities.getRecordLimmit(getContext(), type));
                     currentPage++;
                     for (; currentPage <= totalPages; currentPage++) {
                         Log.v(LOG_TAG, String.format("++++M++ onPerformSync movie, type=%s page=%d",
@@ -74,10 +74,10 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.v(LOG_TAG, "++++M+++ syncImmediately (movie) is called");
         syncImmediately(context, new Bundle());
     }
-    public static void syncImmediately(Context context, int movieId) {
-        Log.v(LOG_TAG, "++++D+++ syncImmediately (detail) is called, movieId="+Integer.toString(movieId));
+    public static void syncImmediately(Context context, long movieId) {
+        Log.v(LOG_TAG, "++++D+++ syncImmediately (detail) is called, movieId="+Long.toString(movieId));
         Bundle bundle = new Bundle();
-        bundle.putInt(MOVIE_ID, movieId);
+        bundle.putLong(MOVIE_ID, movieId);
         syncImmediately(context, bundle);
     }
     private static void  syncImmediately(Context context, Bundle bundle) {

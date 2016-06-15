@@ -1,7 +1,7 @@
 package com.coderming.movieapp;
 
 import android.os.Bundle;
-import android.preference.ListPreference;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -18,7 +18,8 @@ public class SettingsActivity extends PreferenceActivity
     {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);    //Add preferences from XML
-        bindPreferenceSummaryToValue(R.string.pref_sortby_key);
+        bindPreferenceSummaryToValue(R.string.pref_num_popular_key);
+        bindPreferenceSummaryToValue(R.string.pref_num_top_rated_key);
     }
     private void bindPreferenceSummaryToValue(int pref_key) {
         Preference pref = findPreference(getString(pref_key));
@@ -32,14 +33,8 @@ public class SettingsActivity extends PreferenceActivity
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String str = newValue.toString();
-        if (preference instanceof ListPreference) {     // for Radio buttons
-            ListPreference listPref = (ListPreference) preference;
-            int prefIdx = listPref.findIndexOfValue(str);
-            if (prefIdx < 0) {
-                preference.setSummary(str);
-            } else {
-                preference.setSummary(listPref.getEntries()[prefIdx]);
-            }
+        if (preference instanceof EditTextPreference) {
+            preference.setSummary(str);
         }
         return true;            // do update
     }

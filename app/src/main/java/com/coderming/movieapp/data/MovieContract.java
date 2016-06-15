@@ -9,7 +9,7 @@ import android.provider.BaseColumns;
  * Created by linna on 6/1/2016.
  */
 public class MovieContract  {
-    public static final String CONTENT_AUTHORITY = "com.coderming.sqlitedb";
+    public static final String CONTENT_AUTHORITY = "com.coderming.movieapp";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY);
 
     public enum MovieSelectionType {
@@ -54,6 +54,16 @@ public class MovieContract  {
         public static Uri buildUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+        public static Uri getTypeUri(MovieSelectionType type) {
+            if (MovieSelectionType.Favorite.equals(type))
+                return CONTENT_FAVORITE_URI;
+            else if (MovieSelectionType.Popular.equals(type))
+                return  CONTENT_POPULAR_URI;
+            else if (MovieSelectionType.TopRated.equals(type))
+                return CONTENT_TOP_RATES_URI;
+            else
+                return null;
+        }
     }
     public static final class DetailEntry implements BaseColumns {
         public static final String TABLE_NAME = "detail";
@@ -71,7 +81,6 @@ public class MovieContract  {
         public static Uri buildUri(long movieDbId) {
             return ContentUris.withAppendedId(CONTENT_URI, movieDbId);
         }
-
     }
     public static final class MovieSelectionEntry implements BaseColumns {
         public static final String TABLE_NAME = "movie_selection";

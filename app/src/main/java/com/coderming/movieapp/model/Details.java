@@ -1,6 +1,6 @@
 package com.coderming.movieapp.model;
 
-import com.coderming.movieapp.utils.JsonTags;
+import com.coderming.movieapp.utils.Constants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,47 +17,47 @@ public class Details {
 
     public static List<Video>  parseVideos(String jsonStr) throws JSONException {
         List<Video> ret = new ArrayList<>();
-        JSONObject jobj = new JSONObject(jsonStr);
-        JSONArray jarr = jobj.getJSONArray(JsonTags.TAG_RESULTS);
+        JSONArray jarr = new JSONArray(jsonStr);
+        JSONObject jobj;
         Video video;
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
-            String id = jobj.getString(JsonTags.TAG_ID);
+            String id = jobj.getString(Constants.TAG_ID);
             video = new Video(id);
-            video.mName = jobj.getString(JsonTags.TAG_NAME);
-            video.mKey = jobj.getString(JsonTags.TAG_KEY);
-            video.mSite = jobj.getString(JsonTags.TAG_SITE);
+            video.mName = jobj.getString(Constants.TAG_NAME);
+            video.mKey = jobj.getString(Constants.TAG_KEY);
+            video.mSite = jobj.getString(Constants.TAG_SITE);
             ret.add(video);
         }
         return ret;
     }
     public static List<Image>  parseImages(String jsonStr) throws JSONException {
         List<Image> ret = new ArrayList<>();
-        JSONObject jobj = new JSONObject(jsonStr);
-        JSONArray jarr = jobj.getJSONArray(JsonTags.TAG_RESULTS);
+        JSONArray jarr = new JSONArray(jsonStr);
+        JSONObject jobj;
         Image image;
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
-            String id = jobj.getString(JsonTags.TAG_ID);
-            image = new Image(id);
-            image.mPath =  jobj.getString(JsonTags.TAG_FILE_PATH);
-            image.mHeight = jobj.getInt(JsonTags.TAG_HEIGHT);
-            image.mWidth = jobj.getInt(JsonTags.TAG_WIDTH);
+            String aspectRatio = jobj.getString(Constants.TAG_ASPECT_RATIO);
+            image = new Image(aspectRatio);
+            image.mPath =  jobj.getString(Constants.TAG_FILE_PATH);
+            image.mHeight = jobj.getInt(Constants.TAG_HEIGHT);
+            image.mWidth = jobj.getInt(Constants.TAG_WIDTH);
             ret.add(image);
         }
         return ret;
     }
     public static List<Review>  parseReviews(String jsonStr) throws JSONException {
         List<Review> ret = new ArrayList<>();
-        JSONObject jobj = new JSONObject(jsonStr);
-        JSONArray jarr = jobj.getJSONArray(JsonTags.TAG_RESULTS);
+        JSONArray jarr = new JSONArray(jsonStr);
+        JSONObject jobj;
         Review review;
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
-            String id = jobj.getString(JsonTags.TAG_ID);
+            String id = jobj.getString(Constants.TAG_ID);
             review = new Review(id);
-            review.mAuthor =  jobj.getString(JsonTags.TAG_AUTHOR);
-            review.mContent = jobj.getString(JsonTags.TAG_CONTENT);
+            review.mAuthor =  jobj.getString(Constants.TAG_AUTHOR);
+            review.mContent = jobj.getString(Constants.TAG_CONTENT);
             ret.add(review);
         }
         return ret;
@@ -87,12 +87,12 @@ public class Details {
         static final String FILTER_TAG = "width";
         static final int FILTER_VAL = 1000;
 
-        String mId;
+        String mAspectRatio;
         String mPath;
         int mWidth;
         int mHeight;
 
-        Image(String id) { mId = id;}
+        Image(String aspectRatio) { mAspectRatio = aspectRatio;}
         public String getPath() {return mPath; }
     }
     public static class Review {

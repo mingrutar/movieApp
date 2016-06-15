@@ -1,203 +1,260 @@
 package com.coderming.movieapp;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.database.Cursor;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Handler;
+import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.view.ViewTreeObserver;
 
-import com.coderming.movieapp.model.MovieItem;
-import com.coderming.movieapp.model.MovieSource;
+import com.coderming.movieapp.data.MovieContract;
+import com.coderming.movieapp.utils.Constants;
+import com.coderming.movieapp.utils.Utilities;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieMainFragment extends Fragment {
+public class MovieMainFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor>{
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
-    private static final boolean DEBUG = false;
 
-    static final String UrlBase = "https://api.themoviedb.org/3/movie/";
+    private static final String[] MAIN_MOVIE_COLUMNS = {
+            BaseColumns._ID,
+            MovieContract.MovieEntry.COLUMN_POSTER_PATH };
+    public static final int COL_ID = 0;
+    public static final int COL_POSTER_PATH = 1;
 
-    private GridViewAdapter mAdapter;
-    private MovieSource mMovieDb;
-    private ArrayAdapter mSpinnerAdapter;
-    private SharedPreferences.OnSharedPreferenceChangeListener mListener;
-    private Spinner mSpinner;
-    private String mSortby;
+    private MovieRecyclerViewAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    private float mDesityRatio;
+    private GridLayoutManager mGridLayoutManager;
+    private int mLoaderId = -1;
+    private long mFirstMovieDbId = -1;
+    private Uri mUri;
+    private boolean mIsRefreshed;
 
-    public MovieMainFragment() {
-    }
 
-    public void updateMovieInfo() {
-
-        int tagId=  mSortby.equals(getString(R.string.sortby_popular)) ?
-                R.string.tag_sortby_popular : R.string.tag_sortby_top_rated;
-        String url = UrlBase + getString(tagId);
-        Uri buildUri = Uri.parse(url).buildUpon()
-                .appendQueryParameter(getString(R.string.tag_api_key), BuildConfig.MOVIE_DB_API_KEY).build();
-        new FetchMovieTask(this).execute(buildUri.toString());
-    }
+    public MovieMainFragment() {  }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         //not set in AndroidManifest.xml, register here,
-        getContext().registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
 
-    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.v(LOG_TAG, "++ onReceive received intent");
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork =cm.getActiveNetworkInfo();
-            if (activeNetwork != null) {
-                boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;  // not in use
-                if (activeNetwork.isConnectedOrConnecting()) {
-                    updateMovieInfo();
-                }
-            }
+    private void init() {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        double screenWidthInch = displayMetrics.widthPixels / displayMetrics.xdpi;
+        double screenHeightInch = displayMetrics.heightPixels / displayMetrics.ydpi;
+        double diagonalInches = Math.sqrt(screenWidthInch * screenWidthInch + screenHeightInch * screenHeightInch);
+        if (diagonalInches >= 6.5)
+            mDesityRatio = displayMetrics.xdpi / DisplayMetrics.DENSITY_XXHIGH ;
+        else
+            mDesityRatio = displayMetrics.xdpi / DisplayMetrics.DENSITY_XHIGH ;
+    }
+    private int calcGridColumnNumber( int parenWidthPx ) {
+        Resources res = this.getResources();
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        float width = res.getDimension(R.dimen.moviedb_image_width_185);
+        if (mDesityRatio > 1f) {           // if 4K kind
+            width = width * mDesityRatio ;
         }
-    };
+        int space = Math.round(res.getDimensionPixelSize(R.dimen.dimen_1dp) / 2);
+        int maxWidth = Math.round(width) + (4 * space);
+        int numCol = parenWidthPx / maxWidth;
+        int extra =  parenWidthPx % maxWidth;
+        if ((extra >= width/2) && (mDesityRatio<=1))
+            numCol++;
+        return numCol;
+    }
 
-    // TODO how to deal with 4K screen?
-    private void calcNumColumes( GridView gridView) {
-        Resources res = getActivity().getResources();
-        Configuration configuration = res.getConfiguration();
-        int smallScreenWidthDp = configuration.smallestScreenWidthDp;
-
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        float colWidth = res.getDimension(R.dimen.moviedb_image_width_185) + res.getDimensionPixelSize(R.dimen.dimen_4dp) ;
-        int posterWidthDp = Math.round( colWidth / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-// TODO: use commented numCol all dp will get tiny imagess
-//        int numCol = (int) (smallScreenWidthDp  / (posterWidthDp));
-        int numCol =  Math.round(smallScreenWidthDp/colWidth);
-        gridView.setNumColumns(numCol);
+    public static class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+        private final int mSpace;
+        public SpacesItemDecoration(float space) {
+            this.mSpace = Math.round(space);
+        }
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            outRect.left = mSpace;
+            outRect.right = mSpace;
+            outRect.bottom = mSpace;
+            outRect.top = mSpace;
+        }
+    }
+    private void setLayoutMgmgt(int col, int space) {
+        mAdapter.notifyDataSetChanged();
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_movie_main, container, false);
-        Context context = getContext();
-        mAdapter = new GridViewAdapter( context, R.layout.grid_item );
-        GridView gridView = (GridView) rootView.findViewById(R.id.movie_grid);
-        gridView.setAdapter(mAdapter);
-        calcNumColumes(gridView);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MovieItem item = mAdapter.getItem(position);
-                Intent detailIntenet = new Intent(getContext(), DetailActivity.class);
-                detailIntenet.putExtra("MovieItem", item);
-                startActivity(detailIntenet);
-            }
-        });
+ //       init();
+        final View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
+        String key = getLoaderKey();
+        if ((savedInstanceState != null) && savedInstanceState.containsKey(key)) {
+            mLoaderId = savedInstanceState.getInt(key);
+        } else {
+            mLoaderId = -1;
+        }
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+        int colnum = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)?3:2;
+        mGridLayoutManager = new GridLayoutManager(getContext(), colnum);
+        mRecyclerView.setLayoutManager(mGridLayoutManager);
+        float space = getResources().getDimension(R.dimen.dimen_1dp)/2;
+        RecyclerView.ItemDecoration itemDecoration = new SpacesItemDecoration(2);
+        mRecyclerView.addItemDecoration(itemDecoration);
+
+        Bundle args = getArguments();
+        mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
+
+        mAdapter = new MovieRecyclerViewAdapter( this );
+        mRecyclerView.setAdapter(mAdapter);
+
         return rootView;
+    }
+    String getLoaderKey() {
+        if (mUri != null) {
+            return "LOADER_ID_" + mUri;
+        }  else {
+            Log.w(LOG_TAG, "getLoaderKey null mUri") ;
+            return null;
+        }
     }
 
     @Override
-    public void onResume() {
-        Log.v(LOG_TAG, "++++onResume");
-        super.onResume();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mSortby = prefs.getString(getString(R.string.pref_sortby_key), getString(R.string.sortby_popular));
-        if (mSpinner != null) {
-            int pos = 0;
-            if (mSortby.equals(getString(R.string.sortby_top_rated))) {
-                pos = 1;
-            } else if (mSortby.equals(getString((R.string.sortby_faverites)))) {
-                pos = 2;
-            }
-            mSpinner.setSelection(pos);
-        } else {                      // resume could be called before spinner is created
-            updateMovieInfo();
-        }
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mLoaderId != -1)
+            outState.putLong(getLoaderKey(), mLoaderId);
+
     }
 
     @Override
     public void onPause() {
-        Log.v(LOG_TAG, "++++onPause");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(getString(R.string.pref_sortby_key), mSortby);
-        editor.commit();
         super.onPause();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getContext().unregisterReceiver(mBroadcastReceiver);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.movie_main_fragment, menu);
-
-        MenuItem item = menu.findItem(R.id.spinner);
-        android.support.v7.app.ActionBar actionBar=((AppCompatActivity)getActivity() ).getSupportActionBar();
-        final Context themedContext = actionBar.getThemedContext();
-        mSpinnerAdapter = ArrayAdapter.createFromResource(
-                themedContext, R.array.movieListOrderValue, android.R.layout.simple_spinner_dropdown_item); //  create the adapter from a StringArray
-        mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinner = (Spinner) MenuItemCompat.getActionView(item);
-        mSpinner.setAdapter(mSpinnerAdapter); // set the adapter to provide layout of rows and content
-        int pos = (mSortby.equals(getString(R.string.sortby_top_rated))) ? 1 : 0;
-        mSpinner.setSelection(pos);
-
-        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                Object item = parent.getItemAtPosition(pos);
-                if (item != null) {
-                    mSortby = item.toString();
-                    updateMovieInfo();
-                } else {
-                    Toast.makeText(themedContext, "Selected unknown", Toast.LENGTH_LONG).show();
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }        });
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_setting) {
-            Intent settingIntent  = new Intent(getActivity(), SettingsActivity.class);
-            startActivity(settingIntent);
-            return true;               // stop here
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isResumed())
+        {
+            //Only manually call onResume if fragment is already visible
+            //Otherwise allow natural fragment lifecycle to call onResume
+            onResume();
         }
-        return super.onOptionsItemSelected(item);
     }
-    public void updateAdapter(MovieSource movieSource) {
-        mMovieDb = movieSource;
-        mAdapter.resetList(movieSource.getItemList());
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!getUserVisibleHint()) {
+            return;
+        }
+        if (mFirstMovieDbId != -1) {
+            mAdapter.notifyItemSelected(mFirstMovieDbId);
+            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+        } else if (!MovieContract.MovieEntry.CONTENT_FAVORITE_URI.equals(mUri)) {
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if (mAdapter.readyForLayout()) {
+                        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
+                                mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                }
+            }, 5000);           // in milli
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Bundle args = getArguments();
+        if (!args.containsKey(MainActivity.PAGE_DATA_URI))
+            args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
+        if (mLoaderId == -1) {
+            mLoaderId = Constants.nextId();
+        }
+        getLoaderManager().initLoader(mLoaderId, args, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Loader<Cursor> ret = null;
+
+        if ((mLoaderId == id) && args.containsKey(MainActivity.PAGE_DATA_URI)) {
+            mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
+            ret = new CursorLoader(getContext(), mUri, MAIN_MOVIE_COLUMNS, null, null, MovieContract.MovieEntry._ID + " asc");
+        } else {
+            Log.w(LOG_TAG, "onCreateLoader need to contain URI in bundle, mLoadId="+ Integer.toString(mLoaderId));
+        }
+        return ret;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.v(LOG_TAG, "+++RA+++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
+        if (mLoaderId == loader.getId()) {
+            boolean isFav = Utilities.isFavoritePage(mUri);
+            if (data.moveToFirst()) {
+                if (isFav) {
+                    do {
+                        Utilities.addFavoriteMovie(data.getLong(COL_ID));
+                    } while (data.moveToNext());
+                    data.moveToFirst();
+                }
+                mAdapter.swapCursor(data);
+                mFirstMovieDbId = data.getLong(COL_ID);
+            } else if (!isFav) {
+                try {
+                    Thread.sleep(100);              // sleep 100 ms
+                } catch (InterruptedException iex) {
+                    Log.w(LOG_TAG, "+++++Thread.sleep: cannot sleep!!!");
+                }
+                Bundle args = new Bundle();
+                args.putParcelable(MainActivity.PAGE_DATA_URI, mUri);
+                getLoaderManager().restartLoader(loader.getId(), args, this);
+            }
+        }
+    }
+
+    /**
+     * Called when a previously created loader is being reset, and thus
+     * making its data unavailable.  The application should at this point
+     * remove any references it has to the Loader's data.
+     *
+     * @param loader The Loader that is being reset.
+     */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        if (mLoaderId == loader.getId())
+            mAdapter.resetCursor();
     }
 }

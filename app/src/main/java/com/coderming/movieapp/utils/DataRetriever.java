@@ -34,49 +34,51 @@ import java.util.Map;
  */
 public class DataRetriever {
     private static final String LOG_TAG = DataRetriever.class.getSimpleName();
+    //
+    public static boolean syncSucceed;
+
     //  detail tags
+    public static final String[] SUPPORTED_DETAIL_TYPES = new String[] {"videos", "reviews",  "images",};
     private static  final Map<String, String> SetailTypeJsonTag =  new HashMap<>();
     static {
-        SetailTypeJsonTag.put("videos", "results");
-        SetailTypeJsonTag.put("reviews", "results");
-        SetailTypeJsonTag.put("images", "posters");
-    }
-    public static final String[] SUPPORTED_DETAIL_TYPES = new String[SetailTypeJsonTag.size()];
-    {
-        SetailTypeJsonTag.keySet().toArray(SUPPORTED_DETAIL_TYPES);
+        SetailTypeJsonTag.put(SUPPORTED_DETAIL_TYPES[0], "results");
+        SetailTypeJsonTag.put(SUPPORTED_DETAIL_TYPES[1], "results");
+        SetailTypeJsonTag.put(SUPPORTED_DETAIL_TYPES[2], "posters");
     }
 
     @Nullable
-    public static void retrieveDetails(Context context, int movieID ) {
-        long id = com.coderming.movieapp.utils.Utilities.getMovieDbId(context, movieID);
-        if (id != -1) {
-            ContentValues values = new ContentValues();
-            values.put(DetailEntry.COLUMN_MOVIE_ID, id);
+    public static void retrieveDetails(Context context, long movieDbID ) {
+        int movieId = Utilities.getMovieId(context, movieDbID) ;
+        if (movieId != -1) {
+            ContentValues values;
             for (String data : SUPPORTED_DETAIL_TYPES) {
                 try {
-                    String urlStr = String.format(mDetailUri, movieID, data);
+                    String urlStr = String.format(mDetailUri, movieId, data);
                     Log.v(LOG_TAG, "++++s+++ retrieveDetails: uri=" + urlStr);
                     String jsonStr = retrieveData(context, new URL(urlStr));
                     if (jsonStr != null) {
                         JSONObject jobj = new JSONObject(jsonStr);
                         JSONArray jarr = jobj.getJSONArray(SetailTypeJsonTag.get(data));
                         if (jarr.length() > 0) {
+                            values = new ContentValues();
+                            values.put(DetailEntry.COLUMN_MOVIE_ID, movieDbID);
                             values.put(DetailEntry.COLUMN_DETAIL_DATA, jarr.toString());
                             values.put(DetailEntry.COLUMN_TYPE, data);
                             Uri uri = context.getContentResolver().insert(DetailEntry.CONTENT_URI, values);
                             Log.v(LOG_TAG, String.format("retrieveDetails inserted movieId=%d, type=%s =>uri=%s",
-                                    movieID, data, uri));
+                                    movieDbID, data, uri));
                         }
                     }
                 } catch (MalformedURLException mfe) {
-                    Log.e(LOG_TAG, "Error retrieveDetail  "+mfe.getMessage(), mfe);
-                }
-                catch (JSONException jex) {
-                    Log.e(LOG_TAG, "Error retrieveDetail  "+jex.getMessage(), jex);
+                    Log.w(LOG_TAG, "Error: retrieveDetail  "+mfe.getMessage(), mfe);
+                } catch (JSONException jex) {
+                    Log.w(LOG_TAG, "Error: retrieveDetail  "+jex.getMessage(), jex);
+                } catch (RuntimeException rex) {
+                    Log.w(LOG_TAG, "Error: retrieveDetail "+rex.getMessage(), rex);
                 }
             }
         } else {
-            Log.w(LOG_TAG, "Could not find DB id for movie id "+Integer.toString(movieID));
+            Log.w(LOG_TAG, "Could not find movie id for movie DB id "+Long.toString(movieDbID));
         }
     }
 
@@ -90,34 +92,34 @@ public class DataRetriever {
         JSONObject jobj = new JSONObject(jsonStr);
         Log.v(LOG_TAG, "++++s+++ parseJson2Db. json str length= "+Integer.toString(jsonStr.length()));
         int[] ret = new int[3];
-        ret[0] = jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_page);             //currentPage
-        ret[1] = jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_TOTAL_PAGES);      //totalPages
-        ret[2] = jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_TOTAL_RESULTS);    //totalResults
+        ret[0] = jobj.getInt(Constants.TAG_page);             //currentPage
+        ret[1] = jobj.getInt(Constants.TAG_TOTAL_PAGES);      //totalPages
+        ret[2] = jobj.getInt(Constants.TAG_TOTAL_RESULTS);    //totalResults
 
-        JSONArray jarr = jobj.getJSONArray(com.coderming.movieapp.utils.JsonTags.TAG_RESULTS);
+        JSONArray jarr = jobj.getJSONArray(Constants.TAG_RESULTS);
         SimpleDateFormat dateFormater = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         List<ContentValues> movies = new ArrayList<>();
         for (int i = 0; i < jarr.length(); i++ ) {
             jobj = jarr.getJSONObject(i);
-            int moview_id = jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_ID);
+            int moview_id = jobj.getInt(Constants.TAG_ID);
             ContentValues cv = new ContentValues();
             cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, moview_id);
-            cv.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_POSTER_PATH));
-            cv.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_OVERVIEW));
+            cv.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, jobj.getString(Constants.TAG_POSTER_PATH));
+            cv.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, jobj.getString(Constants.TAG_OVERVIEW));
             try {
-                Date date = dateFormater.parse(jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_RELEASE_DATE));
+                Date date = dateFormater.parse(jobj.getString(Constants.TAG_RELEASE_DATE));
                 cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, date.getTime());
             } catch (ParseException pex) {
                 Log.w(LOG_TAG, "failed to parse release time");
                 cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, 0);
             }
-            cv.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_ORIGINAL_TITLE));
-            cv.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_ORIGINAL_LANGUAGE));
-            cv.put(MovieContract.MovieEntry.COLUMN_TITLE, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_TITLE));
-            cv.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, jobj.getString(com.coderming.movieapp.utils.JsonTags.TAG_BACKDROP_PATH));
-            cv.put(MovieContract.MovieEntry.COLUMN_POPULARUTY, jobj.getDouble(com.coderming.movieapp.utils.JsonTags.TAG_POPULARITY));
-            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT, jobj.getInt(com.coderming.movieapp.utils.JsonTags.TAG_VOTE_COUNT));
-            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, jobj.getDouble(com.coderming.movieapp.utils.JsonTags.TAG_VOTE_AVERAGE));
+            cv.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, jobj.getString(Constants.TAG_ORIGINAL_TITLE));
+            cv.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_LANGUAGE, jobj.getString(Constants.TAG_ORIGINAL_LANGUAGE));
+            cv.put(MovieContract.MovieEntry.COLUMN_TITLE, jobj.getString(Constants.TAG_TITLE));
+            cv.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, jobj.getString(Constants.TAG_BACKDROP_PATH));
+            cv.put(MovieContract.MovieEntry.COLUMN_POPULARUTY, jobj.getDouble(Constants.TAG_POPULARITY));
+            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT, jobj.getInt(Constants.TAG_VOTE_COUNT));
+            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, jobj.getDouble(Constants.TAG_VOTE_AVERAGE));
             movies.add(cv);
         }
         if (movies.size() > 0) {
@@ -173,8 +175,10 @@ public class DataRetriever {
                     Log.v(LOG_TAG, "++++ got 0 bytes from remote: url="+url);
                 }
             }
+            syncSucceed = true;
         } catch (IOException ioe) {
-            Log.e(LOG_TAG, "Exception retrieveMovies "+ioe.getMessage(), ioe);
+            syncSucceed = false;
+            Log.e(LOG_TAG, "====Exception retrieveMovies "+ioe.getMessage(), ioe);
         } finally {
             if (httpConnection != null) {
                 httpConnection.disconnect();
