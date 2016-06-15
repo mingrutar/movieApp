@@ -1,24 +1,22 @@
-P2:
-
-
-
-Udacity P1 project Movie App
+Udacity P2 project Movie App
 
 See assignment details at
    https://docs.google.com/document/d/1ZlN1fUsCSKuInLECcJkslIqvpKlP7jWL2TP9m6UiA6I/pub?embedded=true#h.ngb5kvi0pkbz
 
 ToDO:
-   Replace the value (="replace-this-api_key") of "themoviedb_api_key" in string.xml with valid API_KEY.
+   Replace the value of 'themoviedbApiKKeyProp' in gradle.properties.
 
-Screenshots:
-  Yet to learn how to insert images ?
+Screenshots for P2:
+  /screenShorts/p2-device-xxxxx.jpg
 
-Note: I implemented 2 ways to perform 'Sort by':
-   1) through Menu/Settings/Sort by - required by the assignment;
-   2) A Spinner at menu bar - the user could see the selected 'Sort by' option.
-   The selections are synchronized.
+Know issues:
+1) first rime, the thumnils will not refresh.
+   WORKAROUND Options:
+      1) change page selection from spinner menu. it will refresh
+      2) change device oritation
+2) related to above, the detail page in 'tow pane' mode does not synch initially.
 
-Issues and Questions:
- 1) What is good way to figure out the number of columns of a GridView on Nexus 6? Posted question at https://plus.google.com/u/0/communities/109766100514206800627/s/ming
- 2) The image of detail activity sometime is not shown for first time. Do I need to add some kind of notification with Picasso?
-
+ Note: I use RecyclerViewAdapter with CursorLoader for the thumnails.
+ Somehow the Adapter.notifyDataSetChanged() does not trig RecyclerView update.
+ I have tried for days and encouterated crach and burns, but did not solve the problem.
+ QUESTION: what are the proper ways to solve this issue?
