@@ -141,6 +141,7 @@ public class MovieMainFragment extends Fragment
         super.onSaveInstanceState(outState);
         if (mLoaderId != -1)
             outState.putLong(getLoaderKey(), mLoaderId);
+
     }
 
     @Override
@@ -177,17 +178,15 @@ public class MovieMainFragment extends Fragment
         } else if (!MovieContract.MovieEntry.CONTENT_FAVORITE_URI.equals(mUri)) {
             new Handler().postDelayed(new Runnable() {
                 public void run() {
-                    if (mAdapter != null) {
-                        if (mAdapter.readyForLayout()) {
-                            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
-                                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                    mAdapter.notifyDataSetChanged();
-                                }
-                            });
-                        }
+                    if (mAdapter.readyForLayout()) {
+                        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
+                                mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        });
                     }
                 }
             }, 5000);           // in milli

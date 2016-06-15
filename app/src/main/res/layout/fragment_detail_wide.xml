@@ -30,14 +30,13 @@
                     android:src="@drawable/favorite_border_24dp"/>
             <TextView
                 style="@style/header_title"
-                android:text="Title of the Movie"
+                android:text="Click on a movie thumnail"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/title_textView"
                   />
             <TextView
                 style="@style/header_light"
                 android:paddingLeft="@dimen/dimen_1dp"
-                android:text="(2016)"
                 android:id="@+id/release_textView"
                 android:layout_gravity="center_vertical"
                 />
@@ -55,13 +54,11 @@
             <TextView
                 style="@style/header_light"
                 android:paddingLeft="@dimen/dimen_1dp"
-                android:text="3.2"
                 android:id="@+id/nStar_textView"
                 android:layout_alignParentRight="true" />
 
             <TextView
                 style="@style/header_dark"
-                android:text="1234 votes"
                 android:id="@+id/nVoters_textView"
                 android:layout_below="@+id/rating_star"
                 android:layout_alignParentRight="true" />
@@ -109,7 +106,6 @@
                             style="@style/secction_text"
                             android:id="@+id/overview_textView"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                            android:text="long text.................more text ,,,,,...more....long text.................more text ,,,,,...more....long text.................more text ,,,,,...more..long text......"
                             android:layout_marginTop="@dimen/dimen_4dp"
                             android:padding="@dimen/dimen_10dp"
                             android:singleLine="false"

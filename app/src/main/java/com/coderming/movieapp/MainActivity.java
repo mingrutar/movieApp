@@ -35,13 +35,17 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     private static final String SELECTED_FRAG = "selectedFragment";
     public static final String PAGE_DATA_URI = "page_data_uri";
 
+    public static final long DAY_IN_MILLISEC = 24 * 60 * 60 * 1000;          // TODO change to 3*60*60, 3hours;
+
     public static final String MOVIEMAIN_TAG = "MOVIEMAIN_TAG";
     public static final String DETAILFRAGMENT_TAG = "DETAILFRAGMENT_TAG";
-
+    public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
     private Spinner mSpinner;
     private int mSelectedFrag;
     private ViewPager mViewPager;
     private boolean mTwoPane;
+
+    private long lastSyncTime;
 
     static final  MovieSelectionType[] listTypes =  new MovieSelectionType[] {MovieSelectionType.Popular,
             MovieSelectionType.TopRated, MovieSelectionType.Favorite} ;
@@ -62,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             }  else {
                 getSupportActionBar().setElevation(0f);
             }
+        } else if (savedInstanceState.containsKey(LAST_SYNC_TIME)){
+            lastSyncTime = savedInstanceState.getLong(LAST_SYNC_TIME);
         }
 //        registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         callSync();
@@ -82,9 +88,17 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
 //        }
 //    };
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(LAST_SYNC_TIME, lastSyncTime);
+    }
+
     void callSync() {
-        Log.v(LOG_TAG, "++++ calling syncImmediately ");
-        MovieSyncAdapter.syncImmediately(this);
+        if (System.currentTimeMillis() > lastSyncTime + DAY_IN_MILLISEC ) {
+            Log.v(LOG_TAG, "++++ calling syncImmediately ");
+            MovieSyncAdapter.syncImmediately(this);
+        }
     }
     @Override
     protected void onPause() {

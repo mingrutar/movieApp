@@ -73,7 +73,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     Long movieDbId;
     public boolean readyForLayout() {
         if (movieDbId != null) {
-            notifyItemSelected(movieDbId);
+//            notifyItemSelected(movieDbId);
             movieDbId = null;
             return true;
         } else
