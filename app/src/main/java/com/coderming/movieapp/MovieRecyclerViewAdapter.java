@@ -67,15 +67,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item, parent, false);
         return new RecyclerViewHolders(view);
     }
-    Long movieDbId;
-    public boolean readyForLayout() {
-        if (movieDbId != null) {
-//            notifyItemSelected(movieDbId);
-            movieDbId = null;
-            return true;
-        } else
-            return false;
-    }
     @Override
     public void onBindViewHolder(final RecyclerViewHolders holder, int position) {
         if (mCursor != null) {
@@ -86,8 +77,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                     , String.valueOf(mContext.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)),
                     mCursor.getString(MovieMainFragment.COL_POSTER_PATH));
             if (position == 0) {
-                if (movieDbId == null)
-                    movieDbId = mid;
                 Log.v(LOG_TAG, String.format("+++RA+++ onBindViewHolder, position=%d, url=%s", position, url));
             }
             Picasso.with(mContext).load(url)
@@ -111,7 +100,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         Cursor ret = null;
         if (mCursor == null) {
             mCursor = cursor;
-        } else {
+        } else if (!mCursor.equals(cursor)){
             mCursor.close();
             ret = mCursor;
             mCursor = cursor;

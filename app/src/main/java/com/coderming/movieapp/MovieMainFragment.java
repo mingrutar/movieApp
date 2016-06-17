@@ -30,22 +30,23 @@ import com.coderming.movieapp.utils.Utilities;
 public class MovieMainFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>{
     private static final String LOG_TAG = MovieMainFragment.class.getSimpleName();
+    private static final String LAST_SEL_ITEM = "LatsSelectedItem";
 
     private static final String[] MAIN_MOVIE_COLUMNS = {
             BaseColumns._ID,
             MovieContract.MovieEntry.COLUMN_POSTER_PATH };
     public static final int COL_ID = 0;
     public static final int COL_POSTER_PATH = 1;
+    static int sHColNumber = -1;
+    static int sVColNumber = -1;
 
     private MovieRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
-    private float mDesityRatio;
     private GridLayoutManager mGridLayoutManager;
     private int mLoaderId = -1;
-    private long mFirstMovieDbId = -1;
+    private long mSelMovieDbId = -1;
     private Uri mUri;
     private boolean mIsRefreshed;
-
 
     public MovieMainFragment() {  }
 
@@ -53,36 +54,44 @@ public class MovieMainFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        //not set in AndroidManifest.xml, register here,
     }
-
-    private void init() {
-        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+    private boolean isTablet() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         double screenWidthInch = displayMetrics.widthPixels / displayMetrics.xdpi;
         double screenHeightInch = displayMetrics.heightPixels / displayMetrics.ydpi;
         double diagonalInches = Math.sqrt(screenWidthInch * screenWidthInch + screenHeightInch * screenHeightInch);
-        if (diagonalInches >= 6.5)
-            mDesityRatio = displayMetrics.xdpi / DisplayMetrics.DENSITY_XXHIGH ;
-        else
-            mDesityRatio = displayMetrics.xdpi / DisplayMetrics.DENSITY_XHIGH ;
+        return (diagonalInches >= 6.5);            // for tablet 3 or 2
     }
-    private int calcGridColumnNumber( int parenWidthPx ) {
-        Resources res = this.getResources();
-        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+    private int calcColumnNumber (int parentSize) {
+        Resources res = getResources();
+        DisplayMetrics displayMetrics = res.getDisplayMetrics();
+        float desityRatio = displayMetrics.xdpi / DisplayMetrics.DENSITY_XHIGH;
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         float width = res.getDimension(R.dimen.moviedb_image_width_185);
-        if (mDesityRatio > 1f) {           // if 4K kind
-            width = width * mDesityRatio ;
+        if (desityRatio > 1f) {           // if 4K kind
+            width = width * desityRatio;
         }
-        int space = Math.round(res.getDimensionPixelSize(R.dimen.dimen_1dp) / 2);
-        int maxWidth = Math.round(width) + (4 * space);
-        int numCol = parenWidthPx / maxWidth;
-        int extra =  parenWidthPx % maxWidth;
-        if ((extra >= width/2) && (mDesityRatio<=1))
+        int space = Math.round(res.getDimensionPixelSize(R.dimen.dimen_1dp));
+        int numCol = parentSize / space;
+        int extra = parentSize % space;
+        if ((extra >= width / 2) && (desityRatio <= 1))
             numCol++;
         return numCol;
-    }
+   }
 
+    private int calcGridColumnNumber( int parentWidthPx, int parentHeightPx ) {
+        boolean isLandscape = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
+        if (sHColNumber != -1)
+            return isLandscape ? sHColNumber : sVColNumber;
+        if (isTablet()) {           //  tablet 3 : 2;
+            sHColNumber = 3;
+            sVColNumber = 2;
+        } else {
+            sHColNumber = calcColumnNumber(Math.max(parentWidthPx, parentHeightPx));
+            sVColNumber = calcColumnNumber(Math.min(parentWidthPx, parentHeightPx));
+        }
+        return isLandscape ? sHColNumber : sVColNumber;
+    }
     public static class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         private final int mSpace;
         public SpacesItemDecoration(float space) {
@@ -90,73 +99,50 @@ public class MovieMainFragment extends Fragment
         }
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            outRect.left = mSpace;
-            outRect.right = mSpace;
-            outRect.bottom = mSpace;
-            outRect.top = mSpace;
+            outRect.set(mSpace, mSpace, mSpace, mSpace);
         }
     }
-    private void setLayoutMgmgt(int col, int space) {
-        mAdapter.notifyDataSetChanged();
-    }
-    private void intiateMyDataLoader() {
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
         Bundle args = getArguments();
         if (!args.containsKey(MainActivity.PAGE_DATA_URI))
             args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
         mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
-        if (mLoaderId == -1) {
-            mLoaderId = Constants.nextId();
-        }
-        getLoaderManager().initLoader(mLoaderId, args, this);
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
- //       init();
-        final View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
+
         String key = getLoaderKey();
         if ((savedInstanceState != null) && savedInstanceState.containsKey(key)) {
             mLoaderId = savedInstanceState.getInt(key);
         } else {
-            mLoaderId = -1;
+            mLoaderId = Constants.nextId();;
+        }
+        if ((savedInstanceState != null) && savedInstanceState.containsKey(LAST_SEL_ITEM)) {
+            mSelMovieDbId = savedInstanceState.getLong(LAST_SEL_ITEM);
+        } else {
+            mSelMovieDbId = 0;
         }
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         int colnum = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)?3:2;
         mGridLayoutManager = new GridLayoutManager(getContext(), colnum);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
-        float space = getResources().getDimension(R.dimen.dimen_1dp)/2;
-        RecyclerView.ItemDecoration itemDecoration = new SpacesItemDecoration(2);
-        mRecyclerView.addItemDecoration(itemDecoration);
-
-        Bundle args = getArguments();
-        mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration(getResources().getDimension(R.dimen.dimen_1dp)));
 
         mAdapter = new MovieRecyclerViewAdapter( this );
         mRecyclerView.setAdapter(mAdapter);
-
         return rootView;
     }
     String getLoaderKey() {
-        if (mUri != null) {
-            return "LOADER_ID_" + mUri;
-        }  else {
-            Log.w(LOG_TAG, "getLoaderKey null mUri") ;
-            return null;
-        }
+        return (mUri != null)? "LOADER_ID_" + mUri.toString() : null;
     }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mLoaderId != -1)
-            outState.putLong(getLoaderKey(), mLoaderId);
-
+            outState.putInt(getLoaderKey(), mLoaderId);
+        if (mSelMovieDbId != -1)
+            outState.putLong(LAST_SEL_ITEM, mSelMovieDbId);
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -174,23 +160,17 @@ public class MovieMainFragment extends Fragment
             return;
         }
     }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Bundle args = getArguments();
         if (!args.containsKey(MainActivity.PAGE_DATA_URI))
             args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
-        if (mLoaderId == -1) {
-            mLoaderId = Constants.nextId();
-        }
         getLoaderManager().initLoader(mLoaderId, args, this);
     }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Loader<Cursor> ret = null;
-
         if ((mLoaderId == id) && args.containsKey(MainActivity.PAGE_DATA_URI)) {
             mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
             ret = new CursorLoader(getContext(), mUri, MAIN_MOVIE_COLUMNS, null, null, MovieContract.MovieEntry._ID + " asc");
@@ -199,7 +179,6 @@ public class MovieMainFragment extends Fragment
         }
         return ret;
     }
-
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.v(LOG_TAG, "+++RA+++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
@@ -213,28 +192,11 @@ public class MovieMainFragment extends Fragment
                     data.moveToFirst();
                 }
                 mAdapter.swapCursor(data);
-                if ( mFirstMovieDbId == -1)
-                    mFirstMovieDbId = data.getLong(COL_ID);
-            } else if (!isFav) {
-                try {
-                    Thread.sleep(100);              // sleep 100 ms
-                } catch (InterruptedException iex) {
-                    Log.w(LOG_TAG, "+++++Thread.sleep: cannot sleep!!!");
-                }
-                Bundle args = new Bundle();
-                args.putParcelable(MainActivity.PAGE_DATA_URI, mUri);
-                getLoaderManager().restartLoader(loader.getId(), args, this);
+                if ( mSelMovieDbId == -1)
+                    mSelMovieDbId = data.getLong(COL_ID);
             }
         }
     }
-
-    /**
-     * Called when a previously created loader is being reset, and thus
-     * making its data unavailable.  The application should at this point
-     * remove any references it has to the Loader's data.
-     *
-     * @param loader The Loader that is being reset.
-     */
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         if (mLoaderId == loader.getId())
