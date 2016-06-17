@@ -1,11 +1,13 @@
 package com.coderming.movieapp;
 
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -44,7 +46,6 @@ public class MovieMainFragment extends Fragment
     private RecyclerView mRecyclerView;
     private GridLayoutManager mGridLayoutManager;
     private int mLoaderId = -1;
-    private long mSelMovieDbId = -1;
     private Uri mUri;
 
     public MovieMainFragment() {  }
@@ -116,11 +117,7 @@ public class MovieMainFragment extends Fragment
         } else {
             mLoaderId = Constants.nextId();;
         }
-        if ((savedInstanceState != null) && savedInstanceState.containsKey(LAST_SEL_ITEM)) {
-            mSelMovieDbId = savedInstanceState.getLong(LAST_SEL_ITEM);
-        } else {
-            mSelMovieDbId = -1;
-        }
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         int colnum = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)?3:2;
         mGridLayoutManager = new GridLayoutManager(getContext(), colnum);
@@ -134,32 +131,47 @@ public class MovieMainFragment extends Fragment
     String getLoaderKey() {
         return (mUri != null)? "LOADER_ID_" + mUri.toString() : null;
     }
-    public Long getSelMovieDbId() {
-        return mSelMovieDbId;
+    String getSelectKey() {
+        return (mUri != null)? "LAST_SEL_" + mUri.toString() : null;
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mLoaderId != -1)
             outState.putInt(getLoaderKey(), mLoaderId);
-        outState.putLong(LAST_SEL_ITEM, mAdapter.getSelMovieDbId());
     }
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isResumed())
         {
-            //Only manually call onResume if fragment is already visible
-            //Otherwise allow natural fragment lifecycle to call onResume
             onResume();
         }
     }
+    @Override
+    public void onPause() {
+        super.onPause();
+        Long sel = mAdapter.getSelMovieDbId();
+        Log.v(LOG_TAG, String.format("+++BV+=> onPause: uri=%s, sel=%s", mUri, (sel==null)?"null":Long.toString(sel)));
+        if ((sel != null) && (sel.longValue() != -1)) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putLong(getSelectKey(), sel);
+            editor.commit();
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         if (!getUserVisibleHint()) {
             return;
         }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String key = getSelectKey();
+        Long sel = prefs.getLong(key, -1l);
+        Log.v(LOG_TAG, String.format("+++BV++<= onResume: uri=%s, sel=%s", mUri, (sel==null)?"null":Long.toString(sel)));
+        mAdapter.setSelMovieDbId(sel);
     }
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
