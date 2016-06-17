@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -100,6 +101,16 @@ public class MovieMainFragment extends Fragment
     }
     private void setLayoutMgmgt(int col, int space) {
         mAdapter.notifyDataSetChanged();
+    }
+    private void intiateMyDataLoader() {
+        Bundle args = getArguments();
+        if (!args.containsKey(MainActivity.PAGE_DATA_URI))
+            args.putParcelable(MainActivity.PAGE_DATA_URI, MovieContract.MovieEntry.CONTENT_POPULAR_URI);
+        mUri = args.getParcelable(MainActivity.PAGE_DATA_URI);
+        if (mLoaderId == -1) {
+            mLoaderId = Constants.nextId();
+        }
+        getLoaderManager().initLoader(mLoaderId, args, this);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -231,7 +242,8 @@ public class MovieMainFragment extends Fragment
                     data.moveToFirst();
                 }
                 mAdapter.swapCursor(data);
-                mFirstMovieDbId = data.getLong(COL_ID);
+                if ( mFirstMovieDbId == -1)
+                    mFirstMovieDbId = data.getLong(COL_ID);
             } else if (!isFav) {
                 try {
                     Thread.sleep(100);              // sleep 100 ms

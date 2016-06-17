@@ -22,10 +22,10 @@ android {
         }
     }
     buildTypes.each {
-        if ( project.hasProperty("themoviedbApiKKeyProp") ) {
-            it.buildConfigField 'String', 'MOVIE_DB_API_KEY', themoviedbApiKKeyProp
+        if ( project.hasProperty("themoviedbApiKeyProp") ) {
+            it.buildConfigField 'String', 'MOVIE_DB_API_KEY', themoviedbApiKeyProp
         } else {
-            logger.warn("Missing themoviedbApiKKeyProp ");
+            logger.warn("Missing themoviedbApiKeyProp ");
         }
     }
 }

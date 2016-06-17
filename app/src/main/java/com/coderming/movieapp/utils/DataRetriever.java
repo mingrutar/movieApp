@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.coderming.movieapp.BuildConfig;
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.data.MovieContract.DetailEntry;
 
@@ -53,7 +54,7 @@ public class DataRetriever {
             ContentValues values;
             for (String data : SUPPORTED_DETAIL_TYPES) {
                 try {
-                    String urlStr = String.format(mDetailUri, movieId, data);
+                    String urlStr = String.format(mDetailUri, movieId, data, BuildConfig.MOVIE_DB_API_KEY);
                     Log.v(LOG_TAG, "++++s+++ retrieveDetails: uri=" + urlStr);
                     String jsonStr = retrieveData(context, new URL(urlStr));
                     if (jsonStr != null) {
@@ -84,9 +85,9 @@ public class DataRetriever {
 
     static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String mMovieUri =
-            "https://api.themoviedb.org/3/movie/%s?page=%d&api_key=cdf5f229abf9f31735694c38c48a67ac";
+            "https://api.themoviedb.org/3/movie/%s?page=%d&api_key=%s";
     private static final String mDetailUri =
-            "https://api.themoviedb.org/3/movie/%d/%s?api_key=cdf5f229abf9f31735694c38c48a67ac";
+            "https://api.themoviedb.org/3/movie/%d/%s?api_key=%s";
 
     private static int[] parseJson2Db(Context context, String jsonStr, MovieContract.MovieSelectionType type) throws JSONException {
         JSONObject jobj = new JSONObject(jsonStr);
@@ -136,7 +137,7 @@ public class DataRetriever {
     public static int[] retrieveMovies(Context context, MovieContract.MovieSelectionType type, int page) {
         // Will contain the raw JSON response as a string.
         try {
-            String urlStr = String.format(mMovieUri, type.toString(), page);
+            String urlStr = String.format(mMovieUri, type.toString(), page, BuildConfig.MOVIE_DB_API_KEY);
             Log.v(LOG_TAG, "++++s+++ retrieveMovies: uri=" + urlStr);
             String jsonStr = retrieveData(context, new URL(urlStr));
             if (jsonStr != null) {
