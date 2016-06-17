@@ -44,9 +44,12 @@ import java.util.List;
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
-    private static String MOVIE_FUN_SHARE_HASHTAG = "#MovieFunApp";
-    private int mMovieLoaderId;
-    private int mDetailLoaderId;
+    private static final String MOVIE_FUN_SHARE_HASHTAG = "#MovieFunApp";
+    private static final String DBLOADER_MOVIE_ID = "DBLOADERMOVIE_ID";
+    private static final String DBLOADER_EXTRA_ID = "DBLOADEREXTRA_ID";
+
+    private int mMovieLoaderId = -1;
+    private int mDetailLoaderId = -1;
     private long mMovieId;
 
     private ShareActionProvider mShareActionProvider;
@@ -90,13 +93,32 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     public DetailFragment() {
         // Required empty public constructor
-        mMovieLoaderId = Constants.nextId();
-        mDetailLoaderId = Constants.nextId();
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mMovieLoaderId != -1)
+            outState.putInt(DBLOADER_MOVIE_ID, mMovieLoaderId);
+        if (mDetailLoaderId != -1)
+            outState.putInt(DBLOADER_EXTRA_ID, mDetailLoaderId);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(DBLOADER_MOVIE_ID))
+                mMovieLoaderId = savedInstanceState.getInt(DBLOADER_MOVIE_ID);
+            if (savedInstanceState.containsKey(DBLOADER_EXTRA_ID))
+                mDetailLoaderId = savedInstanceState.getInt(DBLOADER_EXTRA_ID);
+        }
+        if (mMovieLoaderId == -1)
+            mMovieLoaderId = Constants.nextId();
+        if (mDetailLoaderId == -1)
+            mDetailLoaderId = Constants.nextId();
+
         Bundle args = getArguments();
         getLoaderManager().initLoader(mMovieLoaderId, args, this);
         if (args != null) {

@@ -120,6 +120,7 @@
                 android:layout_marginLeft="@dimen/dimen_4dp"
                 android:layout_marginRight="@dimen/dimen_4dp"
                 android:padding="@dimen/dimen_4dp"
+                android:background="@color/white"
                 android:orientation="vertical">
                 <TextView
                     style="@style/secction_title"

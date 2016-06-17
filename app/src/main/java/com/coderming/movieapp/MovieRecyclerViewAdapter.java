@@ -3,8 +3,6 @@ package com.coderming.movieapp;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +15,6 @@ import android.widget.ImageView;
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +28,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     private Uri mUri;
     private Cursor mCursor;
     private Context mContext;
-    private Fragment mFragment;
-
+    private Long mSelDbID;
 //    private List<OnLoadFinishListener> mLoaderSubscriber;    TODO: not used for now
     private List<ItemClickedCallback> mItemClickedCallbacks;
 
@@ -40,26 +36,24 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         void onItemClicked(Uri uri);
     }
 
-//    public interface OnLoadFinishListener {
-//        void onLoadFinish(Uri pageUri, int size);
-//    }
-
     public MovieRecyclerViewAdapter(Fragment fragment) {
-        mFragment = fragment;
         mContext = fragment.getContext();
-//        mLoaderSubscriber = new ArrayList<>();
-//        if (fragment instanceof OnLoadFinishListener) {
-//            mLoaderSubscriber.add((OnLoadFinishListener)fragment);
-//        }
-
         mItemClickedCallbacks = new ArrayList<>();
         Activity activity = fragment.getActivity();
         if (activity instanceof ItemClickedCallback) {
             mItemClickedCallbacks.add((ItemClickedCallback)activity);
         }
     }
-
+    void setSelMovieDbId(Long val) {
+        Log.v(LOG_TAG, "+++BV+++setSelMovieDbId: val = "+Long.toString(val)) ;
+        mSelDbID = val;
+    }
+    public Long getSelMovieDbId() {
+        Log.v(LOG_TAG, "+++BV+++getSelMovieDbId: val = "+((mSelDbID==null)?"null":Long.toString(mSelDbID)));
+        return mSelDbID;
+    }
     public void notifyItemSelected(Long movieDbId) {
+        mSelDbID = movieDbId;
         Uri uri = MovieContract.MovieEntry.buildUri( movieDbId.longValue() );
         for (ItemClickedCallback callback : mItemClickedCallbacks ) {
             callback.onItemClicked(uri);
@@ -70,15 +64,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item, parent, false);
         return new RecyclerViewHolders(view);
     }
-    Long movieDbId;
-    public boolean readyForLayout() {
-        if (movieDbId != null) {
-//            notifyItemSelected(movieDbId);
-            movieDbId = null;
-            return true;
-        } else
-            return false;
-    }
     @Override
     public void onBindViewHolder(final RecyclerViewHolders holder, int position) {
         if (mCursor != null) {
@@ -88,31 +73,25 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                     , String.valueOf(mContext.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)),
                     mCursor.getString(MovieMainFragment.COL_POSTER_PATH));
-            if (position == 0) {
-                if (movieDbId == null)
-                    movieDbId = mid;
-                Log.v(LOG_TAG, String.format("+++RA+++ onBindViewHolder, position=%d, url=%s", position, url));
+            if ((position == 0) && (mSelDbID != null) && (mSelDbID == -1)) {
+                Log.v(LOG_TAG, String.format("+++BV+++ position == 0,dbid=%d", mid));
+                mSelDbID = mid;
             }
-            Picasso.with(mContext).load(url).into(new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    holder.mImageView.setImageBitmap(bitmap);
-                }
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    Log.w(LOG_TAG, "Fail to load poster image at "+url);
-                }
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-                }
-            });
-
+            Picasso.with(mContext).load(url)
+                    .error(R.drawable.placeholder)
+                    .placeholder(R.drawable.placeholder)
+                    .into(holder.mImageView);
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     notifyItemSelected((Long) v.getTag());
                 }
             });
+            if (mid.equals(mSelDbID)) {
+                boolean ret = holder.mView.performClick();
+                Log.v(LOG_TAG, String.format("+++BV+++ onBindViewHolder,dbid=%d, position=%d, click()=%s", mid, position, ret));
+                //TODO: draw a red box
+            }
         }
     }
     @Override
@@ -124,7 +103,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         Cursor ret = null;
         if (mCursor == null) {
             mCursor = cursor;
-        } else {
+        } else if (!mCursor.equals(cursor)){
             mCursor.close();
             ret = mCursor;
             mCursor = cursor;
@@ -152,11 +131,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             mImageView = (ImageView) itemView.findViewById(R.id.movie_poster);
         }
 
-        /**
-         * Called when a view has been clicked.
-         *
-         * @param v The view that was clicked.
-         */
         @Override
         public void onClick(View v) {
         }
