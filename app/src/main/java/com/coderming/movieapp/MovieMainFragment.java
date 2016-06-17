@@ -120,7 +120,7 @@ public class MovieMainFragment extends Fragment
         if ((savedInstanceState != null) && savedInstanceState.containsKey(LAST_SEL_ITEM)) {
             mSelMovieDbId = savedInstanceState.getLong(LAST_SEL_ITEM);
         } else {
-            mSelMovieDbId = 0;
+            mSelMovieDbId = -1;
         }
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         int colnum = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)?3:2;
@@ -192,8 +192,6 @@ public class MovieMainFragment extends Fragment
                     data.moveToFirst();
                 }
                 mAdapter.swapCursor(data);
-                if ( mSelMovieDbId == -1)
-                    mSelMovieDbId = data.getLong(COL_ID);
             }
         }
     }

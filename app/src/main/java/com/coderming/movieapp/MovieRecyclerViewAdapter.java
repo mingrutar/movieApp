@@ -37,17 +37,9 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         void onItemClicked(Uri uri);
     }
 
-//    public interface OnLoadFinishListener {
-//        void onLoadFinish(Uri pageUri, int size);
-//    }
-
     public MovieRecyclerViewAdapter(Fragment fragment) {
         mFragment = fragment;
         mContext = fragment.getContext();
-//        mLoaderSubscriber = new ArrayList<>();
-//        if (fragment instanceof OnLoadFinishListener) {
-//            mLoaderSubscriber.add((OnLoadFinishListener)fragment);
-//        }
 
         mItemClickedCallbacks = new ArrayList<>();
         Activity activity = fragment.getActivity();
@@ -128,11 +120,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             mImageView = (ImageView) itemView.findViewById(R.id.movie_poster);
         }
 
-        /**
-         * Called when a view has been clicked.
-         *
-         * @param v The view that was clicked.
-         */
         @Override
         public void onClick(View v) {
         }
