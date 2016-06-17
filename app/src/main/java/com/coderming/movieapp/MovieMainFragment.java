@@ -46,7 +46,6 @@ public class MovieMainFragment extends Fragment
     private int mLoaderId = -1;
     private long mSelMovieDbId = -1;
     private Uri mUri;
-    private boolean mIsRefreshed;
 
     public MovieMainFragment() {  }
 
@@ -135,13 +134,15 @@ public class MovieMainFragment extends Fragment
     String getLoaderKey() {
         return (mUri != null)? "LOADER_ID_" + mUri.toString() : null;
     }
+    public Long getSelMovieDbId() {
+        return mSelMovieDbId;
+    }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mLoaderId != -1)
             outState.putInt(getLoaderKey(), mLoaderId);
-        if (mSelMovieDbId != -1)
-            outState.putLong(LAST_SEL_ITEM, mSelMovieDbId);
+        outState.putLong(LAST_SEL_ITEM, mAdapter.getSelMovieDbId());
     }
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
