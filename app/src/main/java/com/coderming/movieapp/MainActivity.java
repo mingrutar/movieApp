@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
 //    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 //        @Override
 //        public void onReceive(Context context, Intent intent) {
-//            Log.v(LOG_TAG, "++ onReceive received intent");
 //            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 //            NetworkInfo activeNetwork =cm.getActiveNetworkInfo();
 //            if (activeNetwork != null) {
@@ -96,13 +95,11 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
 
     void callSync() {
         if (System.currentTimeMillis() > lastSyncTime + DAY_IN_MILLISEC ) {
-            Log.v(LOG_TAG, "++++ calling syncImmediately ");
             MovieSyncAdapter.syncImmediately(this);
         }
     }
     @Override
     protected void onPause() {
-        Log.v(LOG_TAG, String.format("----onPause mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(SELECTED_FRAG, mSelectedFrag);
@@ -112,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
 
     @Override
     public void onResume() {
-        Log.v(LOG_TAG, String.format("----onResume mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         this.mSelectedFrag = prefs.getInt(SELECTED_FRAG, 0);
@@ -129,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.v(LOG_TAG, String.format("----onCreateOptionsMenu, mSelectedFrag=%d", mSelectedFrag));
         getMenuInflater().inflate(R.menu.movie_main, menu);
 
         MenuItem item = menu.findItem(R.id.spinner);
@@ -169,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         return super.onOptionsItemSelected(item);
     }
     public void onPageSelected(int position) {
-        Log.v(LOG_TAG, "****** onPageSelected called, pos="+Integer.toString(position));
         mViewPager.setCurrentItem(position);
         mViewPager.getAdapter().notifyDataSetChanged();
         // TODO: remove
@@ -218,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         }
         @Override
         public int getCount() {
-//            Log.v(LOG_TAG, "----- getCount, size=" + Integer.toString(mFragments.size()));
             return listTypes.length;
         }
         public Fragment getItem(int position) {
@@ -232,8 +225,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
                     mmf.setArguments(args);
                     mFramentsMap.put(key, mmf);
                 }
-                Log.v(LOG_TAG, String.format("!!!!!! getItem called, key=%s pos=%d, newFrag=%s",
-                        key, position, newFrag));
                 return mFramentsMap.get(key);
             } else {
                 Log.w(LOG_TAG, "!!!!ERROR invalid position=" + Integer.toString(position));

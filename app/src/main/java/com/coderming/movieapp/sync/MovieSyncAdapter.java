@@ -31,19 +31,16 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
     }
     public static void initializeSyncAdapter(Context context) {
-        Log.v(LOG_TAG, "++++s+++ initializeSyncAdapter called" );
         getSyncAccount(context);
     }
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-        Log.v(LOG_TAG, "++++++ onPerformSync is called ");
 
         if (extras.containsKey(MOVIE_ID)) {
             long movieDbId = extras.getLong(MOVIE_ID);
             DataRetriever.retrieveDetails (getContext(), movieDbId);
-            Log.v(LOG_TAG, "++++D++ onPerformSync retrieving detail for movie id "+Long.toString(movieDbId));
         }  else {
             int totalPages = -1;
             int[] ret = null;
@@ -55,13 +52,9 @@ public class MovieSyncAdapter extends AbstractThreadedSyncAdapter {
                     totalPages = Math.min(ret[1], Utilities.getRecordLimmit(getContext(), type));
                     currentPage++;
                     for (; currentPage <= totalPages; currentPage++) {
-                        Log.v(LOG_TAG, String.format("++++M++ onPerformSync movie, type=%s page=%d",
-                                type.toString(), currentPage) );
                         DataRetriever.retrieveMovies(getContext(), type, currentPage);
                     }
                 } else {
-                    //TODO Register subsribe connection status
-                    Log.v(LOG_TAG, "++++++ onPerformSync failed to retrieve data. ");
                 }
             }
         }

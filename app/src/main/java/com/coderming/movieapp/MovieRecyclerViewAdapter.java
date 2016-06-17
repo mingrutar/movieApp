@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,11 +44,9 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         }
     }
     void setSelMovieDbId(Long val) {
-        Log.v(LOG_TAG, "+++BV+++setSelMovieDbId: val = "+Long.toString(val)) ;
         mSelDbID = val;
     }
     public Long getSelMovieDbId() {
-        Log.v(LOG_TAG, "+++BV+++getSelMovieDbId: val = "+((mSelDbID==null)?"null":Long.toString(mSelDbID)));
         return mSelDbID;
     }
     public void notifyItemSelected(Long movieDbId) {
@@ -74,7 +71,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                     , String.valueOf(mContext.getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185)),
                     mCursor.getString(MovieMainFragment.COL_POSTER_PATH));
             if ((position == 0) && (mSelDbID != null) && (mSelDbID == -1)) {
-                Log.v(LOG_TAG, String.format("+++BV+++ position == 0,dbid=%d", mid));
                 mSelDbID = mid;
             }
             Picasso.with(mContext).load(url)
@@ -89,7 +85,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             });
             if (mid.equals(mSelDbID)) {
                 boolean ret = holder.mView.performClick();
-                Log.v(LOG_TAG, String.format("+++BV+++ onBindViewHolder,dbid=%d, position=%d, click()=%s", mid, position, ret));
                 //TODO: draw a red box
             }
         }

@@ -152,7 +152,6 @@ public class MovieMainFragment extends Fragment
     public void onPause() {
         super.onPause();
         Long sel = mAdapter.getSelMovieDbId();
-        Log.v(LOG_TAG, String.format("+++BV+=> onPause: uri=%s, sel=%s", mUri, (sel==null)?"null":Long.toString(sel)));
         if ((sel != null) && (sel.longValue() != -1)) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = prefs.edit();
@@ -170,7 +169,6 @@ public class MovieMainFragment extends Fragment
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String key = getSelectKey();
         Long sel = prefs.getLong(key, -1l);
-        Log.v(LOG_TAG, String.format("+++BV++<= onResume: uri=%s, sel=%s", mUri, (sel==null)?"null":Long.toString(sel)));
         mAdapter.setSelMovieDbId(sel);
     }
     @Override
@@ -194,7 +192,6 @@ public class MovieMainFragment extends Fragment
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.v(LOG_TAG, "+++RA+++ onLoadFinished, cursor count=" + ((data==null)?"null" : Integer.toString(data.getCount())));
         if (mLoaderId == loader.getId()) {
             boolean isFav = Utilities.isFavoritePage(mUri);
             if (data.moveToFirst()) {

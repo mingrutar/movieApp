@@ -55,7 +55,6 @@ public class DataRetriever {
             for (String data : SUPPORTED_DETAIL_TYPES) {
                 try {
                     String urlStr = String.format(mDetailUri, movieId, data, BuildConfig.MOVIE_DB_API_KEY);
-                    Log.v(LOG_TAG, "++++s+++ retrieveDetails: uri=" + urlStr);
                     String jsonStr = retrieveData(context, new URL(urlStr));
                     if (jsonStr != null) {
                         JSONObject jobj = new JSONObject(jsonStr);
@@ -66,8 +65,6 @@ public class DataRetriever {
                             values.put(DetailEntry.COLUMN_DETAIL_DATA, jarr.toString());
                             values.put(DetailEntry.COLUMN_TYPE, data);
                             Uri uri = context.getContentResolver().insert(DetailEntry.CONTENT_URI, values);
-                            Log.v(LOG_TAG, String.format("retrieveDetails inserted movieId=%d, type=%s =>uri=%s",
-                                    movieDbID, data, uri));
                         }
                     }
                 } catch (MalformedURLException mfe) {
@@ -91,7 +88,6 @@ public class DataRetriever {
 
     private static int[] parseJson2Db(Context context, String jsonStr, MovieContract.MovieSelectionType type) throws JSONException {
         JSONObject jobj = new JSONObject(jsonStr);
-        Log.v(LOG_TAG, "++++s+++ parseJson2Db. json str length= "+Integer.toString(jsonStr.length()));
         int[] ret = new int[3];
         ret[0] = jobj.getInt(Constants.TAG_page);             //currentPage
         ret[1] = jobj.getInt(Constants.TAG_TOTAL_PAGES);      //totalPages
@@ -129,7 +125,6 @@ public class DataRetriever {
             ContentValues[] contentValues = new ContentValues[movies.size()];
             movies.toArray(contentValues);
             int inserted = context.getContentResolver().bulkInsert(uri, contentValues);
-            Log.v(LOG_TAG, String.format("+++ %d record inserted, %d moview received", inserted, movies.size()));
         }
         return ret;
     }
@@ -138,7 +133,6 @@ public class DataRetriever {
         // Will contain the raw JSON response as a string.
         try {
             String urlStr = String.format(mMovieUri, type.toString(), page, BuildConfig.MOVIE_DB_API_KEY);
-            Log.v(LOG_TAG, "++++s+++ retrieveMovies: uri=" + urlStr);
             String jsonStr = retrieveData(context, new URL(urlStr));
             if (jsonStr != null) {
                 return parseJson2Db(context, jsonStr, type);
@@ -170,10 +164,9 @@ public class DataRetriever {
                     buffer.append(line).append("\n");
                 }
                 if (buffer.length() != 0) {
-                    Log.v(LOG_TAG, "++++ got "+Integer.toString(buffer.length())+" bytes from remote: url="+url);
                     return buffer.toString();
                 } else {
-                    Log.v(LOG_TAG, "++++ got 0 bytes from remote: url="+url);
+                    Log.i(LOG_TAG, "++++ got 0 bytes from remote: url="+url);
                 }
             }
             syncSucceed = true;

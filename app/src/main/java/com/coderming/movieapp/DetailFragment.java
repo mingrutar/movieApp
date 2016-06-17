@@ -208,7 +208,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         final String url = String.format(Constants.FORMATTER_PICASSO_IMAGE_LOADER
                 , String.valueOf(getResources().getDimensionPixelSize(R.dimen.moviedb_image_width_185))
                 , imagePath);
-        Log.v(LOG_TAG, String.format("++++ fillPage, title=%s, url=%s", mTitle.getText(), url ));
 
         Picasso.with(getContext()).load(url).into(new Target() {
             @Override
@@ -238,7 +237,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     if (videos.size() > 0) {
                         mTailerListView.setVisibility(View.VISIBLE);
                         ((ArrayAdapter<Details.Video>) mTailerListView.getAdapter()).addAll(videos);
-                        Log.v(LOG_TAG, "+++++fillExtraData #video="+Integer.toString(videos.size()));
                     } else {
                         mTailerListView.setVisibility(View.INVISIBLE);
                     }
