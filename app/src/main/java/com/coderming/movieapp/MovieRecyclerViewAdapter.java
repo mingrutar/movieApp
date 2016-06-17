@@ -3,8 +3,6 @@ package com.coderming.movieapp;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +15,6 @@ import android.widget.ImageView;
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,20 +90,10 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                     movieDbId = mid;
                 Log.v(LOG_TAG, String.format("+++RA+++ onBindViewHolder, position=%d, url=%s", position, url));
             }
-            Picasso.with(mContext).load(url).into(new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    holder.mImageView.setImageBitmap(bitmap);
-                }
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    Log.w(LOG_TAG, "Fail to load poster image at "+url);
-                }
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-                }
-            });
-
+            Picasso.with(mContext).load(url)
+                    .error(R.drawable.placeholder)
+                    .placeholder(R.drawable.placeholder)
+                    .into(holder.mImageView);
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

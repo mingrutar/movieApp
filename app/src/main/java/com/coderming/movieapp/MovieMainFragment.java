@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,7 +19,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
@@ -175,32 +172,6 @@ public class MovieMainFragment extends Fragment
         super.onResume();
         if (!getUserVisibleHint()) {
             return;
-        }
-        if (mFirstMovieDbId != -1) {
-            mAdapter.notifyItemSelected(mFirstMovieDbId);
-            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
-                    mAdapter.notifyDataSetChanged();
-                }
-            });
-        } else if (!MovieContract.MovieEntry.CONTENT_FAVORITE_URI.equals(mUri)) {
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    if (mAdapter.readyForLayout()) {
-                        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                Log.v(LOG_TAG, "$*$*$*$* onGlobalLayout called");
-                                mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-                }
-            }, 5000);           // in milli
         }
     }
 
