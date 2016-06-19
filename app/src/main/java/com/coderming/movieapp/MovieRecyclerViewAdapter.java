@@ -29,13 +29,13 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     private Cursor mCursor;
     private Context mContext;
     private Long mSelDbID;
-    private boolean mFirstRec;
 
 //    private List<OnLoadFinishListener> mLoaderSubscriber;    TODO: not used for now
     private List<ItemClickedCallback> mItemClickedCallbacks;
 
     public interface ItemClickedCallback {
-        void onItemClicked(Uri uri, boolean firstRec);
+        void onItemClicked(Uri uri);
+        void initialSelection(Uri uri);
     }
 
     public MovieRecyclerViewAdapter(Fragment fragment) {
@@ -58,10 +58,8 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         mSelDbID = movieDbId;
         Uri uri = MovieContract.MovieEntry.buildUri( movieDbId.longValue() );
         for (ItemClickedCallback callback : mItemClickedCallbacks ) {
-            callback.onItemClicked(uri, mFirstRec);
+            callback.onItemClicked(uri);
         }
-        if (mFirstRec)
-            mFirstRec = !mFirstRec;
     }
     @Override
     public RecyclerViewHolders onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -92,9 +90,12 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                 }
             });
             if (mid.equals(mSelDbID)) {
-                mFirstRec = true;
-                boolean ret = holder.mView.performClick();
-                Log.v(LOG_TAG, String.format("+++BV+++ onBindViewHolder,dbid=%d, position=%d, mFirstRec=%s", mid, position, mFirstRec));
+                Uri uri = MovieContract.MovieEntry.buildUri( mSelDbID.longValue() );
+                for (ItemClickedCallback callback : mItemClickedCallbacks ) {
+                        callback.initialSelection(uri);
+                }
+//                boolean ret = holder.mView.performClick();
+                Log.v(LOG_TAG, String.format("+++BV+++ onBindViewHolder,dbid=%d, position=%d", mid, position));
                 //TODO: draw a red box
             }
         }

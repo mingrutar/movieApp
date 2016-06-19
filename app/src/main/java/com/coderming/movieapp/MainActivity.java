@@ -180,18 +180,28 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         mViewPager.requestLayout();
     }
 
+    private void showinDetailPane(Uri uri) {
+        DetailFragment df = new DetailFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(Constants.DETAIL_URI, uri);
+        df.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.detail_container, df, DETAILFRAGMENT_TAG)
+                .commit();
+    }
     @Override
-    public void onItemClicked(Uri uri, boolean bFirst) {
-        Log.v(LOG_TAG, "+++BV+++ bFirst="+bFirst+", mTwoPane="+mTwoPane);
+    public void initialSelection(Uri uri) {
+        Log.v(LOG_TAG, "+++BV+++ mTwoPane="+mTwoPane);
         if (mTwoPane) {
-            DetailFragment df = new DetailFragment();
-            Bundle args = new Bundle();
-            args.putParcelable(Constants.DETAIL_URI, uri);
-            df.setArguments(args);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.detail_container, df, DETAILFRAGMENT_TAG)
-                    .commit();
-        } else if (!bFirst) {
+            showinDetailPane(uri);
+        }
+    }
+    @Override
+    public void onItemClicked(Uri uri) {
+        Log.v(LOG_TAG, "+++BV+++ mTwoPane="+mTwoPane);
+        if (mTwoPane) {
+            showinDetailPane(uri);
+        } else {
             Intent detailIntent = new Intent(this, DetailActivity.class).setData(uri);
             startActivity(detailIntent);
         }
