@@ -243,8 +243,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     private static final int UNBOUNDED = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-    private int mVideoRowHeight;
-    private int mReviewRowHeight;
     private void fillExtraData(Cursor cursor) {
         do {
             try {
@@ -255,10 +253,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     if (numVideo > 0) {
                         mTailerListView.setVisibility(View.VISIBLE);
                         ((ArrayAdapter<Details.Video>) mTailerListView.getAdapter()).addAll(videos);
-
                         ViewGroup.LayoutParams params = mTailerListView.getLayoutParams();
-                        params.height = Math.max(3, numVideo) * getResources().getDimensionPixelSize(R.dimen.trailerListItemHeight);
-// it will layout later           mTailerListView.requestLayout();
+                        int nv = (numVideo > 3) ? 3 :numVideo;
+                        params.height = nv * getResources().getDimensionPixelSize(R.dimen.trailerListItemHeight) ;
+                        mTailerListView.setLayoutParams(params);
+                        mTailerListView.requestLayout();
                         Log.v(LOG_TAG, "+++++fillExtraData #video="+Integer.toString(videos.size()));
                     } else {
                         mTailerListView.setVisibility(View.INVISIBLE);
@@ -271,7 +270,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                         mReviewListView.setVisibility(View.VISIBLE);
                         ((ArrayAdapter<Details.Review>)mReviewListView.getAdapter()).addAll(reviews) ;
                         ViewGroup.LayoutParams params = mReviewListView.getLayoutParams();
-//                        params.height = Math.max(3, reviews.size()) * 70;   //mReviewRowHeight
                         mReviewListView.requestLayout();
                     } else {
                         mReviewListView.setVisibility(View.INVISIBLE);
@@ -303,10 +301,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     });
                 }
                 ((TextView)rowView.findViewById(R.id.trailer_textView)).setText(video.getName());
-                if (mVideoRowHeight == 0) {
-                    rowView.measure(UNBOUNDED, UNBOUNDED);
-                    mVideoRowHeight += rowView.getMeasuredHeight();
-                }
                  return rowView;
             }
         };
@@ -322,10 +316,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     rowView = inflater.inflate(R.layout.review_list_item, parent, false);
                 }
                 ((TextView) rowView.findViewById(R.id.review_item_textView)).setText(review.getContent());
-                if (mReviewRowHeight == 0) {
-                    rowView.measure(UNBOUNDED, UNBOUNDED);
-                    mReviewRowHeight += rowView.getMeasuredHeight();
-                }
+//                if (mReviewRowHeight == 0) {
+//                    rowView.measure(UNBOUNDED, UNBOUNDED);
+//                    mReviewRowHeight += rowView.getMeasuredHeight();
+//                }
                 return rowView;
             }
         } );

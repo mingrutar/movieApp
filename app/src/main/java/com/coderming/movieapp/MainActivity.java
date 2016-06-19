@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        unregisterReceiver(mBroadcastReceiver);
+        unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
