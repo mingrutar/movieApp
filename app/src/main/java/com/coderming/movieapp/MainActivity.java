@@ -181,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     }
 
     @Override
-    public void onItemClicked(Uri uri) {
+    public void onItemClicked(Uri uri, boolean bFirst) {
+        Log.v(LOG_TAG, "+++BV+++ bFirst="+bFirst+", mTwoPane="+mTwoPane);
         if (mTwoPane) {
             DetailFragment df = new DetailFragment();
             Bundle args = new Bundle();
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, df, DETAILFRAGMENT_TAG)
                     .commit();
-        } else {
+        } else if (!bFirst) {
             Intent detailIntent = new Intent(this, DetailActivity.class).setData(uri);
             startActivity(detailIntent);
         }
