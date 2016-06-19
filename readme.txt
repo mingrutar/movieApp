@@ -1,10 +1,12 @@
-Udacity P2 project Movie App
+Udacity P2 project MovieApp
 
 See assignment details at
    https://docs.google.com/document/d/1ZlN1fUsCSKuInLECcJkslIqvpKlP7jWL2TP9m6UiA6I/pub?embedded=true#h.ngb5kvi0pkbz
 
-ToDO:
-   Replace the value of 'themoviedbApiKKeyProp' in gradle.properties.
+Citation: the code utilizes https://www.themoviedb.org/ APIs, copyrights of themoviewdb.org.
+
+Please add this line to gradle.properties:
+  themoviedbApiKeyProp="your api key"
 
 Screenshots for P2:
   /screenShorts/p2-device-xxxxx.jpg
