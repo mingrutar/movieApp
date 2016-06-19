@@ -1,8 +1,12 @@
 package com.coderming.movieapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,6 +30,7 @@ import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.data.MovieContract.MovieSelectionType;
 import com.coderming.movieapp.sync.MovieSyncAdapter;
 import com.coderming.movieapp.utils.Constants;
+import com.coderming.movieapp.utils.DataRetriever;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,8 +49,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     private int mSelectedFrag;
     private ViewPager mViewPager;
     private boolean mTwoPane;
-
-    private long lastSyncTime;
 
     static final  MovieSelectionType[] listTypes =  new MovieSelectionType[] {MovieSelectionType.Popular,
             MovieSelectionType.TopRated, MovieSelectionType.Favorite} ;
@@ -67,38 +70,35 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
                 getSupportActionBar().setElevation(0f);
             }
         } else if (savedInstanceState.containsKey(LAST_SYNC_TIME)){
-            lastSyncTime = savedInstanceState.getLong(LAST_SYNC_TIME);
+            DataRetriever.sLastMovieSyncTime = savedInstanceState.getLong(LAST_SYNC_TIME);
         }
-//        registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        callSync();
-    }
-
-//    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            Log.v(LOG_TAG, "++ onReceive received intent");
-//            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//            NetworkInfo activeNetwork =cm.getActiveNetworkInfo();
-//            if (activeNetwork != null) {
-//                boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;  // not in use
-//                if (activeNetwork.isConnectedOrConnecting() && !DataRetriever.syncSucceed ) {
-////                    callSync();
-//                }
-//            }
-//        }
-//    };
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(LAST_SYNC_TIME, lastSyncTime);
-    }
-
-    void callSync() {
-        if (System.currentTimeMillis() > lastSyncTime + DAY_IN_MILLISEC ) {
+        if (isSyncTime(this)) {
             Log.v(LOG_TAG, "++++ calling syncImmediately ");
             MovieSyncAdapter.syncImmediately(this);
         }
+        registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+    }
+
+    private boolean isSyncTime(Context context) {
+        return ((System.currentTimeMillis() > DataRetriever.sLastMovieSyncTime + DAY_IN_MILLISEC )
+                && DataRetriever.isNetworkAvailable(this)) ;
+    }
+    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.v(LOG_TAG, "++ onReceive received intent");
+            if (isSyncTime(context)) {
+                ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;  // not in use
+                MovieSyncAdapter.syncImmediately(context);
+            }
+        }
+    };
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(LAST_SYNC_TIME, DataRetriever.sLastMovieSyncTime);
     }
     @Override
     protected void onPause() {
@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         editor.commit();
         super.onPause();
     }
-
     @Override
     public void onResume() {
         Log.v(LOG_TAG, String.format("----onResume mSelectedFrag=%d,mSinner?=%s", mSelectedFrag,(mSpinner != null)));

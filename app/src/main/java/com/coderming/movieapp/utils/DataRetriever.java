@@ -2,6 +2,8 @@ package com.coderming.movieapp.utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -36,7 +38,7 @@ import java.util.Map;
 public class DataRetriever {
     private static final String LOG_TAG = DataRetriever.class.getSimpleName();
     //
-    public static boolean syncSucceed;
+    public static long sLastMovieSyncTime;
 
     //  detail tags
     public static final String[] SUPPORTED_DETAIL_TYPES = new String[] {"videos", "reviews",  "images",};
@@ -137,6 +139,7 @@ public class DataRetriever {
             Log.v(LOG_TAG, "++++s+++ retrieveMovies: uri=" + urlStr);
             String jsonStr = retrieveData(context, new URL(urlStr));
             if (jsonStr != null) {
+                sLastMovieSyncTime = System.currentTimeMillis();
                 return parseJson2Db(context, jsonStr, type);
             }
         } catch (JSONException jsex) {
@@ -147,46 +150,53 @@ public class DataRetriever {
         return null;
     }
 
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork.isConnected();
+    }
     @Nullable
     private static String retrieveData(Context context, URL url) {
-        HttpURLConnection httpConnection = null;    // android API vs HTTPClient
-        BufferedReader reader = null;
-        String jsonStr = null;
-        try {
-            httpConnection = (HttpURLConnection) url.openConnection();
-            httpConnection.setRequestMethod("GET");
-            httpConnection.connect();
-            // Read the input stream into a String
-            InputStream inputStream = httpConnection.getInputStream();
-            if (inputStream != null) {
-                StringBuilder buffer = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line).append("\n");
+        if (isNetworkAvailable(context)) {
+            HttpURLConnection httpConnection = null;    // android API vs HTTPClient
+            BufferedReader reader = null;
+            String jsonStr = null;
+            try {
+                httpConnection = (HttpURLConnection) url.openConnection();
+                httpConnection.setRequestMethod("GET");
+                httpConnection.connect();
+                // Read the input stream into a String
+                InputStream inputStream = httpConnection.getInputStream();
+                if (inputStream != null) {
+                    StringBuilder buffer = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(inputStream));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line).append("\n");
+                    }
+                    if (buffer.length() != 0) {
+                        Log.v(LOG_TAG, "++++ got " + Integer.toString(buffer.length()) + " bytes from remote: url=" + url);
+                        return buffer.toString();
+                    } else {
+                        Log.v(LOG_TAG, "++++ got 0 bytes from remote: url=" + url);
+                    }
                 }
-                if (buffer.length() != 0) {
-                    Log.v(LOG_TAG, "++++ got "+Integer.toString(buffer.length())+" bytes from remote: url="+url);
-                    return buffer.toString();
-                } else {
-                    Log.v(LOG_TAG, "++++ got 0 bytes from remote: url="+url);
+            } catch (IOException ioe) {
+                Log.e(LOG_TAG, "====Exception retrieveMovies " + ioe.getMessage(), ioe);
+            } finally {
+                if (httpConnection != null) {
+                    httpConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Exception retrieveMovies " + e.getMessage(), e);
+                    }
                 }
             }
-            syncSucceed = true;
-        } catch (IOException ioe) {
-            syncSucceed = false;
-            Log.e(LOG_TAG, "====Exception retrieveMovies "+ioe.getMessage(), ioe);
-        } finally {
-            if (httpConnection != null) {
-                httpConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Exception retrieveMovies "+e.getMessage(), e);
-                }
-            }
+        } else {
+            Log.i(LOG_TAG, "Notwork is unavailable");
         }
         return null;
     }

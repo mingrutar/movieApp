@@ -257,8 +257,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                         ((ArrayAdapter<Details.Video>) mTailerListView.getAdapter()).addAll(videos);
 
                         ViewGroup.LayoutParams params = mTailerListView.getLayoutParams();
-                        params.height = Math.max(3, numVideo) * 40;        // mVideoRowHeight;
-                        mTailerListView.requestLayout();
+                        params.height = Math.max(3, numVideo) * getResources().getDimensionPixelSize(R.dimen.trailerListItemHeight);
+// it will layout later           mTailerListView.requestLayout();
                         Log.v(LOG_TAG, "+++++fillExtraData #video="+Integer.toString(videos.size()));
                     } else {
                         mTailerListView.setVisibility(View.INVISIBLE);
