@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.coderming.movieapp.data.MovieContract;
 import com.coderming.movieapp.utils.Constants;
@@ -71,9 +72,9 @@ public class MovieMainFragment extends Fragment
         if (desityRatio > 1f) {           // if 4K kind
             width = width * desityRatio;
         }
-        int space = Math.round(res.getDimensionPixelSize(R.dimen.dimen_1dp));
-        int numCol = parentSize / space;
-        int extra = parentSize % space;
+        float space =res.getDimensionPixelSize(R.dimen.dimen_1dp);
+        int numCol = parentSize /  Math.round(width+space);
+        int extra = parentSize % Math.round(width+space);
         if ((extra >= width / 2) && (desityRatio <= 1))
             numCol++;
         return numCol;
@@ -119,11 +120,31 @@ public class MovieMainFragment extends Fragment
         }
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
-        int colnum = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)?3:2;
+        int colnum = 2;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            colnum = (sHColNumber == -1) ? 3 : sHColNumber;
+        } else {
+            colnum =  (sVColNumber == -1) ? 2 : sVColNumber;
+        }
+//        int colnum = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)?3:2;
         mGridLayoutManager = new GridLayoutManager(getContext(), colnum);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(getResources().getDimension(R.dimen.dimen_1dp)));
-
+        if (sHColNumber == -1) {
+            ViewTreeObserver vto = mRecyclerView.getViewTreeObserver();
+            if ((vto != null) && vto.isAlive()) {
+                vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        final int width = mRecyclerView.getWidth();
+                        int colNum = calcGridColumnNumber(width, mRecyclerView.getHeight());
+                        mGridLayoutManager.setSpanCount(colNum);
+                        return true;
+                    }
+                });
+            }
+        }
         mAdapter = new MovieRecyclerViewAdapter( this );
         mRecyclerView.setAdapter(mAdapter);
         return rootView;

@@ -28,11 +28,13 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
     private Cursor mCursor;
     private Context mContext;
     private Long mSelDbID;
+
 //    private List<OnLoadFinishListener> mLoaderSubscriber;    TODO: not used for now
     private List<ItemClickedCallback> mItemClickedCallbacks;
 
     public interface ItemClickedCallback {
         void onItemClicked(Uri uri);
+        void initialSelection(Uri uri);
     }
 
     public MovieRecyclerViewAdapter(Fragment fragment) {
@@ -84,7 +86,10 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
                 }
             });
             if (mid.equals(mSelDbID)) {
-                boolean ret = holder.mView.performClick();
+                Uri uri = MovieContract.MovieEntry.buildUri( mSelDbID.longValue() );
+                for (ItemClickedCallback callback : mItemClickedCallbacks ) {
+                        callback.initialSelection(uri);
+                }
                 //TODO: draw a red box
             }
         }
