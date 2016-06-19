@@ -6,6 +6,6 @@
     android:layout_height="match_parent"
     android:id="@+id/detail_container"
     android:fitsSystemWindows="true"
-    tools:context="com.coderming.movieapp.DetailActivity">
-
+    tools:context="com.coderming.movieapp.DetailActivity"
+    android:background="@drawable/caroul_31">
 </FrameLayout>

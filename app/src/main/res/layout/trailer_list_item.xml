@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/trailer_video_control"
         android:layout_gravity="center"
-        android:src="@drawable/play_circle_outline_24dp"/>
+        android:src="@drawable/ic_play_arrow_24dp"/>
     <TextView
         style="@style/secction_text"
         android:id="@+id/trailer_textView"
