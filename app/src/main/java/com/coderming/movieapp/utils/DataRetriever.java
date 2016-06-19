@@ -46,8 +46,10 @@ public class DataRetriever {
         SetailTypeJsonTag.put(SUPPORTED_DETAIL_TYPES[1], "results");
         SetailTypeJsonTag.put(SUPPORTED_DETAIL_TYPES[2], "posters");
     }
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String mMovieUri = "https://api.themoviedb.org/3/movie/%s?page=%d&api_key=%s";
+    private static final String mDetailUri = "https://api.themoviedb.org/3/movie/%d/%s?api_key=%s";
 
-    @Nullable
     public static void retrieveDetails(Context context, long movieDbID ) {
         int movieId = Utilities.getMovieId(context, movieDbID) ;
         if (movieId != -1) {
@@ -82,12 +84,6 @@ public class DataRetriever {
             Log.w(LOG_TAG, "Could not find movie id for movie DB id "+Long.toString(movieDbID));
         }
     }
-
-    static final String DATE_FORMAT = "yyyy-MM-dd";
-    private static final String mMovieUri =
-            "https://api.themoviedb.org/3/movie/%s?page=%d&api_key=%s";
-    private static final String mDetailUri =
-            "https://api.themoviedb.org/3/movie/%d/%s?api_key=%s";
 
     private static int[] parseJson2Db(Context context, String jsonStr, MovieContract.MovieSelectionType type) throws JSONException {
         JSONObject jobj = new JSONObject(jsonStr);
