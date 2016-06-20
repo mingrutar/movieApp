@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
@@ -55,6 +57,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private ShareActionProvider mShareActionProvider;
     private String mMyShareString;
 
+    CardView mCardView;
     TextView mTitle;
     TextView mReleaseDate;
     TextView mNumVote;
@@ -63,7 +66,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     TextView mOverview;
     FloatingActionButton mFab;
     View mImage_Container;
+    TextView mTailerTitle;
     ListView mTailerListView;
+    TextView mReviewTitle;
     ListView mReviewListView;
 //    ArrayAdapter<Details.Video> mTrailerAdapter;
 //    ArrayAdapter<Details.Review> mReviewAdapter;
@@ -133,6 +138,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_detail, container, false);
         mTitle = (TextView) root.findViewById(R.id.title_textView)  ;
+        mCardView= (CardView) root.findViewById(R.id.overview_card_view);
         mReleaseDate = (TextView) root.findViewById(R.id.release_textView);
         mNumVote = (TextView) root.findViewById(R.id.nVoters_textView) ;
         mVoteAverage = (TextView) root.findViewById(R.id.nStar_textView);
@@ -140,7 +146,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mPoster = (ImageView) root.findViewById(R.id.poster_imageView);
         mOverview = (TextView) root.findViewById(R.id.overview_textView);
         mImage_Container = root.findViewById(R.id.poster_container);
+        mTailerTitle = (TextView) root.findViewById(R.id.trail_header);
         mTailerListView = (ListView) root.findViewById(R.id.trailer_listView);
+        mReviewTitle = (TextView) root.findViewById(R.id.review_header);
         mReviewListView = (ListView) root.findViewById(R.id.review_listView);
         setupExtraListViews ();
 
@@ -186,15 +194,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mNumVote.setText(String.format("%d votes", cursor.getInt(COL_VOTE_COUNT)));
         mOverview.setText(cursor.getString(COL_OVERVIEW));
         mPoster.setImageResource(0);
+
         ViewTreeObserver vto = mPoster.getViewTreeObserver();
         vto.addOnPreDrawListener( new ViewTreeObserver.OnPreDrawListener() {
             public boolean onPreDraw() {
                 mPoster.getViewTreeObserver().removeOnPreDrawListener(this);
                 int w = mPoster.getWidth();
-                int pw = mImage_Container.getWidth();
-                if (w > (pw/2))  {
-                    mPoster.getLayoutParams().width = pw/2;
-                }
+                mCardView.getLayoutParams().height = mPoster.getHeight();
+
+//                int pw = mImage_Container.getWidth();
+//                if (w > (pw/2))  {
+//                    mPoster.getLayoutParams().width = pw/2;
+//                }
                 return true;
             }
         });
@@ -222,33 +233,47 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             public void onPrepareLoad(Drawable placeHolderDrawable) {
             }
         });
+
         mMyShareString = String.format("movie %s (%s), %s stars of %s votes",cursor.getString(COL_TITLE),
                 mReleaseDate.getText(), mVoteAverage.getText(), mNumVote.getText());
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareForecastIntent());
         }
     }
+
+    private static final int UNBOUNDED = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
     private void fillExtraData(Cursor cursor) {
         do {
             try {
                 String type = cursor.getString(COL_TYPE);
                 if ("videos".equals(type)) {
                     List<Details.Video> videos =  Details.parseVideos(cursor.getString(COL_DETAIL_DATA));
-                    if (videos.size() > 0) {
+                    int numVideo = videos.size();
+                    if (numVideo > 0) {
                         mTailerListView.setVisibility(View.VISIBLE);
                         ((ArrayAdapter<Details.Video>) mTailerListView.getAdapter()).addAll(videos);
+                        ViewGroup.LayoutParams params = mTailerListView.getLayoutParams();
+                        int nv = (numVideo > 3) ? 3 :numVideo;
+                        params.height = nv * getResources().getDimensionPixelSize(R.dimen.trailerListItemHeight) ;
+                        mTailerListView.setLayoutParams(params);
+                        mTailerListView.requestLayout();
                     } else {
                         mTailerListView.setVisibility(View.INVISIBLE);
                     }
+                    mTailerTitle.setText(String.format("Trailers (%d)", numVideo));
                 } else if ("reviews".equals(type)) {
                     List<Details.Review> reviews =  Details.parseReviews(cursor.getString(COL_DETAIL_DATA));
+                    int numReview = reviews.size();
                     if (reviews.size() > 0) {
                         mReviewListView.setVisibility(View.VISIBLE);
                         ((ArrayAdapter<Details.Review>)mReviewListView.getAdapter()).addAll(reviews) ;
+                        ViewGroup.LayoutParams params = mReviewListView.getLayoutParams();
+                        mReviewListView.requestLayout();
                     } else {
                         mReviewListView.setVisibility(View.INVISIBLE);
                     }
-                } else {
+                    mReviewTitle.setText(String.format("Revies (%d)", numReview) );
+//                } else {
 //                    List<Details.Image> images = Details.parseImages(cursor.getString(COL_DETAIL_DATA));
                     //TODO: use later;
                 }

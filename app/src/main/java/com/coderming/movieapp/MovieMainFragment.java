@@ -63,10 +63,10 @@ public class MovieMainFragment extends Fragment
         double diagonalInches = Math.sqrt(screenWidthInch * screenWidthInch + screenHeightInch * screenHeightInch);
         return (diagonalInches >= 6.5);            // for tablet 3 or 2
     }
-    private int calcColumnNumber (int parentSize) {
+    private int calcColumnNumber (int parentSize, boolean isLongEdge) {
         Resources res = getResources();
         DisplayMetrics displayMetrics = res.getDisplayMetrics();
-        float desityRatio = displayMetrics.xdpi / DisplayMetrics.DENSITY_XHIGH;
+        float desityRatio = (isLongEdge?displayMetrics.ydpi:displayMetrics.xdpi) / DisplayMetrics.DENSITY_HIGH;
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         float width = res.getDimension(R.dimen.moviedb_image_width_185);
         if (desityRatio > 1f) {           // if 4K kind
@@ -74,9 +74,9 @@ public class MovieMainFragment extends Fragment
         }
         float space =res.getDimensionPixelSize(R.dimen.dimen_1dp);
         int numCol = parentSize /  Math.round(width+space);
-        int extra = parentSize % Math.round(width+space);
-        if ((extra >= width / 2) && (desityRatio <= 1))
-            numCol++;
+//        int extra = parentSize % Math.round(width+space);
+//        if ((extra >= width / 2) && (desityRatio <= 1))
+//            numCol++;
         return numCol;
    }
 
@@ -88,8 +88,10 @@ public class MovieMainFragment extends Fragment
             sHColNumber = 3;
             sVColNumber = 2;
         } else {
-            sHColNumber = calcColumnNumber(Math.max(parentWidthPx, parentHeightPx));
-            sVColNumber = calcColumnNumber(Math.min(parentWidthPx, parentHeightPx));
+            int longEdge = Math.max(parentWidthPx, parentHeightPx);
+            int shortEdge = Math.min(parentWidthPx, parentHeightPx);
+            sHColNumber = calcColumnNumber(longEdge, true);
+            sVColNumber = calcColumnNumber(shortEdge, false);
         }
         return isLandscape ? sHColNumber : sVColNumber;
     }
@@ -130,15 +132,14 @@ public class MovieMainFragment extends Fragment
         mGridLayoutManager = new GridLayoutManager(getContext(), colnum);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(getResources().getDimension(R.dimen.dimen_1dp)));
-        if (sHColNumber == -1) {
+        if ((sHColNumber == -1) || (sVColNumber == -1)) {
             ViewTreeObserver vto = mRecyclerView.getViewTreeObserver();
             if ((vto != null) && vto.isAlive()) {
                 vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                     @Override
                     public boolean onPreDraw() {
                         mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        final int width = mRecyclerView.getWidth();
-                        int colNum = calcGridColumnNumber(width, mRecyclerView.getHeight());
+                        int colNum = calcGridColumnNumber(mRecyclerView.getWidth(), mRecyclerView.getHeight());
                         mGridLayoutManager.setSpanCount(colNum);
                         return true;
                     }
