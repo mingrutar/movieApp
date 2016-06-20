@@ -151,7 +151,7 @@
                         style="@style/secction_title"
                         android:paddingLeft="@dimen/dimen_4dp"
                         android:id="@+id/review_header"
-                        android:text="Reviews"    />
+                        android:text="Reviews (0)"    />
                     <ListView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
