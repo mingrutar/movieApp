@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(SELECTED_FRAG, mSelectedFrag);
-        editor.commit();
+        editor.apply();
         super.onPause();
     }
     @Override
