@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     public static final String MOVIEMAIN_TAG = "MOVIEMAIN_TAG";
     public static final String DETAILFRAGMENT_TAG = "DETAILFRAGMENT_TAG";
     public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
+
     private Spinner mSpinner;
     private int mSelectedFrag;
     private ViewPager mViewPager;
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(SELECTED_FRAG, mSelectedFrag);
-        editor.commit();
+        editor.apply();
         super.onPause();
     }
     @Override

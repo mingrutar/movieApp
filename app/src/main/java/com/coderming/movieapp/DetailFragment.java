@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
@@ -40,6 +39,10 @@ import org.json.JSONException;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -57,24 +60,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private ShareActionProvider mShareActionProvider;
     private String mMyShareString;
 
-    CardView mCardView;
-    TextView mTitle;
-    TextView mReleaseDate;
-    TextView mNumVote;
-    TextView mVoteAverage;
-    ImageView mPoster;
-    TextView mOverview;
-    FloatingActionButton mFab;
-    View mImage_Container;
-    TextView mTailerTitle;
-    ListView mTailerListView;
-    TextView mReviewTitle;
-    ListView mReviewListView;
-//    ArrayAdapter<Details.Video> mTrailerAdapter;
-//    ArrayAdapter<Details.Review> mReviewAdapter;
-//    ListView mTrailers;
-    ListView mReviews;
-    ImageView mMyFavorite;
+    @BindView(R.id.title_textView) TextView mTitle;
+    @BindView(R.id.overview_card_view) CardView mCardView;
+    @BindView(R.id.release_textView) TextView mReleaseDate;
+    @BindView(R.id.nVoters_textView) TextView mNumVote;
+    @BindView(R.id.nStar_textView) TextView mVoteAverage;
+    @BindView(R.id.poster_imageView) ImageView mPoster;
+    @BindView(R.id.overview_textView) TextView mOverview;
+    @BindView(R.id.fab) FloatingActionButton mFab;
+    @BindView(R.id.poster_container) View mImage_Container;
+    @BindView(R.id.trail_header) TextView mTailerTitle;
+    @BindView(R.id.trailer_listView) ListView mTailerListView;
+    @BindView(R.id.review_header) TextView mReviewTitle;
+    @BindView(R.id.review_listView) ListView mReviewListView;
+    @BindView(R.id.favority_imageView) ImageView mMyFavorite;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieEntry.COLUMN_TITLE,
@@ -99,17 +98,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public DetailFragment() {
         // Required empty public constructor
         setHasOptionsMenu(true);
+        ButterKnife.setDebug(true);
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mMovieLoaderId != -1)
-            outState.putInt(DBLOADER_MOVIE_ID, mMovieLoaderId);
-        if (mDetailLoaderId != -1)
-            outState.putInt(DBLOADER_EXTRA_ID, mDetailLoaderId);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -134,35 +124,25 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             dargs.putParcelable(Constants.MORE_DETAIL_URI, uriDetail);
             getLoaderManager().initLoader(mDetailLoaderId, dargs, this);
         }
-
-        // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_detail, container, false);
-        mTitle = (TextView) root.findViewById(R.id.title_textView)  ;
-        mCardView= (CardView) root.findViewById(R.id.overview_card_view);
-        mReleaseDate = (TextView) root.findViewById(R.id.release_textView);
-        mNumVote = (TextView) root.findViewById(R.id.nVoters_textView) ;
-        mVoteAverage = (TextView) root.findViewById(R.id.nStar_textView);
-        mMyFavorite = (ImageView) root.findViewById(R.id.favority_imageView);
-        mPoster = (ImageView) root.findViewById(R.id.poster_imageView);
-        mOverview = (TextView) root.findViewById(R.id.overview_textView);
-        mImage_Container = root.findViewById(R.id.poster_container);
-        mTailerTitle = (TextView) root.findViewById(R.id.trail_header);
-        mTailerListView = (ListView) root.findViewById(R.id.trailer_listView);
-        mReviewTitle = (TextView) root.findViewById(R.id.review_header);
-        mReviewListView = (ListView) root.findViewById(R.id.review_listView);
+        ButterKnife.bind(this, root);
+
         setupExtraListViews ();
-
-        mFab = (FloatingActionButton) root.findViewById(R.id.fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utilities.addFavoriteMovie(getContext(), mMovieId);
-                mMyFavorite.setVisibility(View.VISIBLE);
-                v.setVisibility(View.INVISIBLE);
-            }
-        });
-
         return root;
+    }
+    @OnClick(R.id.fab)
+    public void favorite(View view) {
+        Utilities.addFavoriteMovie(getContext(), mMovieId);
+        mMyFavorite.setVisibility(View.VISIBLE);
+        view.setVisibility(View.INVISIBLE);
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mMovieLoaderId != -1)
+            outState.putInt(DBLOADER_MOVIE_ID, mMovieLoaderId);
+        if (mDetailLoaderId != -1)
+            outState.putInt(DBLOADER_EXTRA_ID, mDetailLoaderId);
     }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -241,7 +221,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         }
     }
 
-    private static final int UNBOUNDED = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+    private static final int UNBOUNDED = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
     private void fillExtraData(Cursor cursor) {
         do {
             try {
