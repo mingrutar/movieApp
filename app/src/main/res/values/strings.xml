@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">MovieApp</string>
+    <string name="app_label">Movie Fun</string>
+
+    <string name="tag_api_key" translatable="false">api_key</string>
+    <string name="tag_sortby_popular" translatable="false">popular</string>
+    <string name="tag_sortby_top_rated" translatable="false">top_rated</string>
+
+    <string name="sync_account_type">com.coderming.movieapp</string>
+    <string name="content_authority">com.coderming.movieapp</string>
+
+    <string name="title_detail_activity">Movie Details</string>
+   <string name="title_main_activity">Favourite Movies</string>
+    <string name="title_settings_activity">Settings</string>
+
+    <string name="sortby_faverites">Favorites</string>
+    <string name="sortby_popular">Most Popular</string>
+    <string name="sortby_top_rated">Highest Rated</string>
+    <string name="tag_sort_by">Sort by</string>
+
+    <string name="pref_num_popular_title">Number of popular movies (limit 100)</string>
+    <string name="pref_num_popular_key" translatable="false">pref_popular_key</string>
+    <string name="pref_num_popular_default">40</string>
+    <string name="pref_num_top_rated_title">Number of top rated movies (limit 100)</string>
+    <string name="pref_num_top_rated_key" translatable="false">pref_top_rated_key</string>
+    <string name="pref_num_top_rated_default">40</string>
+
+    <string name="pref_sortby_key">pref_sort_key</string>
+    <string-array name="movieListOrder">
+        <item>@string/tag_sortby_popular</item>
+        <item>@string/tag_sortby_top_rated</item>
+        <item>favirotes</item>
+    </string-array>
+    <string-array name="movieListOrderValue">
+        <item>@string/sortby_popular</item>
+        <item>@string/sortby_top_rated</item>
+        <item>@string/sortby_faverites</item>
+    </string-array>
+
+</resources>

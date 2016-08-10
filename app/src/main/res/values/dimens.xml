@@ -1,0 +1,22 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="dimen_1dp">2dp</dimen>
+    <dimen name="dimen_4dp">4dp</dimen>
+    <dimen name="dimen_6dp">6dp</dimen>
+    <dimen name="dimen_10dp">10dp</dimen>
+    <dimen name="dimen_16dp">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="trailerListItemHeight">32dp</dimen>
+    <!--     <dimen name="grid_vspacing">4dp</dimen> -->
+
+    <dimen name="poster_image_width_185">185dp</dimen>
+    <dimen name="poster_image_height_185">277dp</dimen>
+
+    <!-- available theMovieDB poster image sizes, poster hxw ratio is 1.5 -->
+    <dimen name="moviedb_image_width_92">92px</dimen>
+    <dimen name="moviedb_image_width_154">154px</dimen>
+    <dimen name="moviedb_image_width_185">185px</dimen>
+    <dimen name="moviedb_image_width_342">342px</dimen>
+    <dimen name="moviedb_image_width_500">500px</dimen>
+    <dimen name="moviedb_image_width_780">780px</dimen>
+</resources>
