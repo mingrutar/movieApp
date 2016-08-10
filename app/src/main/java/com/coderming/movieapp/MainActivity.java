@@ -55,8 +55,14 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             MovieSelectionType.TopRated, MovieSelectionType.Favorite} ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "++++ onCreate ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (isSyncTime(this)) {
+            MovieSyncAdapter.syncImmediately(this);
+        }
+
         mTwoPane = ( findViewById(R.id.detail_container) != null );
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
@@ -71,18 +77,18 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
                 getSupportActionBar().setElevation(0f);
             }
         } else if (savedInstanceState.containsKey(LAST_SYNC_TIME)){
-            DataRetriever.sLastMovieSyncTime = savedInstanceState.getLong(LAST_SYNC_TIME);
-        }
-        if (isSyncTime(this)) {
-            Log.v(LOG_TAG, "++++ calling syncImmediately ");
-            MovieSyncAdapter.syncImmediately(this);
+            long savedSyncTime = savedInstanceState.getLong(LAST_SYNC_TIME, -1);
+            DataRetriever.sLastMovieSyncTime.set( (savedSyncTime != -1) ? savedSyncTime : null);
         }
         registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
 
     private boolean isSyncTime(Context context) {
-        return ((System.currentTimeMillis() > DataRetriever.sLastMovieSyncTime + DAY_IN_MILLISEC )
-                && DataRetriever.isNetworkAvailable(this)) ;
+        boolean ret = ((DataRetriever.sLastMovieSyncTime == null) ||
+                (System.currentTimeMillis() > DataRetriever.sLastMovieSyncTime.get() + DAY_IN_MILLISEC ))
+                && DataRetriever.isNetworkAvailable(this) ;
+        Log.v(LOG_TAG, "++++ isSyncTime = " + ret);
+        return ret;
     }
     BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -99,7 +105,8 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(LAST_SYNC_TIME, DataRetriever.sLastMovieSyncTime);
+        if (DataRetriever.sLastMovieSyncTime != null)
+            outState.putLong(LAST_SYNC_TIME, DataRetriever.sLastMovieSyncTime.get());
     }
     @Override
     protected void onPause() {

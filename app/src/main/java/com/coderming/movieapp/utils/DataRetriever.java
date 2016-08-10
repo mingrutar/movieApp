@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by linna on 6/2/2016.
@@ -38,7 +39,7 @@ import java.util.Map;
 public class DataRetriever {
     private static final String LOG_TAG = DataRetriever.class.getSimpleName();
     //
-    public static long sLastMovieSyncTime;
+    public static AtomicLong sLastMovieSyncTime = new AtomicLong();
 
     //  detail tags
     public static final String[] SUPPORTED_DETAIL_TYPES = new String[] {"videos", "reviews",  "images",};
@@ -133,7 +134,7 @@ public class DataRetriever {
             String urlStr = String.format(mMovieUri, type.toString(), page, BuildConfig.MOVIE_DB_API_KEY);
             String jsonStr = retrieveData(context, new URL(urlStr));
             if (jsonStr != null) {
-                sLastMovieSyncTime = System.currentTimeMillis();
+                sLastMovieSyncTime.set(System.currentTimeMillis());
                 return parseJson2Db(context, jsonStr, type);
             }
         } catch (JSONException jsex) {

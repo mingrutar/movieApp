@@ -224,6 +224,8 @@ public class MovieMainFragment extends Fragment
                     data.moveToFirst();
                 }
                 mAdapter.swapCursor(data);
+            } else {            // TODO: add no data textView
+
             }
         }
     }
