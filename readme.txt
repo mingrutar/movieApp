@@ -1,11 +1,22 @@
+<<<<<<< HEAD
 Udacity P2 project Movie App
+=======
+Udacity P2 project MovieApp
+>>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
 
 See assignment details at
    https://docs.google.com/document/d/1ZlN1fUsCSKuInLECcJkslIqvpKlP7jWL2TP9m6UiA6I/pub?embedded=true#h.ngb5kvi0pkbz
 
+<<<<<<< HEAD
 Citation: the code utilizes https://www.themoviedb.org/ APIs, copyrights of themoviewdb.org. 
 
 Please add this line to gradle.properties: themoviedbApiKeyProp="your api key"
+=======
+Citation: the code utilizes https://www.themoviedb.org/ APIs, copyrights of themoviewdb.org.
+
+Please add this line to gradle.properties:
+  themoviedbApiKeyProp="your api key"
+>>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
 
 Screenshots for P2:
   /screenShorts/p2-device-xxxxx.jpg

@@ -112,11 +112,15 @@ public class MovieProvider extends ContentProvider {
             cursor = db.query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
             }
         if (cursor != null) {
+<<<<<<< HEAD
             Uri notificationUrl = uri;
             if ((matchCode == MOVIE_TOP_RATE) || (matchCode == MOVIE_POPULAR))  {
                 notificationUrl = MovieContract.MovieEntry.CONTENT_URI;
             }
             cursor.setNotificationUri(getContext().getContentResolver(), notificationUrl);
+=======
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+>>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
         }
         return cursor;
     }
@@ -147,12 +151,16 @@ public class MovieProvider extends ContentProvider {
         } else {
             Log.i(LOG_TAG, "insert: not supported Uri for insertion, uri="+uri);
         }
+<<<<<<< HEAD
         if (uri == MovieContract.MovieEntry.CONTENT_URI) {
             getContext().getContentResolver().notifyChange(MovieContract.MovieEntry.CONTENT_POPULAR_URI, null);
             getContext().getContentResolver().notifyChange(MovieContract.MovieEntry.CONTENT_TOP_RATES_URI, null);
         } else {
             getContext().getContentResolver().notifyChange(uri, null);
         }
+=======
+        getContext().getContentResolver().notifyChange(uri, null);
+>>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
         return ret;
     }
 
