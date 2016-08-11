@@ -28,7 +28,7 @@ Movie app project 2 is  continuous work of project 1, which was created from scr
 * TODO: High light the selected movie at main activity.
 
 ### Screenshots ###
-__Tablet (two pane) Landscape and Portrait __
+__Tablet (two pane) Landscape and Portrait__
 
 ![land-two-pane](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-tablet-land.png?raw=true)
 ![port-two-pane](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-tablet-port-favor.png?raw=true)
