@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             MovieSelectionType.TopRated, MovieSelectionType.Favorite} ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-<<<<<<< HEAD
         Log.v(LOG_TAG, "++++ onCreate ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -64,10 +63,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
             MovieSyncAdapter.syncImmediately(this);
         }
 
-=======
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
         mTwoPane = ( findViewById(R.id.detail_container) != null );
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
@@ -82,31 +77,18 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
                 getSupportActionBar().setElevation(0f);
             }
         } else if (savedInstanceState.containsKey(LAST_SYNC_TIME)){
-<<<<<<< HEAD
             long savedSyncTime = savedInstanceState.getLong(LAST_SYNC_TIME, -1);
             DataRetriever.sLastMovieSyncTime.set( (savedSyncTime != -1) ? savedSyncTime : null);
-=======
-            DataRetriever.sLastMovieSyncTime = savedInstanceState.getLong(LAST_SYNC_TIME);
-        }
-        if (isSyncTime(this)) {
-            Log.v(LOG_TAG, "++++ calling syncImmediately ");
-            MovieSyncAdapter.syncImmediately(this);
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
         }
         registerReceiver(mBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
     }
 
     private boolean isSyncTime(Context context) {
-<<<<<<< HEAD
         boolean ret = ((DataRetriever.sLastMovieSyncTime == null) ||
                 (System.currentTimeMillis() > DataRetriever.sLastMovieSyncTime.get() + DAY_IN_MILLISEC ))
                 && DataRetriever.isNetworkAvailable(this) ;
         Log.v(LOG_TAG, "++++ isSyncTime = " + ret);
         return ret;
-=======
-        return ((System.currentTimeMillis() > DataRetriever.sLastMovieSyncTime + DAY_IN_MILLISEC )
-                && DataRetriever.isNetworkAvailable(this)) ;
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
     }
     BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -123,12 +105,8 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerView
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-<<<<<<< HEAD
         if (DataRetriever.sLastMovieSyncTime != null)
             outState.putLong(LAST_SYNC_TIME, DataRetriever.sLastMovieSyncTime.get());
-=======
-        outState.putLong(LAST_SYNC_TIME, DataRetriever.sLastMovieSyncTime);
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
     }
     @Override
     protected void onPause() {

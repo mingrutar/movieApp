@@ -31,10 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-<<<<<<< HEAD
 import java.util.concurrent.atomic.AtomicLong;
-=======
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
 
 /**
  * Created by linna on 6/2/2016.
@@ -42,11 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class DataRetriever {
     private static final String LOG_TAG = DataRetriever.class.getSimpleName();
     //
-<<<<<<< HEAD
     public static AtomicLong sLastMovieSyncTime = new AtomicLong();
-=======
-    public static long sLastMovieSyncTime;
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
 
     //  detail tags
     public static final String[] SUPPORTED_DETAIL_TYPES = new String[] {"videos", "reviews",  "images",};
@@ -141,11 +134,7 @@ public class DataRetriever {
             String urlStr = String.format(mMovieUri, type.toString(), page, BuildConfig.MOVIE_DB_API_KEY);
             String jsonStr = retrieveData(context, new URL(urlStr));
             if (jsonStr != null) {
-<<<<<<< HEAD
                 sLastMovieSyncTime.set(System.currentTimeMillis());
-=======
-                sLastMovieSyncTime = System.currentTimeMillis();
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
                 return parseJson2Db(context, jsonStr, type);
             }
         } catch (JSONException jsex) {
@@ -159,11 +148,7 @@ public class DataRetriever {
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-<<<<<<< HEAD
         return ((activeNetwork!=null) && activeNetwork.isConnectedOrConnecting());
-=======
-        return activeNetwork.isConnected();
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
     }
     @Nullable
     private static String retrieveData(Context context, URL url) {

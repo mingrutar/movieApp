@@ -224,11 +224,6 @@ public class MovieMainFragment extends Fragment
                     data.moveToFirst();
                 }
                 mAdapter.swapCursor(data);
-<<<<<<< HEAD
-            } else {            // TODO: add no data textView
-
-=======
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
             }
         }
     }
