@@ -1,4 +1,4 @@
-## Udacity P2 project - Movie App ##
+## Movie App ##
 
 ### See assignment details at ###
 https://docs.google.com/document/d/1ZlN1fUsCSKuInLECcJkslIqvpKlP7jWL2TP9m6UiA6I/pub?embedded=true#h.ngb5kvi0pkbz
@@ -28,9 +28,17 @@ Movie app project 2 is  continuous work of project 1, which was created from scr
 * TODO: High light the selected movie at main activity.
 
 ### Screenshots ###
+__Tablet (two pane) Landscape and Portrait __
+
 ![land-two-pane](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-tablet-land.png?raw=true)
 ![port-two-pane](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-tablet-port-favor.png?raw=true)
-![land-main](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-main-land.png?raw=true)
-![land-detail](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-detail-land.png?raw=true)
+
+__Phone Portrait__
+
 ![port-main](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-main-port.png?raw=true)
 ![port-detail-favorite](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-detail-port-favor.png?raw=true)
+
+__Phone Landscape__
+
+![land-main](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-main-land.png?raw=true)
+![land-detail](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-detail-land.png?raw=true)
