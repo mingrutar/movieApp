@@ -6,11 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-<<<<<<< HEAD
         classpath 'com.android.tools.build:gradle:2.1.2'
-=======
-        classpath 'com.android.tools.build:gradle:2.1.0'
->>>>>>> 95e4587aa0ec0e00b4bb81a8684c0bcb38a43a51
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
