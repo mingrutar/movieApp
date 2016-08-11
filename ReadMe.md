@@ -33,4 +33,4 @@ Movie app project 2 is  continuous work of project 1, which was created from scr
 ![land-main](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-main-land.png?raw=true)
 ![land-detail](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-detail-land.png?raw=true)
 ![port-main](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-main-port.png?raw=true)
-![port-detail-favorite](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-detail-port.png?raw=true)
+![port-detail-favorite](https://github.com/mingrutar/movieApp/blob/master/screenShorts/P2-detail-port-favor.png?raw=true)
